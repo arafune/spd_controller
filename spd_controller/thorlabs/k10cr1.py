@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from . import THORLABS_MOTION_CONTROL, bytes_to_decimal, decimal_to_hex
 
 
 class K10CR1(THORLABS_MOTION_CONTROL):
     """Thorlabs K10CR1 rotation stage class."""
 
-    def __init__(self, serial_num) -> None:
+    def __init__(self, serial_num: str | int) -> None:
         super().__init__(serial_num)
 
     def angle_to_DU(self, ang: float) -> int:
@@ -14,7 +16,7 @@ class K10CR1(THORLABS_MOTION_CONTROL):
         return DU * 180 / 24576000
 
     def identify(self) -> None:
-        """Identify itself by flashing its front panel LEDs)"""
+        """Identify itself by flashing its front panel LEDs"""
         return self.write("230200005001")  # 23, 02, 00, 00, 50, 01
 
     def set_home_speed(self, speed_deg_s: float) -> None:
@@ -42,12 +44,9 @@ class K10CR1(THORLABS_MOTION_CONTROL):
         return None
 
     def home(self) -> bytes:
-        """Start a home move
+        """Start to a home position.
 
         MGMSG_MOT_MOVE_HOME
-        TX structure:
-
-        43, 04, "Channel ident", 0x, d, s
         """
         self.set_home_speed(10)
         self.write("430401005001")  # 43, 04, 01, 00, 50, 01
@@ -56,7 +55,7 @@ class K10CR1(THORLABS_MOTION_CONTROL):
     def moverel(self, angle_deg: float) -> None:
         """Start a relative move.
 
-        In this method, the longer version (6 byte header plus 6 data bytes) is used.
+        The longer version (6 byte header plus 6 data bytes) is used.
         Thus, the third and 4th bytes is "06 00"
 
         Parameters
@@ -105,6 +104,13 @@ class K10CR1(THORLABS_MOTION_CONTROL):
         return self.rd(20)
 
     def getpos(self) -> float:
+        """Return the current angle.
+
+        Returns
+        --------------
+        float
+            The current angle (degree)
+        """
         self.write("110401005001")  # 11, 04, 01, 00, 50, 01
         bytedata: bytes = self.rd(12)[8:]
         x = self.DU_to_angle(bytes_to_decimal(bytedata))

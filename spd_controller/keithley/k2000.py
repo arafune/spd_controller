@@ -9,6 +9,7 @@ import datetime
 from time import sleep
 
 from serial.tools import list_ports
+
 from .. import Comm
 
 
@@ -76,7 +77,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.output is not None:
-
         exit
         # args.poscar.save(args.output)
 
