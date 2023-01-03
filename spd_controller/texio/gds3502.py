@@ -9,7 +9,7 @@ import datetime
 
 import numpy as np
 from numpy.typing import NDArray
-from simpleComm import Comm
+from .. import Comm
 
 
 class GDS3502(Comm):

@@ -15,7 +15,7 @@ from __future__ import annotations
 import argparse
 
 from serial.tools import list_ports
-from simpleComm import Comm
+from .. import Comm
 
 
 class GSC02(Comm):

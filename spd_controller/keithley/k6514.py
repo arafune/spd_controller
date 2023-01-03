@@ -4,7 +4,7 @@
 import argparse
 import datetime
 
-from simpleComm import Comm
+from .. import Comm
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument(

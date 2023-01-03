@@ -9,7 +9,7 @@ import datetime
 from time import sleep
 
 from serial.tools import list_ports
-from simpleComm import Comm
+from .. import Comm
 
 
 class DMM2700(Comm):
