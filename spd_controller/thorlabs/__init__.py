@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import binascii
 
 import serial
@@ -32,7 +34,7 @@ class THORLABS_MOTION_CONTROL:
             )
 
     def connect(self) -> None:
-        """Searhes all com ports for device with matching serial numb and opens a connection"""
+        """Searhes all com ports for device with matching serial number and opens a connection"""
         ports = list_ports.comports()
         for port in ports:
             try:
@@ -46,12 +48,30 @@ class THORLABS_MOTION_CONTROL:
                 pass
 
     def rd(self, bytelen: int) -> bytes:
+        """Read buffer
+
+        Parameters
+        ---------------
+        bytelen: int
+            length of byte to read
+
+        Returns
+        ---------
+        bytes
+        """
         x = self.ser.readline()
         while len(x) < bytelen:
             x = x + self.ser.readline()
         return x
 
     def write(self, x: str) -> None:
+        """Write buffer
+
+        Parameters
+        -----------
+        x: str
+            String to buffer
+        """
         command = bytearray.fromhex(x)
         return self.ser.write(command)
 
