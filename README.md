@@ -9,7 +9,7 @@ Following facilities are supported
 * Keithley
   * 
 * SIGMA Koki (SIGMA TECH)
-  * 
+  * GSC-02 (To control variable ND filter)
 * Thorlabs
   * 
 * Newport
