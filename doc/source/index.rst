@@ -24,6 +24,60 @@ API documentation
    :show-inheritance:
 
 
+:mod:`spd_controller.sigma.gsc02` module
+-----------------------------------------
+
+.. automodule:: spd_controller.sigma.gsc02
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+:mod:`spd_controller.sigma.sc104` module
+-----------------------------------------
+
+.. automodule:: spd_controller.sigma.sc104
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+:mod:`spd_controller.keithley.dmm2700` module
+----------------------------------------------
+
+.. automodule:: spd_controller.keithley.dmm2700
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+:mod:`spd_controller.keithley.k2000` module
+----------------------------------------------
+
+.. automodule:: spd_controller.keithley.k2000
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+:mod:`spd_controller.keithley.k6514` module
+----------------------------------------------
+
+.. automodule:: spd_controller.keithley.k6514
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+:mod:`spd_controller.qmass.qmass` module
+--------------------------------------------
+
+.. automodule:: spd_controller.qmass.qmass
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+
 :mod:`spd_controller.texio.gds3502` module
 --------------------------------------------
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keithley 6514 から電流値を読み取る"""
+"""Read the electric current from Keithley 6514 """
 
 import argparse
 import datetime

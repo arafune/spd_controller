@@ -35,7 +35,8 @@ class K2000(Comm):
     def wait_for_srq(self, command: str) -> bool:
         """Waits for a service request from K2000.
 
-        The service request must be enable on the instrument prior to calling this"""
+        The service request must be enable on the instrument
+        prior to calling this"""
         self.sendtext(command)
         self.sendtext("*STB?")
         stb = int(self.read(10).decode("utf-8").strip())
