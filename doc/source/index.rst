@@ -23,11 +23,9 @@ API documentation
    :undoc-members:
    :show-inheritance:
 
-
 .. autofunction:: spd_controller.thorlabs.decimal_to_hex
 
 .. autofunction:: spd_controller.thorlabs.bytes_to_decimal
-
 
 :mod:`spd_controller.thorlabs.k10cr1` module
 ------------------------------------------------
@@ -41,7 +39,6 @@ API documentation
 .. automodule:: spd_controller.thorlabs.mff101
     :members:
     :show-inheritance:
-
 
 
 Indices and tables
