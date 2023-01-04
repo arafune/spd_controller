@@ -4,11 +4,9 @@
 
 from __future__ import annotations
 
-import argparse
-import datetime
-
 import numpy as np
 from numpy.typing import NDArray
+
 from .. import Comm
 
 
@@ -61,8 +59,8 @@ class GDS3502(Comm):
 
         Returns
         -------
-        NDArray[np.float_]
-            Oscilloscope date
+        NDArray[np.float]
+            Oscilloscope data
         """
         self.sendtext(":ACQuire{}:MEMory?".format(channel))
         tmp: list[bytes] = self.comm.readlines()

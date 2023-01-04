@@ -15,6 +15,23 @@ Welcome to spd_controller's documentation!
 API documentation
 ==================
 
+:mod:`spd_controller` module
+------------------------------
+
+.. autoclass:: spd_controller.Comm
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+:mod:`spd_controller.texio.gds3502` module
+--------------------------------------------
+
+.. automodule:: spd_controller.texio.gds3502
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 :mod:`spd_controller.thorlabs` module
 ------------------------------------------------
 
