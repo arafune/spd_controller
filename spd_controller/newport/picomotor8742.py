@@ -37,9 +37,33 @@ class Picomotor8742:
         self.sock = None
 
     def connect(self):
+        """Connect the Picomotor device"""
         self.sock = TcpSocketWrapper(self.verbose)
         self.sock.settimeout(self.timeout)
         self.sock.connect((self.ipaddr, self.port))
+
+    def cmd(self, axis, cmd, *args):
+        """Send a command to 8742 controller
+
+        Parameters
+        ----------
+        axis:
+
+        cmd:
+
+
+        """
+        cmdstr = "%d%s" % (axis, cmd)
+        cmdstr = ",".join(map(str, args)) + "\n"
+        self.sock.send(cmdstr.encode())
+
+    def ask(self, axis: int, cmd: str, *args):
+        self.cmd(axis, cmd, *args)
+        ans = self.sock.recv(128)
+        if ans[0] == 255:
+            ans = self.sock.recv(128)
+        assert ans[-2:] == b"\r\n"
+        return ans.strip()
 
     def position(self, axis: int = 1) -> int:
         """Return Axis position in step
