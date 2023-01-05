@@ -4,16 +4,16 @@ import socket
 class TcpSocketWrapper(socket.socket):
     """Very thin wrapper of socket"""
 
-    def __init__(self, verbose=False):
+    def __init__(self, verbose: bool = False):
         self._verbose = verbose
         super().__init__(socket.AF_INET, socket.SOCK_STREAM)
 
-    def send(self, bytes, flags=0):
+    def send(self, bytes: bytes, flags: int = 0) -> int:
         if self._verbose:
             print("WRITING:", bytes)
-        super().send(bytes, flags)
+        return super().send(bytes, flags)
 
-    def recv(self, bufsize, flags=0):
+    def recv(self, bufsize: int, flags: int = 0) -> bytes:
         if self._verbose:
             print("READING: ", end="")
         msg = super().recv(bufsize, flags)
@@ -28,11 +28,11 @@ class Picomotor8742:
     def __init__(
         self,
         ipaddr: str,
-        port=23,
-        naxis=4,
-        timeout=2,
-        name="Picomotor8742",
-        verbose=False,
+        port: int = 23,
+        naxis: int = 4,
+        timeout: int = 2,
+        name: str = "Picomotor8742",
+        verbose: bool = False,
     ):
         self.name = name
         self.ipaddr = ipaddr
@@ -48,7 +48,7 @@ class Picomotor8742:
         self.sock.settimeout(self.timeout)
         self.sock.connect((self.ipaddr, self.port))
 
-    def cmd(self, axis, cmd, *args) -> None:
+    def cmd(self, axis: int, cmd: str, *args) -> int:
         """Send a command to 8742 controller
 
         Parameters
@@ -60,7 +60,7 @@ class Picomotor8742:
         """
         cmdstr = "{:d}{:s}".format(axis, cmd)
         cmdstr += ",".join(map(str, args)) + "\n"
-        self.sock.send(cmdstr.encode("utf-8"))
+        return self.sock.send(cmdstr.encode("utf-8"))
 
     def ask(self, axis: int, cmd: str, *args) -> bytes:
         """"""
@@ -115,8 +115,8 @@ class Picomotor8742:
         """
         return int(self.ask(axis, "TP?"))
 
-    def stop(self, axis: int = 1) -> None:
-        """Stop motion
+    def force_stop(self, axis: int = 1) -> None:
+        """Force stop the actuator.
 
         Parameters
         -----------
@@ -135,6 +135,9 @@ class Picomotor8742:
         velocity: int
             Velocity (steps/sec)  default is 2000
         """
+        if velocity > 2000:
+            print("The velocity should be less than 2000")
+            return None
         self.cmd(axis, "VA{:d}".format(int(velocity)))
 
     def set_acceleration(self, axis: int = 1, acceleration: int = 100000) -> None:
@@ -149,8 +152,8 @@ class Picomotor8742:
         """
         self.cmd(axis, "AC{:d}".format(int(acceleration)))
 
-    def motion_done_query(self, axis: int = 1) -> int:
-        """Motion done status query
+    def check_stop(self, axis: int = 1) -> bool:
+        """Return True if the actuator is stop.
 
         Parameters
         -----------
@@ -159,10 +162,12 @@ class Picomotor8742:
 
         Returns
         -------
-        int
-            0 is in progress, 1 is not in progress
+        bool
+            True if the actuator is stop (not work)
         """
-        return int(self.ask(axis, "MD?"))
+        if int(self.ask(axis, "MD?")):
+            return True
+        return False
 
     def acceleration(self, axis: int = 1) -> int:
         """Return the acceleration
@@ -191,3 +196,30 @@ class Picomotor8742:
         int
         """
         return int(self.ask(axis, "VA?"))
+
+    def speed(self, axis: int = 1) -> int:
+        """Alias of self.velocity
+
+        Parameters
+        --------------
+        axis: int
+            Axis number
+
+        Returns
+        ----------
+        int:
+            Speed (steps/sec)
+        """
+        return self.velocity(axis)
+
+    def set_speed(self, axis: int, speed: int):
+        """Alias of self.set_velocity
+
+        Parameters
+        ----------
+        axis: int
+            Axis number
+        speed: int
+            Speed to set (steps/sec)
+        """
+        self.set_velocity(axis, speed)
