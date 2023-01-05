@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
+import socket
 import threading
 import time
 
@@ -195,3 +196,24 @@ class Comm:
         if self.is_portopen:
             self.comm.close()
         self.is_portopen = False
+
+
+class SocketClient:
+    """Tiny Socket client"""
+
+    def __init__(self, host: str, port: int) -> None:
+        self.host = host
+        self.port = port
+        self.socket = None
+
+    def send_recv(self, input_data: str) -> str:
+        DATASIZE = 512  # 受信データバイト数
+        # sockインスタンスを生成
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            # ソケットをオープンにして、サーバーに接続
+            sock.connect((self.host, self.port))
+            # 入力データをサーバーへ送信
+            sock.send(input_data.encode("utf-8"))
+            # サーバーからのデータを受信
+            rcv_data: bytes = sock.recv(DATASIZE)
+            return rcv_data.decode("utf-8")

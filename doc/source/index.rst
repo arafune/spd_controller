@@ -74,7 +74,6 @@ API documentation
 .. automodule:: spd_controller.qmass.qmass
    :members:
    :undoc-members:
-   :show-inheritance:
 
 
 
