@@ -77,6 +77,14 @@ API documentation
 
 
 
+:mod:`spd_controller.newport.picomotor8742` module
+----------------------------------------------------
+
+.. automodule:: spd_controller.newport.picomotor8742
+   :members:
+   :undoc-members:
+
+
 :mod:`spd_controller.texio.gds3502` module
 --------------------------------------------
 

@@ -4,6 +4,7 @@
 To control variable ND filter.
 
 To work Motorized ND Filter Holder.
+
 Hard ware side:
     * Model name OSMS-60YAW (SIGMAKOKI Co., Ltd.)
     * Motor Drive Cuurent: 0.75 (A)
@@ -15,6 +16,7 @@ from __future__ import annotations
 import argparse
 
 from serial.tools import list_ports
+
 from .. import Comm
 
 
