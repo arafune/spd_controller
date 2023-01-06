@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Module for GDS3502 Oscilloscope (USB connection)"""
+"""Module for GDS3502 Oscilloscope (USB connection through pySerial)"""
 
 from __future__ import annotations
 
@@ -35,12 +35,12 @@ class GDS3502(Comm):
         raise RuntimeError("Not found")
 
     def lrn(self) -> str:
-        """_summary_
+        """Returns the oscilloscope settings as a data string
 
         Returns
         -------
         str
-            _description_
+            Oscilloscope setting
         """
         self.sendtext("*LRN?")
         tmp: list[bytes] = self.comm.readlines()
@@ -82,8 +82,9 @@ class GDS3502(Comm):
         wave = [[wave_data[i], wave_data[i + 1]] for i in range(0, len(wave_data), 2)]
         timescale: NDArray[np.float64] = np.linspace(
             0,
-            self.header_dict["Sampling Period"] * self.header_dict["Memory Length"],
-            self.header_dict["Memory Length"],
+            float(self.header_dict["Sampling Period"])
+            * float(self.header_dict["Memory Length"]),
+            int(self.header_dict["Memory Length"]),
             endpoint=False,
         )
         amplitudes: list[int] = []
