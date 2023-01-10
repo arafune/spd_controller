@@ -29,12 +29,12 @@ def flipper_component(id: int):
     """
     return html.Div(
         [
-            html.H2("Flipper {}".format(id), style={"marginLeft": "2em"}),
+            html.H2(f"Flipper {id}", style={"marginLeft": "2em"}),
             dbc.Button(
                 "Flip {}!".format(id),
                 size="large",
                 color="primary",
-                id="flipper{}".format(id),
+                id=f"flipper{id}",
                 style={
                     "marginLeft": "10em",
                     "marginBottom": ".3em",
@@ -58,7 +58,7 @@ def mirror_component(id: int):
     id: int
         1 or 3
     """
-    html.Div(
+    return html.Div(
         [
             html.H3(f"Mirrror {id}ω", style={"marginLeft": "2em"}),
             daq.LEDDisplay(
@@ -130,196 +130,15 @@ app.layout = html.Article(
         html.H1("Tuning Mirrors", style={"text-align": "center"}),
         html.Div(
             [
-                # html.H2("Flipper", style={"text-align": "center"}),
-                html.Div(
-                    [
-                        html.Div(
-                            [
-                                html.H2("Flipper 1", style={"marginLeft": "2em"}),
-                                dbc.Button(
-                                    "Flip 1!",
-                                    size="large",
-                                    color="primary",
-                                    id="flipper1",
-                                    style={
-                                        "marginLeft": "10em",
-                                        "marginBottom": ".3em",
-                                    },
-                                ),
-                            ],
-                            style={
-                                "margin": "2em",
-                                "border-style": "solid",
-                                "border-radius": "20pt",
-                                "border-color": "green",
-                            },
-                        ),
-                        html.Div(
-                            [
-                                html.H2(
-                                    "Flipper 2",
-                                    style={"marginLeft": "2em"},
-                                ),
-                                dbc.Button(
-                                    "Flip 2!",
-                                    size="large",
-                                    color="primary",
-                                    id="filpper2",
-                                    style={
-                                        "marginLeft": "10em",
-                                        "marginBottom": ".3em",
-                                    },
-                                ),
-                            ],
-                            style={
-                                "margin": "2em",
-                                "border-style": "solid",
-                                "border-radius": "20pt",
-                                "border-color": "green",
-                            },
-                        ),
-                    ]
-                ),
+                flipper_component(1),
+                flipper_component(2),
             ],
             style={"display": "inline-block", "width": "50%", "verticalAlign": "top"},
         ),
         html.Div(
             [
-                # html.H2("Mirror", style={"text-align": "center"}),
-                html.Div(
-                    [
-                        html.Div(
-                            [
-                                html.H3("Mirrror 3ω", style={"marginLeft": "2em"}),
-                                daq.LEDDisplay(
-                                    value="0",
-                                    color="red",
-                                    id="position_3omega",
-                                    size=24,
-                                    style={"marginLeft": "1em"},
-                                ),
-                                dbc.Button(
-                                    "◀",
-                                    color="primary",
-                                    size="sm",
-                                    style={"marginLeft": "2em"},
-                                    id="left_3omega",
-                                ),
-                                dbc.Button(
-                                    "stop",
-                                    color="primary",
-                                    size="sm",
-                                    id="stop_3omega",
-                                ),
-                                dbc.Button(
-                                    "▶",
-                                    color="primary",
-                                    size="sm",
-                                    id="right_3omega",
-                                ),
-                                html.Div(
-                                    [
-                                        dbc.Input(
-                                            type="relative move",
-                                            step=1,
-                                            placeholder="Input steps from here",
-                                            inputmode="numeric",
-                                            id="move_3omega",
-                                            style={
-                                                "display": "inline-block",
-                                                "width": "10em",
-                                            },
-                                        ),
-                                        dbc.Button(
-                                            "Move",
-                                            color="primary",
-                                            id="move_start_3omega",
-                                            style={
-                                                "display": "incline-block",
-                                                "marginLeft": "1em",
-                                            },
-                                        ),
-                                    ],
-                                    style={
-                                        "text-align": "center",
-                                        "marginBottom": ".3em",
-                                    },
-                                ),
-                            ],
-                            style={
-                                "border-style": "solid",
-                                "border-radius": "20pt",
-                                "border-color": "red",
-                                "margin": "2em",
-                            },
-                        ),
-                        html.Div(
-                            [
-                                html.H3("Mirror ω", style={"marginLeft": "2em"}),
-                                daq.LEDDisplay(
-                                    value="0",
-                                    color="red",
-                                    id="position_omega",
-                                    size=24,
-                                    style={"marginLeft": "1em"},
-                                ),
-                                dbc.Button(
-                                    "◀",
-                                    color="primary",
-                                    size="sm",
-                                    style={"marginLeft": "2em"},
-                                    id="left_omega",
-                                ),
-                                dbc.Button(
-                                    "stop",
-                                    color="primary",
-                                    size="sm",
-                                    id="stop_omega",
-                                ),
-                                dbc.Button(
-                                    "▶",
-                                    color="primary",
-                                    size="sm",
-                                    id="right_omega",
-                                ),
-                                html.Div(
-                                    [
-                                        dbc.Input(
-                                            type="relative move",
-                                            placeholder="Input steps from here",
-                                            step=1,
-                                            inputmode="numeric",
-                                            id="move_omega",
-                                            style={
-                                                "display": "inline-block",
-                                                "width": "10em",
-                                            },
-                                        ),
-                                        dbc.Button(
-                                            "Move",
-                                            color="primary",
-                                            id="move_start_omega",
-                                            style={
-                                                "display": "incline-block",
-                                                "marginLeft": "1em",
-                                            },
-                                        ),
-                                    ],
-                                    style={
-                                        "text-align": "center",
-                                        "marginBottom": ".3em",
-                                    },
-                                ),
-                            ],
-                            style={
-                                "border-style": "solid",
-                                "border-radius": "20pt",
-                                "border-color": "red",
-                                "margin": "2em",
-                            },
-                        ),
-                    ]
-                ),
+                mirror_component(3),
+                mirror_component(1),
             ],
             style={"display": "inline-block", "width": "50%", "verticalAlign": "top"},
         ),
