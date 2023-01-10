@@ -26,21 +26,42 @@ app.layout = html.Article(
                 # html.H2("Flipper", style={"text-align": "center"}),
                 html.Div(
                     [
-                        html.H2("Flipper 1"),
-                        dbc.Button(
-                            "Flip 1!",
-                            size="large",
-                            color="primary",
-                            id="flipper1",
-                            style={"marginLeft": "10em"},
+                        html.Div(
+                            [
+                                html.H2("Flipper 1", style={"marginLeft": "2em"}),
+                                dbc.Button(
+                                    "Flip 1!",
+                                    size="large",
+                                    color="primary",
+                                    id="flipper1",
+                                    style={"marginLeft": "10em"},
+                                ),
+                            ],
+                            style={
+                                "margin": "2em",
+                                "border-style": "solid",
+                                "border-radius": "20pt",
+                            },
                         ),
-                        html.H2("Flipper 2", style={"marginTop": "1em"}),
-                        dbc.Button(
-                            "Flip 2!",
-                            size="large",
-                            color="primary",
-                            id="filpper2",
-                            style={"marginLeft": "10em"},
+                        html.Div(
+                            [
+                                html.H2(
+                                    "Flipper 2",
+                                    style={"marginLeft": "2em"},
+                                ),
+                                dbc.Button(
+                                    "Flip 2!",
+                                    size="large",
+                                    color="primary",
+                                    id="filpper2",
+                                    style={"marginLeft": "10em"},
+                                ),
+                            ],
+                            style={
+                                "margin": "2em",
+                                "border-style": "solid",
+                                "border-radius": "20pt",
+                            },
                         ),
                     ]
                 ),
@@ -52,57 +73,80 @@ app.layout = html.Article(
                 # html.H2("Mirror", style={"text-align": "center"}),
                 html.Div(
                     [
-                        html.H3("Mirrror 3ω"),
-                        daq.LEDDisplay(
-                            value="0", color="red", id="position_3omega", size=24
-                        ),
-                        dbc.Button("◀", color="primary", size="sm"),
-                        dbc.Button("stop", color="primary", size="sm"),
-                        dbc.Button("▶", color="primary", size="sm"),
                         html.Div(
                             [
-                                dbc.Input(
-                                    type="relative move",
-                                    step=1,
-                                    id="move_3omega",
-                                    style={"display": "inline-block", "width": "10em"},
+                                html.H3("Mirrror 3ω"),
+                                daq.LEDDisplay(
+                                    value="0",
+                                    color="red",
+                                    id="position_3omega",
+                                    size=24,
                                 ),
-                                dbc.Button(
-                                    "Move",
-                                    color="primary",
-                                    style={
-                                        "display": "incline-block",
-                                        "marginLeft": "1em",
-                                    },
+                                dbc.Button("◀", color="primary", size="sm"),
+                                dbc.Button("stop", color="primary", size="sm"),
+                                dbc.Button("▶", color="primary", size="sm"),
+                                html.Div(
+                                    [
+                                        dbc.Input(
+                                            type="relative move",
+                                            step=1,
+                                            placeholder="Input steps from here",
+                                            inputmode="numeric",
+                                            id="move_3omega",
+                                            style={
+                                                "display": "inline-block",
+                                                "width": "10em",
+                                            },
+                                        ),
+                                        dbc.Button(
+                                            "Move",
+                                            color="primary",
+                                            style={
+                                                "display": "incline-block",
+                                                "marginLeft": "1em",
+                                            },
+                                        ),
+                                    ],
+                                    style={"text-align": "center"},
                                 ),
                             ],
-                            style={"text-align": "center"},
+                            style={"border-style": "solid", "border-radius": "20pt"},
                         ),
-                        html.H3("Mirror ω"),
-                        daq.LEDDisplay(
-                            value="0", color="red", id="position_omega", size=24
-                        ),
-                        dbc.Button("◀", color="primary", size="sm"),
-                        dbc.Button("stop", color="primary", size="sm"),
-                        dbc.Button("▶", color="primary", size="sm"),
                         html.Div(
                             [
-                                dbc.Input(
-                                    type="relative move",
-                                    step=1,
-                                    id="move_omega",
-                                    style={"display": "inline-block", "width": "10em"},
+                                html.H3("Mirror ω"),
+                                daq.LEDDisplay(
+                                    value="0", color="red", id="position_omega", size=24
                                 ),
-                                dbc.Button(
-                                    "Move",
-                                    color="primary",
-                                    style={
-                                        "display": "incline-block",
-                                        "marginLeft": "1em",
-                                    },
+                                dbc.Button("◀", color="primary", size="sm"),
+                                dbc.Button("stop", color="primary", size="sm"),
+                                dbc.Button("▶", color="primary", size="sm"),
+                                html.Div(
+                                    [
+                                        dbc.Input(
+                                            type="relative move",
+                                            placeholder="Input steps from here",
+                                            step=1,
+                                            inputmode="numeric",
+                                            id="move_omega",
+                                            style={
+                                                "display": "inline-block",
+                                                "width": "10em",
+                                            },
+                                        ),
+                                        dbc.Button(
+                                            "Move",
+                                            color="primary",
+                                            style={
+                                                "display": "incline-block",
+                                                "marginLeft": "1em",
+                                            },
+                                        ),
+                                    ],
+                                    style={"text-align": "center"},
                                 ),
                             ],
-                            style={"text-align": "center"},
+                            style={"border-style": "solid", "border-radius": "20pt"},
                         ),
                     ]
                 ),
