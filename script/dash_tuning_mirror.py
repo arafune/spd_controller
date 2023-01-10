@@ -29,22 +29,28 @@ def flipper_component(id: int):
     """
     return html.Div(
         [
-            html.H2(f"Flipper {id}", style={"marginLeft": "2em"}),
+            html.H3(
+                f"Flipper {id}", style={"marginLeft": "2em", "display": "inline-block"}
+            ),
             dbc.Button(
                 "Flip {}!".format(id),
                 size="large",
                 color="primary",
                 id=f"flipper{id}",
                 style={
-                    "marginLeft": "10em",
+                    "display": "inline-block",
+                    "align-items": "center",
+                    "justify-content": "center",
+                    "marginLeft": "5%",
                     "marginBottom": ".3em",
+                    "marginTop": ".3em",
                 },
             ),
         ],
         style={
             "margin": "2em",
             "border-style": "solid",
-            "border-radius": "20pt",
+            "border-radius": "10pt",
             "border-color": "green",
         },
     )
@@ -118,7 +124,7 @@ def mirror_component(id: int):
         ],
         style={
             "border-style": "solid",
-            "border-radius": "20pt",
+            "border-radius": "10pt",
             "border-color": "red",
             "margin": "2em",
         },
