@@ -34,13 +34,17 @@ app.layout = html.Article(
                                     size="large",
                                     color="primary",
                                     id="flipper1",
-                                    style={"marginLeft": "10em"},
+                                    style={
+                                        "marginLeft": "10em",
+                                        "marginBottom": ".3em",
+                                    },
                                 ),
                             ],
                             style={
                                 "margin": "2em",
                                 "border-style": "solid",
                                 "border-radius": "20pt",
+                                "border-color": "green",
                             },
                         ),
                         html.Div(
@@ -54,13 +58,17 @@ app.layout = html.Article(
                                     size="large",
                                     color="primary",
                                     id="filpper2",
-                                    style={"marginLeft": "10em"},
+                                    style={
+                                        "marginLeft": "10em",
+                                        "marginBottom": ".3em",
+                                    },
                                 ),
                             ],
                             style={
                                 "margin": "2em",
                                 "border-style": "solid",
                                 "border-radius": "20pt",
+                                "border-color": "green",
                             },
                         ),
                     ]
@@ -75,16 +83,33 @@ app.layout = html.Article(
                     [
                         html.Div(
                             [
-                                html.H3("Mirrror 3ω"),
+                                html.H3("Mirrror 3ω", style={"marginLeft": "2em"}),
                                 daq.LEDDisplay(
                                     value="0",
                                     color="red",
                                     id="position_3omega",
                                     size=24,
+                                    style={"marginLeft": "1em"},
                                 ),
-                                dbc.Button("◀", color="primary", size="sm"),
-                                dbc.Button("stop", color="primary", size="sm"),
-                                dbc.Button("▶", color="primary", size="sm"),
+                                dbc.Button(
+                                    "◀",
+                                    color="primary",
+                                    size="sm",
+                                    style={"marginLeft": "2em"},
+                                    id="left_3omega",
+                                ),
+                                dbc.Button(
+                                    "stop",
+                                    color="primary",
+                                    size="sm",
+                                    id="stop_3omega",
+                                ),
+                                dbc.Button(
+                                    "▶",
+                                    color="primary",
+                                    size="sm",
+                                    id="right_3omega",
+                                ),
                                 html.Div(
                                     [
                                         dbc.Input(
@@ -101,26 +126,55 @@ app.layout = html.Article(
                                         dbc.Button(
                                             "Move",
                                             color="primary",
+                                            id="move_start_3omega",
                                             style={
                                                 "display": "incline-block",
                                                 "marginLeft": "1em",
                                             },
                                         ),
                                     ],
-                                    style={"text-align": "center"},
+                                    style={
+                                        "text-align": "center",
+                                        "marginBottom": ".3em",
+                                    },
                                 ),
                             ],
-                            style={"border-style": "solid", "border-radius": "20pt"},
+                            style={
+                                "border-style": "solid",
+                                "border-radius": "20pt",
+                                "border-color": "red",
+                                "margin": "2em",
+                            },
                         ),
                         html.Div(
                             [
-                                html.H3("Mirror ω"),
+                                html.H3("Mirror ω", style={"marginLeft": "2em"}),
                                 daq.LEDDisplay(
-                                    value="0", color="red", id="position_omega", size=24
+                                    value="0",
+                                    color="red",
+                                    id="position_omega",
+                                    size=24,
+                                    style={"marginLeft": "1em"},
                                 ),
-                                dbc.Button("◀", color="primary", size="sm"),
-                                dbc.Button("stop", color="primary", size="sm"),
-                                dbc.Button("▶", color="primary", size="sm"),
+                                dbc.Button(
+                                    "◀",
+                                    color="primary",
+                                    size="sm",
+                                    style={"marginLeft": "2em"},
+                                    id="left_omega",
+                                ),
+                                dbc.Button(
+                                    "stop",
+                                    color="primary",
+                                    size="sm",
+                                    id="stop_omega",
+                                ),
+                                dbc.Button(
+                                    "▶",
+                                    color="primary",
+                                    size="sm",
+                                    id="right_omega",
+                                ),
                                 html.Div(
                                     [
                                         dbc.Input(
@@ -137,16 +191,25 @@ app.layout = html.Article(
                                         dbc.Button(
                                             "Move",
                                             color="primary",
+                                            id="move_start_omega",
                                             style={
                                                 "display": "incline-block",
                                                 "marginLeft": "1em",
                                             },
                                         ),
                                     ],
-                                    style={"text-align": "center"},
+                                    style={
+                                        "text-align": "center",
+                                        "marginBottom": ".3em",
+                                    },
                                 ),
                             ],
-                            style={"border-style": "solid", "border-radius": "20pt"},
+                            style={
+                                "border-style": "solid",
+                                "border-radius": "20pt",
+                                "border-color": "red",
+                                "margin": "2em",
+                            },
                         ),
                     ]
                 ),
