@@ -16,8 +16,9 @@ from dash import Input, Output, State, dcc, html
 from numpy.typing import NDArray
 
 try:
-    from K10CR1.k10cr1 import K10CR1
     from ThorlabsPM100 import USBTMC, ThorlabsPM100
+
+    from spd_controller.thorlabs.k10cr1 import K10CR1
 
     polarizer = K10CR1("55274554")
     inst = USBTMC()
