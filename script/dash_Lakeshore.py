@@ -67,6 +67,7 @@ file_name_input = dcc.Input(
     persistence_type="local",
     style=filename_input_style,
 )
+
 save_sw = daq.BooleanSwitch(
     id="save_sw",
     on=False,

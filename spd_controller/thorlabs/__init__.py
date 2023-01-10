@@ -6,7 +6,7 @@ import serial
 from serial.tools import list_ports
 
 __all__: list[str] = ["k10cr1", "mff101"]
-__version__: str = "0.0.1"
+__version__: str = "0.1.0"
 
 
 class THORLABS_MOTION_CONTROL:
@@ -64,7 +64,7 @@ class THORLABS_MOTION_CONTROL:
             x = x + self.ser.readline()
         return x
 
-    def write(self, x: str) -> None:
+    def write(self, x: str) -> int | None:
         """Write buffer
 
         Parameters

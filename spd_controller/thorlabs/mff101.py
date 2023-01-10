@@ -28,7 +28,7 @@ class MFF101(THORLABS_MOTION_CONTROL):
         self.write("290400005001")  # MGMSG_MOT_REQ_STATUSBITS
         return self.rd(12)[8]
 
-    def forward_move(self) -> None:
+    def move_forward(self) -> None:
         """Move flipper forward (2->1)
 
         MGMSG_MOT_MOVE_JOG   (64 04 (Chan Ident) Direction d s)
@@ -37,7 +37,7 @@ class MFF101(THORLABS_MOTION_CONTROL):
         """
         return self.write("6A0401015001")
 
-    def backward_move(self) -> None:
+    def move_backward(self) -> None:
         """Move flipper backward  (1->2)
 
         MGMSG_MOT_MOVE_JOG   (64 04 (Chan Ident) Direction d s)
@@ -49,6 +49,6 @@ class MFF101(THORLABS_MOTION_CONTROL):
     def flip(self) -> None:
         """Flip the position"""
         if self.position() == 1:
-            self.backward_move()
+            self.move_backward()
         else:
-            self.forward_move()
+            self.move_forward()
