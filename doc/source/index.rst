@@ -11,6 +11,7 @@ Welcome to spd_controller's documentation!
    :caption: Contents:
 
    dash_Lakeshore/dash_Lakeshore
+   dash_tuning_mirror/dash_tuning_mirror
 
 API documentation
 ==================
