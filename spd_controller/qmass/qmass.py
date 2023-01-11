@@ -420,7 +420,9 @@ class Qmass:
             default 4: (E-11)
 
 
-        Returns: int
+        Returns
+        --------
+        int
             2 means leakcheck
         """
         command0 = "00 e4 00 00 02 04 "

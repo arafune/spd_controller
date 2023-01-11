@@ -6,8 +6,9 @@ from __future__ import annotations
 import dash
 import dash_daq as daq
 from dash import Input, Output, State, dcc, html
-from gsc02 import GSC02
-from sc104 import SC104
+
+from spd_controller.sigma.gsc02 import GSC02
+from spd_controller.sigma.sc104 import SC104
 
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 app = dash.Dash(

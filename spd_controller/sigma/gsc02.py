@@ -5,7 +5,7 @@ To control variable ND filter.
 
 To work Motorized ND Filter Holder.
 
-Hard ware side:
+Hard ware side information:
     * Model name OSMS-60YAW (SIGMAKOKI Co., Ltd.)
     * Motor Drive Cuurent: 0.75 (A)
     * 144000 pulse : 360 degree

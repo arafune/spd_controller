@@ -206,7 +206,7 @@ measurement_module = html.Div(
         dcc.Graph(id="Graph"),
         dcc.Interval(id="intervals", interval=1000, max_intervals=-1),
     ]
-)  ##<< ここにグラフがはいる。
+)  # << ここにグラフがはいる。
 app.layout = html.Div(
     [
         html.H1("Q-mass spectroscopy", id="placeholder", style={"textAlign": "center"}),
