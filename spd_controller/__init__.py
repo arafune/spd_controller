@@ -119,11 +119,12 @@ class Comm:
         return self.comm.readline()
 
     def recvtext(self) -> str:
-        """Read the text endwith the TERM (default: \r) from the device
+        r"""Read the text endwith the TERM (default: \\r) from the device
 
         Returns
-        --------
+        ---------
         str
+            returned text
         """
         return self.recvbytes().decode("utf-8")
 
