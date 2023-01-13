@@ -15,7 +15,7 @@ class K10CR1(THORLABS_MOTION_CONTROL):
     def DU_to_angle(self, DU: int) -> float:
         return DU * 180 / 24576000
 
-    def identify(self) -> None:
+    def identify(self) -> int | None:
         """Identify itself by flashing its front panel LEDs"""
         return self.write("230200005001")  # 23, 02, 00, 00, 50, 01
 

@@ -21,6 +21,8 @@ app = dash.Dash(
     suppress_callback_exceptions=True,
 )
 
+# ---------- Layout
+
 
 def flipper_component(id: int):
     """Flipper flipper_component
@@ -163,12 +165,12 @@ app.layout = html.Article(
     lang="english",
 )
 
-
+# Callback
 # ---------- Flipper Button
 
 
-def flipbutton_n(id, n_clicks):
-    """Call back function for flipbutton1
+def flipbutton(id, n_clicks) -> dict[str, str]:
+    """Base of the callback function for flipbutton1
 
     Parameters
     --------------
@@ -198,19 +200,33 @@ def flipbutton_n(id, n_clicks):
 
 
 @app.callback(Output("flipper1", "style"), Input("flipper1", "n_clicks"))
-def flipbutton1(n_clicks):
-    return flipbutton_n(1, n_clicks)
+def flipbutton1(n_clicks) -> dict[str, str]:
+    return flipbutton(1, n_clicks)
 
 
 @app.callback(Output("flipper2", "style"), Input("flipper2", "n_clicks"))
-def flipbutton2(n_clicks):
-    return flipbutton_n(2, n_clicks)
+def flipbutton2(n_clicks) -> dict[str, str]:
+    return flipbutton(2, n_clicks)
 
 
 # ----------- Callback: Mirror
 
 
-def left_mirror(axis: int, n_clicks: int):
+def left_mirror(axis: int, n_clicks: int) -> bool:
+    """Base of the callback function for mirror tuning (left)
+
+    Parameters
+    ----------
+    axis: int
+        Axis number
+    n_clicks: int
+        number of clicks of the button
+
+    Returns
+    --------
+    bool
+        Return True to disable Input form
+    """
     if n_clicks > 0 and picomotor.check_stop(axis):
         picomotor.move_indefinitely(axis, False)
     return True
@@ -226,23 +242,49 @@ def left_mirror1omega(n_clicks: int):
     return left_mirror(2, n_clicks)
 
 
-def right_mirror(axis: int, n_clicks: int):
+def right_mirror(axis: int, n_clicks: int) -> bool:
+    """Base of the callback function for mirror tuning (right)
+
+    Parameters
+    ----------
+    axis: int
+        Axis number
+    n_clicks: int
+        number of clicks of the button
+    Returns
+    --------
+    bool
+        Return True to disable Input form
+    """
     if n_clicks > 0 and picomotor.check_stop(axis):
         picomotor.move_indefinitely(axis, True)
     return True
 
 
 @app.callback(Output("move_3omega", "disabled"), Input("right_3omega", "n_clicks"))
-def right_mirror3omega(n_clicks: int):
+def right_mirror3omega(n_clicks: int) -> bool:
     return right_mirror(1, n_clicks)
 
 
 @app.callback(Output("move_1omega", "disabled"), Input("right_1omega", "n_clicks"))
-def right_mirror1omega(n_clicks: int):
+def right_mirror1omega(n_clicks: int) -> bool:
     return right_mirror(2, n_clicks)
 
 
-def stop_mirror(axis: int, n_clicks: int):
+def stop_mirror(axis: int, n_clicks: int) -> bool:
+    """Base of the callback function for stopping mirror tuning
+
+    Parameters
+    ----------
+    axis: int
+        Axis number
+    n_clicks: int
+        number of clicks of the button
+    Returns
+    --------
+    bool
+        Return False to act Input form
+    """
     if n_clicks > 0:
         picomotor.force_stop(axis)
     return False
@@ -353,9 +395,11 @@ def update_mirror_position(n_intervals: int) -> tuple[int, int]:
     return 0, 0
 
 
+# --Main
+
 if __name__ == "__main__":
     flipper1 = mff101.MFF101("serial1")
-    flipper2 = mff101.MFF101("serial2")
+    flipper2 = mff101.MFF101("3700003278")
     picomotor = picomotor8742.Picomotor8742("144.213.126.101")
     picomotor.connect()
     app.run_server(debug=True, host="0.0.0.0")

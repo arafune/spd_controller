@@ -10,7 +10,7 @@ class MFF101(THORLABS_MOTION_CONTROL):
     def __init__(self, serial_num: str | int) -> None:
         super().__init__(serial_num)
 
-    def identify(self) -> None:
+    def identify(self) -> int | None:
         """Identify itself by flashing the LED
 
         MGMSG_MODE_IDENTIFY
@@ -28,7 +28,7 @@ class MFF101(THORLABS_MOTION_CONTROL):
         self.write("290400005001")  # MGMSG_MOT_REQ_STATUSBITS
         return self.rd(12)[8]
 
-    def move_forward(self) -> None:
+    def move_forward(self) -> int | None:
         """Move flipper forward (2->1)
 
         MGMSG_MOT_MOVE_JOG   (64 04 (Chan Ident) Direction d s)
@@ -37,7 +37,7 @@ class MFF101(THORLABS_MOTION_CONTROL):
         """
         return self.write("6A0401015001")
 
-    def move_backward(self) -> None:
+    def move_backward(self) -> int | None:
         """Move flipper backward  (1->2)
 
         MGMSG_MOT_MOVE_JOG   (64 04 (Chan Ident) Direction d s)
