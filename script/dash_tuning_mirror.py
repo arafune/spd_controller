@@ -398,7 +398,7 @@ def update_mirror_position(n_intervals: int) -> tuple[int, int]:
 # --Main
 
 if __name__ == "__main__":
-    flipper1 = mff101.MFF101("serial1")
+    flipper1 = mff101.MFF101("3700003548")
     flipper2 = mff101.MFF101("3700003278")
     picomotor = picomotor8742.Picomotor8742("144.213.126.101")
     picomotor.connect()
