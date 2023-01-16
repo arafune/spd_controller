@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import sys
 
-import gsc02
+import spd_controller.sigma.gsc02 as gsc02
 
 if __name__ == "__main__":
     g = gsc02.GSC02()

@@ -17,7 +17,7 @@ from __future__ import annotations
 import sys
 from time import sleep
 
-import sc104
+import spd_controller.sigma.sc104 as sc104
 
 if __name__ == "__main__":
     s = sc104.SC104()
