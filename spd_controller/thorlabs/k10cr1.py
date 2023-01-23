@@ -52,7 +52,7 @@ class K10CR1(THORLABS_MOTION_CONTROL):
         self.write("430401005001")  # 43, 04, 01, 00, 50, 01
         return self.rd(6)
 
-    def moverel(self, angle_deg: float) -> None:
+    def move_rel(self, angle_deg: float) -> None:
         """Start a relative move.
 
         The longer version (6 byte header plus 6 data bytes) is used.
@@ -69,7 +69,7 @@ class K10CR1(THORLABS_MOTION_CONTROL):
         cmd: str = header + channel + rel_position
         self.write(cmd)
 
-    def moveabs(self, angle_deg: float) -> None:
+    def move_abs(self, angle_deg: float) -> None:
         """Start a absolute move.
 
         Parameters

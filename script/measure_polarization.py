@@ -40,7 +40,7 @@ if __name__ == "__main__":
     if args.file_name:
         f = open(args.file_name, mode="w")
     for angle in range(0, 360, args.step):
-        polarizer.moverel(args.step)
+        polarizer.move_rel(args.step)
         polarizer.rd(20)
         # print(polarizer.btd(polarizer.rd(20)[8:12]))  # devide by 136553 equals angle of degree
         sleep(0.01)  # 0.01 s is sufficient waiting time.

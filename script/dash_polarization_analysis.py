@@ -35,7 +35,7 @@ except (ModuleNotFoundError, ImportError):
         return None
 
     polarizer = MagicMock()
-    polarizer.moverel = MagicMock(side_effect=side)
+    polarizer.move_rel = MagicMock(side_effect=side)
     power_meter = MagicMock()
     type(power_meter).read = PropertyMock(
         side_effect=[random() / 100 for _ in range(3600)]
