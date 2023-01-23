@@ -201,11 +201,41 @@ def flipbutton(id, n_clicks) -> dict[str, str]:
 
 @app.callback(Output("flipper1", "style"), Input("flipper1", "n_clicks"))
 def flipbutton1(n_clicks) -> dict[str, str]:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    n_clicks : [TODO:type]
+        [TODO:description]
+
+    Returns
+    -------
+    dict[str, str]
+        [TODO:description]
+    """
     return flipbutton(1, n_clicks)
 
 
 @app.callback(Output("flipper2", "style"), Input("flipper2", "n_clicks"))
 def flipbutton2(n_clicks) -> dict[str, str]:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    n_clicks : [TODO:type]
+        [TODO:description]
+
+    Returns
+    -------
+    dict[str, str]
+        [TODO:description]
+    """
     return flipbutton(2, n_clicks)
 
 
@@ -234,11 +264,31 @@ def left_mirror(axis: int, n_clicks: int) -> bool:
 
 @app.callback(Output("move_3omega", "disabled"), Input("left_3omega", "n_clicks"))
 def left_mirror3omega(n_clicks: int):
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    n_clicks
+        [TODO:description]
+    """
     return left_mirror(1, n_clicks)
 
 
 @app.callback(Output("move_1omega", "disabled"), Input("left_1omega", "n_clicks"))
 def left_mirror1omega(n_clicks: int):
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    n_clicks
+        [TODO:description]
+    """
     return left_mirror(2, n_clicks)
 
 
@@ -263,11 +313,41 @@ def right_mirror(axis: int, n_clicks: int) -> bool:
 
 @app.callback(Output("move_3omega", "disabled"), Input("right_3omega", "n_clicks"))
 def right_mirror3omega(n_clicks: int) -> bool:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    n_clicks
+        [TODO:description]
+
+    Returns
+    -------
+    bool
+        [TODO:description]
+    """
     return right_mirror(1, n_clicks)
 
 
 @app.callback(Output("move_1omega", "disabled"), Input("right_1omega", "n_clicks"))
 def right_mirror1omega(n_clicks: int) -> bool:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    n_clicks
+        [TODO:description]
+
+    Returns
+    -------
+    bool
+        [TODO:description]
+    """
     return right_mirror(2, n_clicks)
 
 
@@ -324,6 +404,21 @@ def move_by_value(distance: int) -> tuple[bool, bool, bool]:
     Input("move_3omega", "value"),
 )
 def move_by_value_3omega(distance: int) -> tuple[bool, bool, bool]:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    distance
+        [TODO:description]
+
+    Returns
+    -------
+    tuple[bool, bool, bool]
+        [TODO:description]
+    """
     return move_by_value(distance)
 
 
@@ -334,6 +429,21 @@ def move_by_value_3omega(distance: int) -> tuple[bool, bool, bool]:
     Input("move_1omega", "value"),
 )
 def move_by_value_1omega(distance: int) -> tuple[bool, bool, bool]:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    distance
+        [TODO:description]
+
+    Returns
+    -------
+    tuple[bool, bool, bool]
+        [TODO:description]
+    """
     return move_by_value(distance)
 
 
@@ -364,6 +474,22 @@ def move_start(axis: int, distance: int) -> tuple[bool, bool, bool]:
     Input("move_start_3omega", "n_clicks"),
 )
 def move_start_3omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
+    """
+    Trigger of 3ω mirror moving
+
+
+    Parameters
+    ----------
+    distance: int
+        number of steps
+    n_clicks
+        number of clicks of the dash buttom
+
+    Returns
+    -------
+    tuple[bool, bool, bool]
+        [TODO:description]
+    """
     if n_clicks > 0:
         return move_start(1, distance)
     return True, True, True
@@ -377,6 +503,23 @@ def move_start_3omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     Input("move_start_1omega", "n_clicks"),
 )
 def move_start_1omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    distance
+        [TODO:description]
+    n_clicks
+        [TODO:description]
+
+    Returns
+    -------
+    tuple[bool, bool, bool]
+        [TODO:description]
+    """
     if n_clicks > 0:
         return move_start(2, distance)
     return True, True, True
@@ -388,6 +531,21 @@ def move_start_1omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     Input("realtime_interval", "n_intervals"),
 )
 def update_mirror_position(n_intervals: int) -> tuple[int, int]:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    n_intervals
+        [TODO:description]
+
+    Returns
+    -------
+    tuple[int, int]
+        [TODO:description]
+    """
     if n_intervals > 0:
         mirror_position1 = picomotor.position(1)
         mirror_position2 = picomotor.position(2)
