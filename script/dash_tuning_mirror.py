@@ -28,7 +28,7 @@ def flipper_component(id: int):
     """Flipper flipper_component
 
     Parameters
-    ------------
+    ----------
     id : int
         1 or 2
     """
@@ -66,7 +66,7 @@ def mirror_component(id: int):
     """Mirror flipper_component
 
     Parameters
-    -------------
+    ----------
     id: int
         1 or 3
     """
@@ -302,7 +302,7 @@ def right_mirror(axis: int, n_clicks: int) -> bool:
     n_clicks: int
         number of clicks of the button
     Returns
-    --------
+    -------
     bool
         Return True to disable Input form
     """
