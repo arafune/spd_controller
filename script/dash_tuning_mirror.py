@@ -426,4 +426,4 @@ if __name__ == "__main__":
     flipper2 = mff101.MFF101("37003278")
     picomotor = picomotor8742.Picomotor8742("144.213.126.101")
     picomotor.connect()
-    app.run_server(debug=True, host="0.0.0.0")
+    app.run_server(debug=False, host="0.0.0.0", dev_tools_ui=None)
