@@ -277,9 +277,13 @@ def move_mirror_indefinitely(axis: int, action: str) -> bool:
     Input("left_3omega", "n_clicks"),
     Input("stop_3omega", "n_clicks"),
 )
-def move_3omega_mirror_indefinitely(n_clicks: int):
+def move_3omega_mirror_indefinitely(
+    right_button: int, left_button: int, stop_button: int
+):
     button_clicked = ctx.triggered_id
-    assert n_clicks > 0
+    assert right_button >= 0
+    assert left_button >= 0
+    assert stop_button >= 0
     if button_clicked == "right_3omega":
         return move_mirror_indefinitely(1, "right")
     elif button_clicked == "left_3omega":
@@ -294,9 +298,13 @@ def move_3omega_mirror_indefinitely(n_clicks: int):
     Input("left_1omega", "n_clicks"),
     Input("stop_1omega", "n_clicks"),
 )
-def move_1omega_mirror_indefinitely(n_clicks: int):
+def move_1omega_mirror_indefinitely(
+    right_button: int, left_button: int, stop_button: int
+):
+    assert right_button >= 0
+    assert left_button >= 0
+    assert stop_button >= 0
     button_clicked = ctx.triggered_id
-    assert n_clicks > 0
     if button_clicked == "right_1omega":
         return move_mirror_indefinitely(2, "right")
     elif button_clicked == "left_1omega":
