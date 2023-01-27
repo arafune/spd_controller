@@ -20,7 +20,6 @@ class THORLABS_MOTION_CONTROL:
         serial_num: str| int
             serial number of the MFF101
         """
-
         self.serial_num = str(serial_num)
         self.ready = False
         self.connect()
@@ -42,8 +41,8 @@ class THORLABS_MOTION_CONTROL:
                     self.ser = serial.Serial(
                         baudrate=115200, timeout=0.1, port=port.device
                     )
-                self.ready = True
-                break
+                    self.ready = True
+                    break
             except AttributeError:
                 pass
 
