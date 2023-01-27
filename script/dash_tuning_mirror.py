@@ -6,7 +6,7 @@ from __future__ import annotations
 import dash
 import dash_bootstrap_components as dbc
 import dash_daq as daq
-from dash import Input, Output, State, html
+from dash import Input, Output, State, ctx, html
 
 import spd_controller.newport.picomotor8742 as picomotor8742
 import spd_controller.thorlabs.mff101 as mff101
@@ -242,209 +242,67 @@ def flipbutton2(n_clicks) -> dict[str, str]:
 # ----------- Callback: Mirror
 
 
-def left_mirror(axis: int, n_clicks: int) -> bool:
-    """Base of the callback function for mirror tuning (left)
+def move_mirror_indefinitely(axis: int, action: str) -> bool:
+    """
+    [TODO:summary]
+
+    [TODO:description]
 
     Parameters
     ----------
     axis: int
         Axis number
-    n_clicks: int
-        number of clicks of the button
+    action: str
+        "left", "right", or other (= "stop")
 
     Returns
-    --------
+    -------
     bool
-        Return True to disable Input form
+        Return true/false to set "disable" property of the dash component
     """
-    if n_clicks > 0 and picomotor.check_stop(axis):
+    if action == "left":
         picomotor.move_indefinitely(axis, False)
-    return True
-
-
-@app.callback(Output("move_3omega", "disabled"), Input("left_3omega", "n_clicks"))
-def left_mirror3omega(n_clicks: int):
-    """
-    [TODO:summary]
-
-    [TODO:description]
-
-    Parameters
-    ----------
-    n_clicks
-        [TODO:description]
-    """
-    return left_mirror(1, n_clicks)
-
-
-@app.callback(Output("move_1omega", "disabled"), Input("left_1omega", "n_clicks"))
-def left_mirror1omega(n_clicks: int):
-    """
-    [TODO:summary]
-
-    [TODO:description]
-
-    Parameters
-    ----------
-    n_clicks
-        [TODO:description]
-    """
-    return left_mirror(2, n_clicks)
-
-
-def right_mirror(axis: int, n_clicks: int) -> bool:
-    """Base of the callback function for mirror tuning (right)
-
-    Parameters
-    ----------
-    axis: int
-        Axis number
-    n_clicks: int
-        number of clicks of the button
-    Returns
-    -------
-    bool
-        Return True to disable Input form
-    """
-    if n_clicks > 0 and picomotor.check_stop(axis):
+        return True
+    elif action == "right":
         picomotor.move_indefinitely(axis, True)
-    return True
-
-
-@app.callback(Output("move_3omega", "disabled"), Input("right_3omega", "n_clicks"))
-def right_mirror3omega(n_clicks: int) -> bool:
-    """
-    [TODO:summary]
-
-    [TODO:description]
-
-    Parameters
-    ----------
-    n_clicks
-        [TODO:description]
-
-    Returns
-    -------
-    bool
-        [TODO:description]
-    """
-    return right_mirror(1, n_clicks)
-
-
-@app.callback(Output("move_1omega", "disabled"), Input("right_1omega", "n_clicks"))
-def right_mirror1omega(n_clicks: int) -> bool:
-    """
-    [TODO:summary]
-
-    [TODO:description]
-
-    Parameters
-    ----------
-    n_clicks
-        [TODO:description]
-
-    Returns
-    -------
-    bool
-        [TODO:description]
-    """
-    return right_mirror(2, n_clicks)
-
-
-def stop_mirror(axis: int, n_clicks: int) -> bool:
-    """Base of the callback function for stopping mirror tuning
-
-    Parameters
-    ----------
-    axis: int
-        Axis number
-    n_clicks: int
-        number of clicks of the button
-    Returns
-    --------
-    bool
-        Return False to act Input form
-    """
-    if n_clicks > 0:
+        return True
+    else:
         picomotor.force_stop(axis)
-    return False
-
-
-@app.callback(Output("move_3omega", "disabled"), Input("stop_3omega", "n_clicks"))
-def stop_mirror3omega(n_clicks: int):
-    return stop_mirror(1, n_clicks)
-
-
-@app.callback(Output("move_1omega", "disabled"), Input("stop_1omega", "n_clicks"))
-def stop_mirror1omega(n_clicks: int):
-    return stop_mirror(2, n_clicks)
-
-
-def move_by_value(distance: int) -> tuple[bool, bool, bool]:
-    """Function for Input of distance
-
-    Parameters
-    -------------
-    distance: int
-        Relative distance(step)
-
-    Returns
-    --------
-    tuple[bool, bool, bool]
-       value for "disabled" property of button
-    """
-    assert isinstance(distance, int)
-    return True, True, True
+        return False
 
 
 @app.callback(
-    Output("left_3omega", "disabled"),
-    Output("stop_3omega", "disabled"),
-    Output("right_3omega", "disabled"),
-    Input("move_3omega", "value"),
+    Output("move_start_3omega", "disabled"),
+    Input("right_3omega", "n_clicks"),
+    Input("left_3omega", "n_clicks"),
+    Input("stop_3omega", "n_clicks"),
 )
-def move_by_value_3omega(distance: int) -> tuple[bool, bool, bool]:
-    """
-    [TODO:summary]
-
-    [TODO:description]
-
-    Parameters
-    ----------
-    distance
-        [TODO:description]
-
-    Returns
-    -------
-    tuple[bool, bool, bool]
-        [TODO:description]
-    """
-    return move_by_value(distance)
+def move_3omega_mirror_indefinitely(n_clicks: int):
+    button_clicked = ctx.triggered_id
+    assert n_clicks > 0
+    if button_clicked == "right_3omega":
+        return move_mirror_indefinitely(1, "right")
+    elif button_clicked == "left_3omega":
+        return move_mirror_indefinitely(1, "ieft")
+    else:
+        return move_mirror_indefinitely(1, "stop")
 
 
 @app.callback(
-    Output("left_1omega", "disabled"),
-    Output("stop_1omega", "disabled"),
-    Output("right_1omega", "disabled"),
-    Input("move_1omega", "value"),
+    Output("move_start_1omega", "disabled"),
+    Input("right_1omega", "n_clicks"),
+    Input("left_1omega", "n_clicks"),
+    Input("stop_1omega", "n_clicks"),
 )
-def move_by_value_1omega(distance: int) -> tuple[bool, bool, bool]:
-    """
-    [TODO:summary]
-
-    [TODO:description]
-
-    Parameters
-    ----------
-    distance
-        [TODO:description]
-
-    Returns
-    -------
-    tuple[bool, bool, bool]
-        [TODO:description]
-    """
-    return move_by_value(distance)
+def move_1omega_mirror_indefinitely(n_clicks: int):
+    button_clicked = ctx.triggered_id
+    assert n_clicks > 0
+    if button_clicked == "right_1omega":
+        return move_mirror_indefinitely(2, "right")
+    elif button_clicked == "left_1omega":
+        return move_mirror_indefinitely(2, "left")
+    else:
+        return move_mirror_indefinitely(2, "stop")
 
 
 def move_start(axis: int, distance: int) -> tuple[bool, bool, bool]:
@@ -477,7 +335,6 @@ def move_start_3omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     """
     Trigger of 3ω mirror moving
 
-
     Parameters
     ----------
     distance: int
@@ -488,7 +345,7 @@ def move_start_3omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     Returns
     -------
     tuple[bool, bool, bool]
-        [TODO:description]
+        "disable" property of the dash component
     """
     if n_clicks > 0:
         return move_start(1, distance)
@@ -504,21 +361,21 @@ def move_start_3omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
 )
 def move_start_1omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     """
-    [TODO:summary]
+    Trigger of 3ω mirror moving
 
     [TODO:description]
 
     Parameters
     ----------
     distance
-        [TODO:description]
+        number of steps
     n_clicks
-        [TODO:description]
+        number of clicks of the dash buttom
 
     Returns
     -------
     tuple[bool, bool, bool]
-        [TODO:description]
+        "disable" property of the dash component
     """
     if n_clicks > 0:
         return move_start(2, distance)
