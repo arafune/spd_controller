@@ -56,7 +56,7 @@ if __name__ == "__main__":
             elif command == "condition":  # Just B or R
                 """"""
                 s.sendtext("!:")
-                msg = s.recvrecv().decode("UTF-8").strip()
+                msg = s.recvbytes().decode("UTF-8").strip()
                 sys.stdout.write(msg)
                 sys.stdout.flush()
             elif command == "close":
