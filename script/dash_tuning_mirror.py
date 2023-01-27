@@ -206,7 +206,7 @@ def flipbutton(id, n_clicks) -> dict[str, str]:
     }
 
 
-@app.callback(Output("flipper1", "style"), Input("flipper1", "n_clicks"))
+@app.callback(Output("flipper1", "style"), Input("flip1", "n_clicks"))
 def flipbutton1(n_clicks) -> dict[str, str]:
     """
     [TODO:summary]
@@ -226,7 +226,7 @@ def flipbutton1(n_clicks) -> dict[str, str]:
     return flipbutton(1, n_clicks)
 
 
-@app.callback(Output("flipper2", "style"), Input("flipper2", "n_clicks"))
+@app.callback(Output("flipper2", "style"), Input("flip2", "n_clicks"))
 def flipbutton2(n_clicks) -> dict[str, str]:
     """
     [TODO:summary]
@@ -412,7 +412,7 @@ def update_mirror_position(n_intervals: int) -> tuple[int, int]:
     tuple[int, int]
         [TODO:description]
     """
-    if n_intervals > 0:
+    if n_intervals is not None:
         mirror_position1 = picomotor.position(1)
         mirror_position2 = picomotor.position(2)
         return mirror_position1, mirror_position2
@@ -426,4 +426,4 @@ if __name__ == "__main__":
     flipper2 = mff101.MFF101("37003278")
     picomotor = picomotor8742.Picomotor8742("144.213.126.101")
     picomotor.connect()
-    app.run_server(debug=False, host="0.0.0.0")
+    app.run_server(debug=True, host="0.0.0.0")
