@@ -182,15 +182,6 @@ def flipbutton(id, n_clicks) -> dict[str, str]:
     dict [str, str]
         style of the border
     """
-<<<<<<< HEAD
-    if n_clicks is not None:
-        setattr(f"flipper{id}", "flip", None)
-    if getattr(f"flipper{id}", "position") == 1:
-||||||| parent of 68ca9b3 ((fix)  Use getattr corretly)
-    if n_clicks > 0:
-        setattr(f"flipper{id}", "flip", None)
-    if getattr(f"flipper{id}", "position") == 1:
-=======
     if id == 1:
         flipper = flipper1
     elif id == 2:
@@ -200,7 +191,6 @@ def flipbutton(id, n_clicks) -> dict[str, str]:
     if n_clicks is not None:
         setattr(flipper, "flip", None)
     if getattr(flipper, "position") == 1:
->>>>>>> 68ca9b3 ((fix)  Use getattr corretly)
         return {
             "margin": "2em",
             "border-style": "solid",
