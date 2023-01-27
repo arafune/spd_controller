@@ -182,7 +182,7 @@ def flipbutton(id, n_clicks) -> dict[str, str]:
     dict [str, str]
         style of the border
     """
-    if n_clicks > 0:
+    if n_clicks is not None:
         setattr(f"flipper{id}", "flip", None)
     if getattr(f"flipper{id}", "position") == 1:
         return {
@@ -281,9 +281,6 @@ def move_3omega_mirror_indefinitely(
     right_button: int, left_button: int, stop_button: int
 ):
     button_clicked = ctx.triggered_id
-    assert right_button >= 0
-    assert left_button >= 0
-    assert stop_button >= 0
     if button_clicked == "right_3omega":
         return move_mirror_indefinitely(1, "right")
     elif button_clicked == "left_3omega":
@@ -301,9 +298,6 @@ def move_3omega_mirror_indefinitely(
 def move_1omega_mirror_indefinitely(
     right_button: int, left_button: int, stop_button: int
 ):
-    assert right_button >= 0
-    assert left_button >= 0
-    assert stop_button >= 0
     button_clicked = ctx.triggered_id
     if button_clicked == "right_1omega":
         return move_mirror_indefinitely(2, "right")
@@ -355,7 +349,7 @@ def move_start_3omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     tuple[bool, bool, bool]
         "disable" property of the dash component
     """
-    if n_clicks > 0:
+    if n_clicks is not None:
         return move_start(1, distance)
     return True, True, True
 
@@ -385,7 +379,7 @@ def move_start_1omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     tuple[bool, bool, bool]
         "disable" property of the dash component
     """
-    if n_clicks > 0:
+    if n_clicks is not None:
         return move_start(2, distance)
     return True, True, True
 
