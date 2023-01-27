@@ -6,7 +6,7 @@ from __future__ import annotations
 import dash
 import dash_bootstrap_components as dbc
 import dash_daq as daq
-from dash import Input, Output, State, ctx, html
+from dash import Input, Output, State, ctx, html, dcc
 
 import spd_controller.newport.picomotor8742 as picomotor8742
 import spd_controller.thorlabs.mff101 as mff101
@@ -147,6 +147,7 @@ def mirror_component(id: int):
 app.layout = html.Article(
     children=[
         html.H1("Tuning Mirrors", style={"text-align": "center"}),
+        dcc.Interval(id="realtime_interval", interval=1000),
         html.Div(
             [
                 flipper_component(1),
@@ -189,8 +190,8 @@ def flipbutton(id, n_clicks) -> dict[str, str]:
     else:
         raise RuntimeError("We have only 2 flippers")
     if n_clicks is not None:
-        setattr(flipper, "flip", None)
-    if getattr(flipper, "position") == 1:
+        flipper.flip()
+    if flipper.position() in (1, 18):
         return {
             "margin": "2em",
             "border-style": "solid",
@@ -290,7 +291,7 @@ def move_3omega_mirror_indefinitely(
     if button_clicked == "right_3omega":
         return move_mirror_indefinitely(1, "right")
     elif button_clicked == "left_3omega":
-        return move_mirror_indefinitely(1, "ieft")
+        return move_mirror_indefinitely(1, "left")
     else:
         return move_mirror_indefinitely(1, "stop")
 
@@ -421,8 +422,8 @@ def update_mirror_position(n_intervals: int) -> tuple[int, int]:
 # --Main
 
 if __name__ == "__main__":
-    flipper1 = mff101.MFF101("3700003548")
-    flipper2 = mff101.MFF101("3700003278")
+    flipper1 = mff101.MFF101("37003548")
+    flipper2 = mff101.MFF101("37003278")
     picomotor = picomotor8742.Picomotor8742("144.213.126.101")
     picomotor.connect()
-    app.run_server(debug=True, host="0.0.0.0")
+    app.run_server(debug=False, host="0.0.0.0")
