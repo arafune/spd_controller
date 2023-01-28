@@ -6,7 +6,7 @@ from __future__ import annotations
 import dash
 import dash_bootstrap_components as dbc
 import dash_daq as daq
-from dash import Input, Output, State, ctx, html, dcc
+from dash import Input, Output, State, ctx, dcc, html
 
 import spd_controller.newport.picomotor8742 as picomotor8742
 import spd_controller.thorlabs.mff101 as mff101
@@ -181,7 +181,7 @@ def flipbutton(id, n_clicks) -> dict[str, str]:
     Returns
     -------
     dict [str, str]
-        style of the border
+        css style of the border
     """
     if id == 1:
         flipper = flipper1
@@ -207,41 +207,35 @@ def flipbutton(id, n_clicks) -> dict[str, str]:
 
 
 @app.callback(Output("flipper1", "style"), Input("flip1", "n_clicks"))
-def flipbutton1(n_clicks) -> dict[str, str]:
-    """
-    [TODO:summary]
-
-    [TODO:description]
+def flipbutton1(n_clicks: int) -> dict[str, str]:
+    """Flip the flipper1
 
     Parameters
     ----------
-    n_clicks : [TODO:type]
-        [TODO:description]
+    n_clicks : int
+        number of clicks of the button
 
     Returns
     -------
     dict[str, str]
-        [TODO:description]
+        css style of the border
     """
     return flipbutton(1, n_clicks)
 
 
 @app.callback(Output("flipper2", "style"), Input("flip2", "n_clicks"))
-def flipbutton2(n_clicks) -> dict[str, str]:
-    """
-    [TODO:summary]
-
-    [TODO:description]
+def flipbutton2(n_clicks: int) -> dict[str, str]:
+    """Flip the flipper2
 
     Parameters
     ----------
-    n_clicks : [TODO:type]
-        [TODO:description]
+    n_clicks : int
+        number of clicks of the button
 
     Returns
     -------
     dict[str, str]
-        [TODO:description]
+        css style of the border
     """
     return flipbutton(2, n_clicks)
 
@@ -250,10 +244,7 @@ def flipbutton2(n_clicks) -> dict[str, str]:
 
 
 def move_mirror_indefinitely(axis: int, action: str) -> bool:
-    """
-    [TODO:summary]
-
-    [TODO:description]
+    """Move mirror indefinitely
 
     Parameters
     ----------
@@ -369,10 +360,8 @@ def move_start_3omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     Input("move_start_1omega", "n_clicks"),
 )
 def move_start_1omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
-    """
-    Trigger of 3ω mirror moving
+    """Trigger of 3ω mirror moving
 
-    [TODO:description]
 
     Parameters
     ----------
@@ -397,20 +386,18 @@ def move_start_1omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     Input("realtime_interval", "n_intervals"),
 )
 def update_mirror_position(n_intervals: int) -> tuple[int, int]:
-    """
-    [TODO:summary]
+    """Return the current mirror tilt
 
-    [TODO:description]
 
     Parameters
     ----------
-    n_intervals
-        [TODO:description]
+    n_intervals: int
+        incremented by dash
 
     Returns
     -------
     tuple[int, int]
-        [TODO:description]
+        step of the actuator
     """
     if n_intervals is not None:
         mirror_position1 = picomotor.position(1)
