@@ -59,7 +59,7 @@ class Comm:
         Returns
         -------
         tuple[bool, bytearray]
-
+           True in the first item if the received appropriately.  The bytearray is the byte returned.
         """
         time_start = time.time()
         time_end = time_start

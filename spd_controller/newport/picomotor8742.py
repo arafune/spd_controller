@@ -180,6 +180,7 @@ class Picomotor8742:
         Returns
         -------
         int
+            acceleration value (step/sec^2)
         """
         return int(self.ask(axis, "AC?"))
 
@@ -194,6 +195,7 @@ class Picomotor8742:
         Returns
         -------
         int
+            velocity value (step/sec)
         """
         return int(self.ask(axis, "VA?"))
 
