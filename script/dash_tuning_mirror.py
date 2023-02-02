@@ -120,8 +120,13 @@ def mirror_component(id: int):
                         ],
                         className="mb-3",
                         size="sm",
-                        id=f"velociy_{id}omega",
+                        id=f"velocity_{id}omega",
                         style={"display": "inline-block"},
+                    ),
+                    dbc.Tooltip(
+                        "Max: 2000 (step/s), Middle: 200, Low:20",
+                        target=f"velocity_{id}omega",
+                        placement="top",
                     ),
                     html.P(
                         children="Max",
