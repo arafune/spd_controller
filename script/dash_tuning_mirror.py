@@ -6,10 +6,9 @@ from __future__ import annotations
 import dash
 import dash_bootstrap_components as dbc
 import dash_daq as daq
-from dash import Input, Output, State, ctx, dcc, html
-
 import spd_controller.newport.picomotor8742 as picomotor8742
 import spd_controller.thorlabs.mff101 as mff101
+from dash import Input, Output, State, ctx, dcc, html
 
 external_stylesheets = [dbc.themes.MATERIA]
 
@@ -73,31 +72,64 @@ def mirror_component(id: int):
     return html.Div(
         [
             html.H3(f"Mirrror {id}ω", style={"marginLeft": "2em"}),
-            daq.LEDDisplay(
-                value="0",
-                color="red",
-                id=f"position_{id}omega",
-                size=24,
-                style={"marginLeft": "1em"},
+            html.Div(
+                [
+                    daq.LEDDisplay(
+                        value="0",
+                        color="red",
+                        id=f"position_{id}omega",
+                        size=24,
+                        style={"marginLeft": "1em"},
+                    ),
+                    dbc.Button(
+                        "◀",
+                        color="primary",
+                        size="sm",
+                        style={"marginLeft": "2em"},
+                        id=f"left_{id}omega",
+                    ),
+                    dbc.Button(
+                        "stop",
+                        color="primary",
+                        size="sm",
+                        id=f"stop_{id}omega",
+                    ),
+                    dbc.Button(
+                        "▶",
+                        color="primary",
+                        size="sm",
+                        id=f"right_{id}omega",
+                    ),
+                ],
+                style={"display": "inline-block", "width": "30%"},
             ),
-            dbc.Button(
-                "◀",
-                color="primary",
-                size="sm",
-                style={"marginLeft": "2em"},
-                id=f"left_{id}omega",
-            ),
-            dbc.Button(
-                "stop",
-                color="primary",
-                size="sm",
-                id=f"stop_{id}omega",
-            ),
-            dbc.Button(
-                "▶",
-                color="primary",
-                size="sm",
-                id=f"right_{id}omega",
+            html.Div(
+                [
+                    dbc.DropdownMenu(
+                        label="Velocity",
+                        children=[
+                            dbc.DropdownMenuItem(
+                                "Max", id=f"velocity_{id}omega_max", n_clicks=0
+                            ),
+                            dbc.DropdownMenuItem(
+                                "Middle", id=f"velocity_{id}omega_middle", n_clicks=0
+                            ),
+                            dbc.DropdownMenuItem(
+                                "Low", id=f"velocity_{id}omega_low", n_clicks=0
+                            ),
+                        ],
+                        className="mb-3",
+                        size="sm",
+                        id=f"velociy_{id}omega",
+                        style={"display": "inline-block"},
+                    ),
+                    html.P(
+                        children="Max",
+                        id=f"current_velocity_{id}omega",
+                        style={"display": "inline-block", "marginLeft": "1em"},
+                    ),
+                ],
+                style={"display": "inline-block", "marginLeft": "2em"},
             ),
             html.Div(
                 [
@@ -123,7 +155,7 @@ def mirror_component(id: int):
                         color="primary",
                         id=f"move_start_{id}omega",
                         style={
-                            "display": "incline-block",
+                            "display": "inline-block",
                             "marginLeft": "1em",
                         },
                     ),
@@ -305,6 +337,45 @@ def move_1omega_mirror_indefinitely(
         return move_mirror_indefinitely(2, "stop")
 
 
+@app.callback(
+    Output("current_velocity_3omega", "children"),
+    Input("velocity_3omega_max", "n_clicks"),
+    Input("velocity_3omega_middle", "n_clicks"),
+    Input("velocity_3omega_low", "n_clicks"),
+)
+def change_3omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
+    selected_item = ctx.triggered_id
+    if selected_item == "velocity_3omega_max":
+        picomotor.set_velocity(1, 2000)
+        return "Max"
+    elif selected_item == "velocity_3omega_middle":
+        picomotor.set_velocity(1, 200)
+        return "Middle"
+    else:
+        picomotor.set_velocity(1, 20)
+        return "Low"
+
+
+@app.callback(
+    Output("current_velocity_1omega", "children"),
+    Input("velocity_1omega_max", "n_clicks"),
+    Input("velocity_1omega_middle", "n_clicks"),
+    Input("velocity_1omega_low", "n_clicks"),
+)
+def change_1omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
+    selected_item = ctx.triggered_id
+    if selected_item == "velocity_1omega_max":
+        picomotor.set_velocity(2, 2000)
+        return "Max"
+
+    elif selected_item == "velocity_1omega_middle":
+        picomotor.set_velocity(2, 200)
+        return "Middle"
+    else:
+        picomotor.set_velocity(1, 20)
+        return "Low"
+
+
 def move_start(axis: int, distance: int) -> tuple[bool, bool, bool]:
     """Function for move_start_button
 
@@ -413,4 +484,4 @@ if __name__ == "__main__":
     flipper2 = mff101.MFF101("37003278")
     picomotor = picomotor8742.Picomotor8742("144.213.126.101")
     picomotor.connect()
-    app.run_server(debug=False, host="0.0.0.0", dev_tools_ui=None)
+    app.run_server(debug=True, host="0.0.0.0", dev_tools_ui=None)
