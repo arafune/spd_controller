@@ -13,6 +13,7 @@ from typing import Literal
 from unittest.mock import MagicMock
 
 import dash
+import dash_bootstrap_components as dbc
 import dash_daq as daq
 import plotly.graph_objects as go
 from dash import Input, Output, State, dcc, html
@@ -58,7 +59,7 @@ save_sw_style = {
     "margin-left": 15,
 }
 
-file_name_input = dcc.Input(
+file_name_input = dbc.Input(
     id="filename",
     type="text",
     debounce=True,
@@ -67,6 +68,7 @@ file_name_input = dcc.Input(
     persistence_type="local",
     style=filename_input_style,
 )
+
 
 save_sw = daq.BooleanSwitch(
     id="save_sw",
