@@ -9,6 +9,7 @@ from typing import Literal
 from unittest.mock import MagicMock
 
 import dash
+import dash_bootstrap_components as dbc
 import dash_daq as daq
 import numpy as np
 import plotly.express as px
@@ -62,7 +63,8 @@ class Semaphore:
 
 semaphore = Semaphore()
 
-external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+# external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+external_stylesheets = [dbc.themes.MATERIA]
 
 app = dash.Dash(
     __name__,
@@ -101,7 +103,7 @@ angle_step_input = html.Div(
             value=1,
             min=1,
             max=359,
-            style={"display": "inline-block", "margin-left": "2%"},
+            style={"display": "inline-block", "margin-left": "2%", "margin-top": "1em"},
         ),
     ]
 )
@@ -113,21 +115,22 @@ measurment_start_button = html.Button(
     disabled=True,
     n_clicks=0,
     style={
-        "margin-left": "10%",
+        "margin-left": "2%",
         "color": "black",
         "padding": "1px 4px 2px",
         "background": "#FFCCFF",
     },
 )
 
-dl_button = html.Button(
+dl_button = dbc.Button(
     "Download data",
     id="dl_button",
     disabled=True,
     n_clicks=0,
+    size="sm",
     style={
         "display": "inline-block",
-        "margin-left": "15%",
+        "margin-left": "2%",
         "color": "black",
         "padding": "1px 4px 2px",
         "background": "#CCFFFF",
@@ -135,7 +138,13 @@ dl_button = html.Button(
 )
 
 buttons = html.Div(
-    [measurment_start_button, dl_button, dcc.Download(id="download_data")]
+    [measurment_start_button, dl_button, dcc.Download(id="download_data")],
+    style={
+        "margin": "2em",
+        "border-style": "solid",
+        "border-radius": "10pt",
+        "border-color": "pink",
+    },
 )
 
 save_sw_style = {
@@ -163,7 +172,20 @@ current_power = daq.LEDDisplay(
 )
 
 left_col = html.Div(
-    [file_name_input, angle_step_input, buttons, current_angle, current_power],
+    [
+        file_name_input,
+        angle_step_input,
+        buttons,
+        html.Div(
+            [current_angle, current_power],
+            style={
+                "margin": "2em",
+                "border-style": "solid",
+                "border-radius": "10pt",
+                "border-color": "red",
+            },
+        ),
+    ],
     style={"width": "40%", "display": "inline-block"},
 )
 right_col = html.Div(
@@ -196,6 +218,20 @@ app.layout = html.Div(
     Input("dl_button", "n_clicks"),
 )
 def download_file(dl_filename: str, n_clicks: int):
+    """Button to download the data file
+
+    Parameters
+    ----------
+    dl_filename: str
+        The file name of data.
+    n_clicks: int
+        Nnumber of clicks
+
+    Raises
+    ------
+    Exception:
+        [TODO:description]
+    """
     if semaphore.is_locked():
         raise Exception("Resource is locked")
     if n_clicks > 0:
@@ -260,6 +296,17 @@ def enable_meas_start_sw(filename: str) -> tuple[bool, bool]:
     Input("interval", "n_intervals"),
 )
 def update_graph(filename: str, n_intervals: int):
+    """Update graph
+
+    Updating the graph of the angle dependence of the light intensity
+
+    Parameters
+    ----------
+    filename: str
+        Filename of the data
+    n_intervals
+        Interval time in ms
+    """
     if filename:
         p = Path(filename)
         if not p.exists():
@@ -310,4 +357,4 @@ def update_graph(filename: str, n_intervals: int):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True, host="0.0.0.0")
+    app.run_server(debug=False, host="0.0.0.0")
