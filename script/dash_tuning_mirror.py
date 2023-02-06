@@ -6,9 +6,10 @@ from __future__ import annotations
 import dash
 import dash_bootstrap_components as dbc
 import dash_daq as daq
+from dash import Input, Output, State, ctx, dcc, html
+
 import spd_controller.newport.picomotor8742 as picomotor8742
 import spd_controller.thorlabs.mff101 as mff101
-from dash import Input, Output, State, ctx, dcc, html
 
 external_stylesheets = [dbc.themes.MATERIA]
 
@@ -315,6 +316,9 @@ def move_mirror_indefinitely(axis: int, action: str) -> bool:
 def move_3omega_mirror_indefinitely(
     right_button: int, left_button: int, stop_button: int
 ):
+    assert isinstance(right_button, int)
+    assert isinstance(left_button, int)
+    assert isinstance(stop_button, int)
     button_clicked = ctx.triggered_id
     if button_clicked == "right_3omega":
         return move_mirror_indefinitely(1, "right")
@@ -333,6 +337,9 @@ def move_3omega_mirror_indefinitely(
 def move_1omega_mirror_indefinitely(
     right_button: int, left_button: int, stop_button: int
 ):
+    assert isinstance(right_button, int)
+    assert isinstance(left_button, int)
+    assert isinstance(stop_button, int)
     button_clicked = ctx.triggered_id
     if button_clicked == "right_1omega":
         return move_mirror_indefinitely(2, "right")
@@ -349,6 +356,9 @@ def move_1omega_mirror_indefinitely(
     Input("velocity_3omega_low", "n_clicks"),
 )
 def change_3omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
+    assert isinstance(max_speed, int)
+    assert isinstance(middle_speed, int)
+    assert isinstance(low_speed, int)
     selected_item = ctx.triggered_id
     if selected_item == "velocity_3omega_max":
         picomotor.set_velocity(1, 2000)
@@ -368,6 +378,9 @@ def change_3omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
     Input("velocity_1omega_low", "n_clicks"),
 )
 def change_1omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
+    assert isinstance(max_speed, int)
+    assert isinstance(middle_speed, int)
+    assert isinstance(low_speed, int)
     selected_item = ctx.triggered_id
     if selected_item == "velocity_1omega_max":
         picomotor.set_velocity(2, 2000)
