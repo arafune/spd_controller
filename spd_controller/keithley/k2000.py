@@ -36,7 +36,18 @@ class K2000(Comm):
         """Waits for a service request from K2000.
 
         The service request must be enable on the instrument
-        prior to calling this"""
+        prior to calling this
+
+        Parameters
+        ----------
+        command
+            [TODO:description]
+
+        Returns
+        -------
+        bool
+            [TODO:description]
+        """
         self.sendtext(command)
         self.sendtext("*STB?")
         stb = int(self.read(10).decode("utf-8").strip())
