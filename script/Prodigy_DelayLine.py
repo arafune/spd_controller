@@ -37,10 +37,19 @@ if __name__ == "__main__":
                 """Change the speed"""
                 speed = float(argument)
                 s.set_speed(speed)
-            elif command == "position":
-                """move the position"""
+            elif command == "goto":
+                """move the position in mm unit"""
                 position = float(argument)
                 s.move_abs(position, wait=False)
+                moving = s.moving()
+                while moving:
+                    sleep(1)
+                    moving = s.moving()
+                sys.stdout.write("Done.")
+            elif command == "move":
+                """Relative move in micron unit"""
+                distance = float(argument)
+                s.move_rel(distance, wait=False, micron=True)
                 moving = s.moving()
                 while moving:
                     sleep(1)
@@ -61,5 +70,7 @@ if __name__ == "__main__":
                 sys.stdout.flush()
             elif command == "close":
                 s.close()
+        except TypeError:
+            pass
         except:
             break
