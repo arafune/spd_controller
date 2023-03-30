@@ -6,6 +6,9 @@ CR+LF
 8bit
 stop bit 1bit
 No parity
+
+* Repeat accuracy : < 0.2 micron
+* Minimum resolution: 0.1 micron
 """
 
 from __future__ import annotations
