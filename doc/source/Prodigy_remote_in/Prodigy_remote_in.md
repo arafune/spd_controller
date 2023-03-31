@@ -1,4 +1,6 @@
-#
+# Prodigy Remote_in
+
+-- how to integrate the stepping motor system and the ARPES measurement.
 
 ## To control with jupyter from the client machine.
 

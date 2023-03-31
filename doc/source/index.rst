@@ -10,9 +10,9 @@ Welcome to spd_controller's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   Prodigy_remote_in/Prodigy_remote_in
    dash_Lakeshore/dash_Lakeshore
    dash_tuning_mirror/dash_tuning_mirror
-   Prodigy_remote_in/Prodigy_remote_in.md
 
 API documentation
 ==================
