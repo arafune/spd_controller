@@ -3,7 +3,11 @@
 
 import socket
 from time import sleep
+
 import numpy as np
+
+import spd_controller.Specs.convert as convert
+
 from .. import SocketClient
 
 BUFSIZE = 1024
@@ -17,6 +21,7 @@ class RemoteIn(SocketClient):
         self.id: int = 1
         self.samples: int = 0
         self.param: dict[str, int | float | str] = {}
+        self.data: list[float] = []
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
 
@@ -119,7 +124,7 @@ class RemoteIn(SocketClient):
         self,
         start_energy: float,
         end_energy: float,
-        samples: int,
+        samples: int = 1,
         dwell: float = 0.096,
         lens: str = "WideAngleMode",
         scanrange: str = "40V",
@@ -217,6 +222,7 @@ class RemoteIn(SocketClient):
         return response
 
     def clear(self) -> str:
+        self.data = []  # for sureness
         return self.sendcommand("ClearSpectrum")
 
     def get_status(self) -> str:
@@ -240,7 +246,8 @@ class RemoteIn(SocketClient):
         data = self.recvtext(byte_size=8192)
         while "]" not in data:
             data += self.recvtext(byte_size=8192)
-        return [float(i) for i in data[16:-2].split(",")]
+        self.data = [float(i) for i in data[16:-2].split(",")]
+        return self.data
 
     def get_non_energy_channel_info(self):
         response = self.sendcommand('GetSpectrumDataInfo ParameterName:"OrdinateRange"')
@@ -274,10 +281,15 @@ class RemoteIn(SocketClient):
             self.clear()
         if num_scan > 1:
             data = np.array(data).reshape(num_scan, -1).sum(axis=0).tolist()
+        self.data = data
         return data
 
-    def save_data(self) -> None:
-        pass
+    def save_data(self, filename: str, id: int, comment="", measure_mode="FAT") -> None:
+        itx = convert.itx(
+            self.data, self.param, id, comment=comment, measure_mode=measure_mode
+        )
+        with open(filename, "w") as itx_file:
+            itx_file.write(itx)
 
 
 def parse_analyzer_parameter(response: str) -> tuple[str, int | float]:
