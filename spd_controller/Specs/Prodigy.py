@@ -66,29 +66,88 @@ class RemoteIn(SocketClient):
         self.sendcommand("Disonnect")
         return self.recvtext(BUFSIZE)
 
-    def defineFAT(self) -> str:
-        pass
+    def defineFAT(
+        self,
+        start_energy: float,
+        end_energy: float,
+        step: float,
+        dwell: float = 0.096,
+        pass_energy: float = 5,
+        lens: str = "WideAngleMode",
+        scanrange: str = "40 V",
+    ) -> str:
+        command: str = 'DefineSpectrumFAT StartEnergy:{} EndEnergy:{} StepWidth:{} DwellTime:{} PassEnergy:{} LensMode:"{}" ScanRange"{}"'.format(
+            start_energy, end_energy, step, dwell, pass_energy, lens, scanrange
+        )
+        self.sendcommand(command)
+        return self.recvtext(BUFSIZE)
 
-    def defineSFAT(self) -> str:
-        pass
+    def defineSFAT(
+        self,
+        start_energy: float,
+        end_energy: float,
+        samples: int,
+        dwell: float = 0.096,
+        lens: str = "WideAngleMode",
+        scanrange: str = "40 V",
+    ) -> str:
+        command: str = 'DefineSpectrumSFAT StartEnergy:{} EndEnergy:{} Samples:{} DwellTime:{} LensMode:"{}" ScanRange"{}"'.format(
+            start_energy, end_energy, samples, dwell, lens, scanrange
+        )
+        self.sendcommand(command)
+        return self.recvtext(BUFSIZE)
 
-    def checkFAT(self) -> str:
-        pass
+    def checkFAT(
+        self,
+        start_energy: float,
+        end_energy: float,
+        step: float,
+        dwell: float = 0.096,
+        pass_energy: float = 5,
+        lens: str = "WideAngleMode",
+        scanrange: str = "40 V",
+    ) -> str:
+        command: str = 'CheckSpectrumFAT StartEnergy:{} EndEnergy:{} StepWidth:{} DwellTime:{} PassEnergy:{} LensMode:"{}" ScanRange"{}"'.format(
+            start_energy, end_energy, step, dwell, pass_energy, lens, scanrange
+        )
+        self.sendcommand(command)
+        return self.recvtext(BUFSIZE)
 
-    def checkSFAT(self) -> str:
-        pass
+    def checkSFAT(
+        self,
+        start_energy: float,
+        end_energy: float,
+        samples: int,
+        dwell: float = 0.096,
+        lens: str = "WideAngleMode",
+        scanrange: str = "40 V",
+    ) -> str:
+        command: str = 'CheckSpectrumSFAT StartEnergy:{} EndEnergy:{} Samples:{} DwellTime:{} LensMode:"{}" ScanRange"{}"'.format(
+            start_energy, end_energy, samples, dwell, lens, scanrange
+        )
+        self.sendcommand(command)
+        return self.recvtext(BUFSIZE)
 
     def validate(self) -> str:
-        pass
+        self.sendcommand("ValidateSpectrum")
+        return self.recvtext(BUFSIZE)
 
-    def start(self) -> str:
-        pass
+    def start(self, setsafeafter: bool = True) -> str:
+        if setsafeafter:
+            command: str = "Start"
+        else:
+            command = 'Start SetSafeStartAfter:"false"'
+
+        self.sendcommand(command)
+        return self.recvtext(BUFSIZE)
 
     def clear(self) -> str:
-        pass
+        self.sendcommand("ClearSpectrum")
+        return self.recvtext(BUFSIZE)
 
-    def get_state(self) -> str:
-        pass
+    def get_status(self) -> str:
+        self.sendcommand("GetAcquisitionStatus")
+        return self.recvtext(BUFSIZE)
 
     def save_data(self) -> None:
         pass
