@@ -59,13 +59,44 @@ class RemoteIn(SocketClient):
         pass_energy: float = 5,
         lens: str = "WideAngleMode",
         scanrange: str = "40V",
+        with_check: bool = True,
     ) -> str:
-        command: str = "DefineSpectrumFAT StartEnergy:{} EndEnergy:{} StepWidth:{} "
-        command += 'DwellTime:{} PassEnergy:{} LensMode:"{}" ScanRange:"{}"'
-        command = command.format(
+        """Set measurment parameters of Phoibos (FAT mode)
+
+        Send FAT spectrum specification for subsequent acquisition.
+        Existing data must be cleared first.
+
+
+        Parameters
+        ----------
+        start_energy: float
+            Kinetic energy of the first data point in eV
+        end_energy: float
+            Kinetic energy of the end data point in eV
+        step: float
+            Delta between measurement points in eV
+        dwell: float
+            Dwell time of the detector in seconds
+        pass_energy: float
+            Pass energy in eV
+        lens: str
+            Lens mode (as string)
+        scanrange: str
+            HSA voltage range for scanning (as string)
+        wich_check:bool
+            if True, CheckSpectrumFAT is excecuted after DefineSpectrumFAT
+        """
+        command: str = "DefineSpectrumFAT "
+        argument: str = "StartEnergy:{} EndEnergy:{} StepWidth:{} "
+        argument += 'DwellTime:{} PassEnergy:{} LensMode:"{}" ScanRange:"{}"'
+        argument = argument.format(
             start_energy, end_energy, step, dwell, pass_energy, lens, scanrange
         )
-        return self.sendcommand(command)
+        response = self.sendcommand(command + argument)
+        if with_check:
+            command = "CheckSpectrumFAT "
+            response = self.sendcommand(command + argument)
+        return response
 
     def defineSFAT(
         self,
@@ -75,13 +106,49 @@ class RemoteIn(SocketClient):
         dwell: float = 0.096,
         lens: str = "WideAngleMode",
         scanrange: str = "40V",
+        with_check: bool = True,
     ) -> str:
-        command: str = "DefineSpectrumSFAT StartEnergy:{} EndEnergy:{} Samples:{} "
-        command += 'DwellTime:{} LensMode:"{}" ScanRange:"{}"'
-        command = command.format(
+        """Set measurment parameters of Phoibos (SFAT (Snapshot) mode)
+
+        Send SFAT spectrum (snapshot) specification for subsequent
+        acquisition.
+        Existing data must be cleared first.
+
+        Note
+        -------
+        Step width and pass energy are computed automatically
+        with reference to the current detector calibration.
+
+        Parameters
+        ----------
+        start_energy: float
+            Kinetic energy of the first data point in eV
+        end_energy: float
+            Kinetic energy of the end data point in eV
+        Samples: int
+            Number of acquisition samples (Default: 1)
+        dwell: float
+            Dwell time of the detector in seconds
+        pass_energy: float
+            Pass energy in eV
+        lens: str
+            Lens mode (as string)
+        scanrange: str
+            HSA voltage range for scanning (as string)
+        with_check: bool
+            if True, CheckSpectrum is executed after DefinSpectrum
+        """
+        command: str = "DefineSpectrumSFAT "
+        argument: str = "StartEnergy:{} EndEnergy:{} Samples:{} "
+        argument += 'DwellTime:{} LensMode:"{}" ScanRange:"{}"'
+        argument = argument.format(
             start_energy, end_energy, samples, dwell, lens, scanrange
         )
-        return self.sendcommand(command)
+        response = self.sendcommand(command + argument)
+        if with_check:
+            command = "CheckSpectrumSFAT"
+            response = self.sendcommand(command + argument)
+        return response
 
     def checkFAT(
         self,
@@ -93,12 +160,36 @@ class RemoteIn(SocketClient):
         lens: str = "WideAngleMode",
         scanrange: str = "40V",
     ) -> str:
-        command: str = "CheckSpectrumFAT StartEnergy:{} EndEnergy:{} StepWidth:{} "
-        command += 'DwellTime:{} PassEnergy:{} LensMode:"{}" ScanRange:"{}"'
-        command = command.format(
+        """Validate FAT spectrum specification.
+
+        Validate FAT spectrum specification without setting
+        it for subsequent acquisition. The existing acquisition
+        status will be kept.
+
+
+        Parameters
+        ----------
+        start_energy: float
+            Kinetic energy of the first data point in eV
+        end_energy: float
+            Kinetic energy of the end data point in eV
+        step: float
+            Delta between measurement points in eV
+        dwell: float
+            Dwell time of the detector in seconds
+        pass_energy: float
+            Pass energy in eV
+        lens: str
+            Lens mode (as string)
+        ScanRange: HSA voltage range for scanning (as string)
+        """
+        command: str = "CheckSpectrumFAT "
+        argument: str = "CheckSpectrumFAT StartEnergy:{} EndEnergy:{} StepWidth:{} "
+        argument += 'DwellTime:{} PassEnergy:{} LensMode:"{}" ScanRange:"{}"'
+        argument = argument.format(
             start_energy, end_energy, step, dwell, pass_energy, lens, scanrange
         )
-        response = self.sendcommand(command)
+        response = self.sendcommand(command + argument)
         self.parse_check_response(response)
         return response
 
@@ -111,69 +202,38 @@ class RemoteIn(SocketClient):
         lens: str = "WideAngleMode",
         scanrange: str = "40V",
     ) -> str:
-        command: str = "CheckSpectrumSFAT StartEnergy:{} EndEnergy:{} Samples:{} "
-        command += 'DwellTime:{} LensMode:"{}" ScanRange:"{}"'
-        command = command.format(
+        """Validate SFAT spectrum specification.
+
+        Validate SFAT spectrum specification without setting
+        it for subsequent acquisition. The existing acquisition
+        status will be kept.
+
+
+        Parameters
+        ----------
+        start_energy: float
+            Kinetic energy of the first data point in eV
+        end_energy: float
+            Kinetic energy of the end data point in eV
+        Samples: int
+            Number of acquisition samples (Default: 1)
+        dwell: float
+            Dwell time of the detector in seconds
+        pass_energy: float
+            Pass energy in eV
+        lens: str
+            Lens mode (as string)
+        ScanRange: HSA voltage range for scanning (as string)
+        """
+        command: str = "CheckSpectrumSFAT "
+        argument: str = "StartEnergy:{} EndEnergy:{} Samples:{} "
+        argument += 'DwellTime:{} LensMode:"{}" ScanRange:"{}"'
+        argument = argument.format(
             start_energy, end_energy, samples, dwell, lens, scanrange
         )
-        response = self.sendcommand(command)
+        response = self.sendcommand(command + argument)
         self.parse_check_response(response)
         return response
-
-    def define_checkSFAT(
-        self,
-        start_energy: float,
-        end_energy: float,
-        samples: int = 1,
-        dwell: float = 0.096,
-        lens: str = "WideAngleMode",
-        scanrange: str = "40V",
-    ) -> str:
-        self.defineSFAT(
-            start_energy=start_energy,
-            end_energy=end_energy,
-            samples=samples,
-            dwell=dwell,
-            lens=lens,
-            scanrange=scanrange,
-        )
-        return self.checkSFAT(
-            start_energy=start_energy,
-            end_energy=end_energy,
-            samples=samples,
-            dwell=dwell,
-            lens=lens,
-            scanrange=scanrange,
-        )
-
-    def define_checkFAT(
-        self,
-        start_energy: float,
-        end_energy: float,
-        step: float,
-        dwell: float = 0.096,
-        pass_energy: float = 5,
-        lens: str = "WideAngleMode",
-        scanrange: str = "40V",
-    ) -> str:
-        self.defineFAT(
-            start_energy=start_energy,
-            end_energy=end_energy,
-            step=step,
-            dwell=dwell,
-            pass_energy=pass_energy,
-            lens=lens,
-            scanrange=scanrange,
-        )
-        return self.checkFAT(
-            start_energy=start_energy,
-            end_energy=end_energy,
-            step=step,
-            dwell=dwell,
-            pass_energy=pass_energy,
-            lens=lens,
-            scanrange=scanrange,
-        )
 
     def parse_check_response(self, response: str) -> None:
         for i in response[10:].split():
