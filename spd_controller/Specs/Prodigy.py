@@ -284,7 +284,9 @@ class RemoteIn(SocketClient):
         self.data = data
         return data
 
-    def save_data(self, filename: str, id: int, comment="", measure_mode="FAT") -> None:
+    def save_data(
+        self, filename: str, id: int, comment: str = "", measure_mode: str = "FAT"
+    ) -> None:
         itx = convert.itx(
             self.data, self.param, id, comment=comment, measure_mode=measure_mode
         )
