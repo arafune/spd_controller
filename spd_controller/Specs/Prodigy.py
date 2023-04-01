@@ -26,7 +26,18 @@ class RemoteIn(SocketClient):
         self.socket.connect((self.host, self.port))
 
     def sendcommand(self, text: str, buffsize: int = BUFSIZE) -> str:
-        """Send command"""
+        r"""Send request command
+
+        Request command syntax is as follows:
+        ?<id> Command [InParams]
+
+        where:
+            id: Unique request identifier (hexadecimal value, always 4 digits)
+            Command: Command name (character token, camel case, commands with spaces must be enclosed in double quotes)
+            InParams: Optional list of input parameters (“key:value”-list, space separated), specific for each command; the order of parameters is arbitrary.
+
+        Each command and response are terminated by a newline character “\n”.
+        """
         request_str: str = "?" + format(self.id, "04X") + " " + text
         self.id += 1
         self.sendtext(request_str)
@@ -310,6 +321,10 @@ class RemoteIn(SocketClient):
         return self.data
 
     def get_non_energy_channel_info(self):
+        """Read information about non energy (i.e. Angle) channel
+
+        The data are stored in the self.param property
+        """
         response = self.sendcommand('GetSpectrumDataInfo ParameterName:"OrdinateRange"')
         tmp = response[10:-1].split()[1:]
         self.param["Angle_Unit"] = tmp[0].split(":")[-1][1:-1]
@@ -317,6 +332,10 @@ class RemoteIn(SocketClient):
         self.param["Angle_max"] = float(tmp[2].split(":")[-1])
 
     def get_excitation_energy(self) -> None:
+        """Read the *Recoreded* Photon energy information
+
+        The value is used in the itx file as "Excitation Energy"
+        """
         command = 'GetDeviceParameterValue ParameterName:"ex_energy" '
         command += 'DeviceCommand:"UVS.Source"'
         response: str = self.sendcommand(command)
@@ -325,6 +344,16 @@ class RemoteIn(SocketClient):
         )
 
     def set_excitation_energy(self, excitation_energy: float) -> str:
+        """Change the *recoreded* Excitation photon energy value.
+
+        Note:
+            Actual photon energy is not affected.
+
+        Parameters
+        -----------
+        excitation_energy: float
+            Photon energy for excitation.
+        """
         command = 'SetDeviceParameterValue ParameterName:"ex_energy" '
         command += 'DeviceCommand:"UVS.Source" Value:{}'
         command = command.format(excitation_energy)
@@ -333,6 +362,18 @@ class RemoteIn(SocketClient):
         return response
 
     def scan(self, num_scan: int = 1) -> list[float]:
+        """Execut the multiple scanning
+
+        Parameters
+        -----------
+        num_scan: int
+            number of scan
+
+        Returns
+        ---------
+        data: list[float]
+            Resultant intensity data.  (The same data are stored as self.data)
+        """
         self.param["num_scan"] = num_scan
         data: list = []
         for _ in range(num_scan):
@@ -347,6 +388,19 @@ class RemoteIn(SocketClient):
     def save_data(
         self, filename: str, id: int, comment: str = "", measure_mode: str = "FAT"
     ) -> None:
+        """Save the data as itx format
+
+        Parameters
+        ----------
+        filename: str
+            file name of the data
+        id: int
+            Spectrum_ID
+        comment: str
+            comment string stored in itx file.
+        measure_mode: str
+            Measure mode name (FAT or SFAT)
+        """
         itx = convert.itx(
             self.data, self.param, id, comment=comment, measure_mode=measure_mode
         )
