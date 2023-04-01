@@ -2,11 +2,13 @@
 
 -- how to integrate the stepping motor system and the ARPES measurement.
 
-## To control with jupyter from the client machine.
+![NetworkConfiguration](./DigramPumpProbeSetup.png)
+
+## 0. Step zero: To control with jupyter from the client machine.
 
 ### Setting the server
 
-Execut below on the server.
+Execut below on the server 2 (Linux).
 
 ```
 # jupyter notebook password
@@ -26,3 +28,9 @@ Execute below on the server.
 
 - On the client machine, access `http://[IP address of the server]:8888`.
 - jupyter notebook appear in the web browser.
+
+## 1. Prodigy size preparation.
+
+Note: Calibration file cannot be changed with remote-in.
+
+## 2. Run jupyter notebook from the client PC.
