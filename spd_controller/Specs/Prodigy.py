@@ -32,9 +32,11 @@ class RemoteIn(SocketClient):
         ?<id> Command [InParams]
 
         where:
-            id: Unique request identifier (hexadecimal value, always 4 digits)
-            Command: Command name (character token, camel case, commands with spaces must be enclosed in double quotes)
-            InParams: Optional list of input parameters (“key:value”-list, space separated), specific for each command; the order of parameters is arbitrary.
+            * id: Unique request identifier (hexadecimal value, always 4 digits)
+            * Command: Command name (character token, camel case, commands with
+                       spaces must be enclosed in double quotes)
+            * InParams: Optional list of input parameters (“key:value”-list, space separated),
+                        specific for each command; the order of parameters is arbitrary.
 
         Each command and response are terminated by a newline character “\n”.
         """
