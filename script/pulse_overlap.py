@@ -3,9 +3,11 @@
 """Measure the pulse overlap by using oscilloscope"""
 
 import argparse
+
 import numpy as np
-import spd_controller.texio.gds3502 as gds3502
+
 import spd_controller.sigma.sc104 as sc104
+import spd_controller.texio.gds3502 as gds3502
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
@@ -25,7 +27,7 @@ if __name__ == "__main__":
     o = gds3502.GDS3502()
     data = []
     while pos < args.end:
-        data.append(o.acquire_memory(1))
+        data.append(o.acquire_memory(2))
         s.move_rel(args.step, micron=True)
         pos = s.position()
     np.savetxt(args.output, np.array(data))
