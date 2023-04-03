@@ -25,21 +25,24 @@ class GSC02(Comm):
 
     def __init__(self, term: str = "\r\n", port: str = "") -> None:
         super().__init__(term=term)
-        ttys = [port.device for port in list_ports.comports()]
-        for tty in ttys:
-            self.open(tty=tty, baud=9600, rtscts=True)
-            self.sendtext("?:V")
-            return_info = self.recvtext().strip()
-            if return_info == "V1.32":
-                self.is_portopen = True
-                self.close()
+        if port:
+            self.open(tty=port, baud=9600)
+        else:
+            ttys = [port.device for port in list_ports.comports()]
+            for tty in ttys:
                 self.open(tty=tty, baud=9600, rtscts=True)
-                return None
-            else:
-                self.close()
-        raise RuntimeError(
-            "Check the port. Cannot find the connection to the ND filter"
-        )
+                self.sendtext("?:V")
+                return_info = self.recvtext().strip()
+                if return_info == "V1.32":
+                    self.is_portopen = True
+                    self.close()
+                    self.open(tty=tty, baud=9600, rtscts=True)
+                    return None
+                else:
+                    self.close()
+            raise RuntimeError(
+                "Check the port. Cannot find the connection to the ND filter"
+            )
 
     def move_mechanical_zero(self, axis: int = 1, wait: bool = True) -> None:
         """Go to "mechanical zero" position.

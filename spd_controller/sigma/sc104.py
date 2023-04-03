@@ -45,24 +45,27 @@ class SC104(Comm):
             [TODO:description]
         """
         super().__init__(term=term)
-        ttys = [port.device for port in list_ports.comports()]
-        for tty in ttys:
-            self.open(tty=tty, baud=9600)
-            self.sendtext("MODE?")
-            return_info: str = self.recvtext().strip()
-            if return_info == "LOCAL":
-                self.sendtext("MODE:REMOTE")
-            self.sendtext("MODE?")
-            return_info = self.recvtext().strip()
-            if return_info == "REMOTE":
-                self.is_portopen = True
-                self.close()
-                self.open(tty=tty, baud=9600, xonxoff=True)
-                return None
-            else:
-                self.close()
-        raise RuntimeError(
-            "Check the port. Cannot find the connection to the ND filter"
+        if port:
+            self.open(tty=port, baud=9600)
+        else:
+            ttys = [port.device for port in list_ports.comports()]
+            for tty in ttys:
+                self.open(tty=tty, baud=9600)
+                self.sendtext("MODE?")
+                return_info: str = self.recvtext().strip()
+                if return_info == "LOCAL":
+                    self.sendtext("MODE:REMOTE")
+                self.sendtext("MODE?")
+                return_info = self.recvtext().strip()
+                if return_info == "REMOTE":
+                    self.is_portopen = True
+                    self.close()
+                    self.open(tty=tty, baud=9600, xonxoff=True)
+                    return None
+                else:
+                    self.close()
+            raise RuntimeError(
+                "Check the port. Cannot find the connection to the Delay line"
         )
 
     def position(self) -> float:
