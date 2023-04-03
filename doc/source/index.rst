@@ -10,6 +10,7 @@ Welcome to spd_controller's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   Prodigy_remote_in/Prodigy_remote_in
    dash_Lakeshore/dash_Lakeshore
    dash_tuning_mirror/dash_tuning_mirror
 
@@ -23,6 +24,13 @@ API documentation
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+.. autoclass:: spd_controller.SocketClient
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 
 :mod:`spd_controller.sigma.gsc02` module
@@ -84,6 +92,24 @@ API documentation
 .. automodule:: spd_controller.newport.picomotor8742
    :members:
    :undoc-members:
+
+
+:mod:`spd_controller.Specs.prodigy` module
+----------------------------------------------------
+
+.. automodule:: spd_controller.Specs.Prodigy
+   :members:
+   :undoc-members:
+
+
+
+:mod:`spd_controller.Specs.convert` module
+----------------------------------------------------
+
+.. automodule:: spd_controller.Specs.convert
+   :members:
+   :undoc-members:
+
 
 
 :mod:`spd_controller.texio.gds3502` module

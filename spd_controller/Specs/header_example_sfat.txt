@@ -1,0 +1,23 @@
+IGOR
+X //Created Date (UTC): 2023-Jan-27 04:39:21.955306
+X //Igor Text File Exporter Version: 0.3
+X //Created by: SpecsLab Prodigy, Version 4.86.2-r103043 
+X //Acquisition Parameters:
+X //Scan Mode         = Snapshot
+X //User Comment      = bias:0 V; T:RT ;beta:0;
+X //Analysis Mode     = UPS
+X //Lens Mode         = LowAngularDispersion
+X //Lens Voltage      = 40V
+X //Spectrum ID       = 1
+X //Analyzer Slits    = 1:0.5x20\B:open
+X //Number of Scans   = 600
+X //Number of Samples = 1
+X //Scan Step         = 0.000588722
+X //DwellTime         = 0.996
+X //Excitation Energy = 5.0319
+X //Kinetic Energy    = 5
+X //Binding Energy    = 0.0319
+X //Pass Energy       = 5
+X //Bias Voltage      = -1.5
+X //Detector Voltage  = 1500
+X //WorkFunction      = 4.401

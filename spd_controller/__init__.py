@@ -207,6 +207,27 @@ class SocketClient:
         self.port = port
         self.socket = None
 
+    def sendtext(self, text: str) -> int:
+        """An syntax suger of sendtext
+
+        To send the command to Remote_In Prodigy, the text is converted to byte with linefeed character self.
+
+        Parameters
+        ------------
+        text: str
+            input text
+
+        Returns
+        --------
+        int: number of byte send
+        """
+        text = text + "\n"
+        return self.socket.send(text.encode("utf-8"))
+
+    def recvtext(self, byte_size: int) -> str:
+        """"""
+        return self.socket.recv(byte_size).decode("utf-8")
+
     def send_recv(self, input_data: str) -> str:
         DATASIZE = 512  # 受信データバイト数
         # sockインスタンスを生成
