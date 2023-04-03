@@ -23,7 +23,7 @@ from .. import Comm
 class GSC02(Comm):
     """Class for DSC-02 controller"""
 
-    def __init__(self, term: str = "\r\n") -> None:
+    def __init__(self, term: str = "\r\n", port: str = "") -> None:
         super().__init__(term=term)
         ttys = [port.device for port in list_ports.comports()]
         for tty in ttys:

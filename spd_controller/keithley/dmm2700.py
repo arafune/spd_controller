@@ -9,11 +9,12 @@ import datetime
 from time import sleep
 
 from serial.tools import list_ports
+
 from .. import Comm
 
 
 class DMM2700(Comm):
-    def __init__(self) -> None:
+    def __init__(self, port: str = "") -> None:
         super().__init__()
         ttys = [port.devie for port in list_ports.comports()]
         for tty in ttys:

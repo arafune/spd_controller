@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to spd_controller's documentation!
+spd_controller's documentation
 ==========================================
 
 .. toctree::
@@ -68,15 +68,6 @@ API documentation
    :show-inheritance:
 
 
-:mod:`spd_controller.keithley.k6514` module
-----------------------------------------------
-
-.. automodule:: spd_controller.keithley.k6514
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
 :mod:`spd_controller.qmass.qmass` module
 --------------------------------------------
 
@@ -100,7 +91,7 @@ API documentation
 .. automodule:: spd_controller.Specs.Prodigy
    :members:
    :undoc-members:
-
+   :show-inheritance:
 
 
 :mod:`spd_controller.Specs.convert` module
@@ -109,6 +100,7 @@ API documentation
 .. automodule:: spd_controller.Specs.convert
    :members:
    :undoc-members:
+   :show-inheritance:
 
 
 
