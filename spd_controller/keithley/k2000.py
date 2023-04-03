@@ -14,7 +14,7 @@ from .. import Comm
 
 
 class K2000(Comm):
-    def __init__(self) -> None:
+    def __init__(self, port: str = "") -> None:
         super().__init__()
         ttys = [port.device for port in list_ports.comports()]
         for tty in ttys:

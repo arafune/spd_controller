@@ -23,7 +23,7 @@ from .. import Comm
 class SC104(Comm):
     """Class for SC-104 Linear translation stage controller"""
 
-    def __init__(self, term: str = "\r\n") -> None:
+    def __init__(self, term: str = "\r\n", port: str = "") -> None:
         """
         [TODO:summary]
 

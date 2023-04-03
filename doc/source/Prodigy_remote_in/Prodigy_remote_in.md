@@ -40,7 +40,8 @@ and then select the template, and check "Allow Remote Connections"
 ## 2. Remote control through Jupyter
 
 - Open the "Windows terminal"
-- Run "jupyter lab"
+- type the following
+  > jupyter lab
 
 ![JupyterLab](./SS_Jupyter.png)
 
