@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import numpy as np
 from typing_extensions import Literal
 
-measure_type: Literal["FAT", "SFAT"]
+measure_type = Literal["FAT", "SFAT"]
 
 header_template = """IGOR
 X //Created Date (UTC): {}
@@ -37,7 +37,7 @@ def itx(
     id: int,
     num_scan: int = 1,
     comment: str = "",
-    measure_mode="FAT",
+    measure_mode: measure_type = "FAT",
 ):
     """
     [TODO:summary]
