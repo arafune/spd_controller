@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 
 from serial.tools import list_ports
+
 from .. import Comm
 
 
@@ -23,6 +24,26 @@ class SC104(Comm):
     """Class for SC-104 Linear translation stage controller"""
 
     def __init__(self, term: str = "\r\n") -> None:
+        """
+        [TODO:summary]
+
+        [TODO:description]
+
+        Parameters
+        ----------
+        term
+            [TODO:description]
+
+        Returns
+        -------
+        None
+            [TODO:description]
+
+        Raises
+        ------
+        RuntimeError:
+            [TODO:description]
+        """
         super().__init__(term=term)
         ttys = [port.device for port in list_ports.comports()]
         for tty in ttys:
@@ -45,7 +66,7 @@ class SC104(Comm):
         )
 
     def position(self) -> float:
-        """Return the current postion
+        """Return the current postion.
 
         Returns
         -------
@@ -59,7 +80,7 @@ class SC104(Comm):
         return pos_mm
 
     def move_to_origin(self, wait: bool = True) -> None:
-        """Move to mechanical origin.
+        """Move to the mechanical origin.
 
         And electric zero is set at this point.
         """
@@ -107,7 +128,7 @@ class SC104(Comm):
             self.wait_during_move()
 
     def move_rel(self, move: float, wait: bool = True, micron: bool = False) -> None:
-        """Move by the value (Relative move).
+        """Move by the value from the current position(Relative move).
 
         Parameters
         -----------

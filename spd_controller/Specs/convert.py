@@ -3,6 +3,9 @@
 from datetime import datetime, timezone
 
 import numpy as np
+from typing_extensions import Literal
+
+measure_type: Literal["FAT", "SFAT"]
 
 header_template = """IGOR
 X //Created Date (UTC): {}
@@ -36,6 +39,26 @@ def itx(
     comment: str = "",
     measure_mode="FAT",
 ):
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    data
+        [TODO:description]
+    param
+        [TODO:description]
+    id
+        [TODO:description]
+    num_scan
+        [TODO:description]
+    comment
+        [TODO:description]
+    measure_mode : [TODO:type]
+        [TODO:description]
+    """
     itx: str = ""
     if "num_scan" in param.keys() and num_scan == 1:
         num_scan = param["num_scan"]
@@ -75,13 +98,58 @@ def itx(
 def correct_angle_region(
     angle_min: float, angle_max: float, num_pixel: int
 ) -> tuple[float, float]:
+    """
+    [TODO:summary]
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    angle_min
+        [TODO:description]
+    angle_max
+        [TODO:description]
+    num_pixel
+        [TODO:description]
+
+    Returns
+    -------
+    tuple[float, float]
+        [TODO:description]
+    """
     diff: float = ((angle_max - angle_min) / num_pixel) / 2
     return angle_min + diff, angle_max - diff
 
 
 def header(
-    param: dict, id: int, num_scan: int = 1, comment: str = "", measure_mode="FAT"
+    param: dict,
+    id: int,
+    num_scan: int = 1,
+    comment: str = "",
+    measure_mode: measure_type = "FAT",
 ) -> str:
+    """Make itx file header
+
+    [TODO:description]
+
+    Parameters
+    ----------
+    param: dict
+        [TODO:description]
+    id: int
+        [TODO:description]
+    num_scan: int
+        [TODO:description]
+    comment: str
+        [TODO:description]
+    measure_mode : measure_type
+        [TODO:description]
+
+    Returns
+    -------
+    str
+        Header part of itx
+    """
     if measure_mode == "FAT":
         mode = "Fixed Analyzer Transmission"
     else:

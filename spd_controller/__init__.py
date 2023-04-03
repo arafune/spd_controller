@@ -202,9 +202,10 @@ class Comm:
 class SocketClient:
     """Tiny Socket client"""
 
-    def __init__(self, host: str, port: int) -> None:
+    def __init__(self, host: str, port: int, term: str = "\n") -> None:
         self.host = host
         self.port = port
+        self.TERM = term
         self.socket = None
 
     def sendtext(self, text: str) -> int:
@@ -221,7 +222,7 @@ class SocketClient:
         --------
         int: number of byte send
         """
-        text = text + "\n"
+        text = text + self.TERM
         return self.socket.send(text.encode("utf-8"))
 
     def recvtext(self, byte_size: int) -> str:
