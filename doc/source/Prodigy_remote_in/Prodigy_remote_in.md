@@ -44,6 +44,7 @@ and then select the template, and check "Allow Remote Connections"
 
 ![JupyterLab](./SS_Jupyter.png)
 
+<!--
 The below is for way-3.
 
 ## 0. Step zero: To control with jupyter from the client machine.
@@ -76,3 +77,5 @@ Execute below on the server.
 Note: Calibration file cannot be changed with remote-in.
 
 ## 2. Run jupyter notebook from the client PC.
+
+-->
