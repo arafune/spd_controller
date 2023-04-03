@@ -15,6 +15,7 @@ offline. Optionally you can specify command line arguments
 from __future__ import annotations
 
 import sys
+from ctypes import windll
 from time import sleep
 
 import spd_controller.sigma.sc104 as sc104
@@ -37,6 +38,8 @@ if __name__ == "__main__":
                 """Change the speed"""
                 speed = float(argument)
                 s.set_speed(speed)
+                sys.stdout.write("Done.")
+                sys.stdout.flush()
             elif command == "goto":
                 """move the position in mm unit"""
                 position = float(argument)
@@ -46,6 +49,7 @@ if __name__ == "__main__":
                     sleep(1)
                     moving = s.moving()
                 sys.stdout.write("Done.")
+                sys.stdout.flush()
             elif command == "move":
                 """Relative move in micron unit"""
                 distance = float(argument)
@@ -55,6 +59,13 @@ if __name__ == "__main__":
                     sleep(1)
                     moving = s.moving()
                 sys.stdout.write("Done.")
+                sys.stdout.flush()
+            elif command == "origin":
+                """Return to the Mechanical origin"""
+                s.move_to_origin()
+                sleep(5)
+                sys.stdout.write("Done.")
+                sys.stdout.flush()
             elif command == "current":
                 """Return the current position"""
                 s.sendtext("Q:")
@@ -70,7 +81,5 @@ if __name__ == "__main__":
                 sys.stdout.flush()
             elif command == "close":
                 s.close()
-        except TypeError:
-            pass
         except:
             break
