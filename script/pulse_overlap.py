@@ -5,6 +5,7 @@
 import argparse
 
 import numpy as np
+from numpy.typing import NDArray
 
 import spd_controller.sigma.sc104 as sc104
 import spd_controller.texio.gds3502 as gds3502
@@ -20,14 +21,17 @@ if __name__ == "__main__":
     )
     parser.add_argument("--output", type=float, required=True, help="Output file name")
     args = parser.parse_args()
-    s = sc104.SC104()
+    s = sc104.SC104(port="COM3")
     s.move_to_origin()
     s.move_abs(args.start)
     pos = s.position()
     o = gds3502.GDS3502()
-    data = []
+    o.acquire_memory(2)
+    header = ["timescale"]
+    data: list[NDArray] = [o.timescale]
     while pos < args.end:
+        header.append("{:.4f}".format(pos))
         data.append(o.acquire_memory(2))
         s.move_rel(args.step, micron=True)
         pos = s.position()
-    np.savetxt(args.output, np.array(data))
+    np.savetxt(args.output, np.array(data).T, delimiter="\t", header="\t".join(header))
