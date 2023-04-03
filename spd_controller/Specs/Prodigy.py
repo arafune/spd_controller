@@ -197,7 +197,7 @@ class RemoteIn(SocketClient):
         ScanRange: HSA voltage range for scanning (as string)
         """
         command: str = "CheckSpectrumFAT "
-        argument: str = "CheckSpectrumFAT StartEnergy:{} EndEnergy:{} StepWidth:{} "
+        argument: str = "StartEnergy:{} EndEnergy:{} StepWidth:{} "
         argument += 'DwellTime:{} PassEnergy:{} LensMode:"{}" ScanRange:"{}"'
         argument = argument.format(
             start_energy, end_energy, step, dwell, pass_energy, lens, scanrange
@@ -250,7 +250,7 @@ class RemoteIn(SocketClient):
 
     def parse_check_response(self, response: str) -> None:
         for i in response[10:].split():
-            key, item = i.split(":", 1)
+            key, item = i.split(":", 2)
             try:
                 self.param[key] = int(item)
             except ValueError:
