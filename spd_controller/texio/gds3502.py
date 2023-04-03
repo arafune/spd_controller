@@ -49,7 +49,7 @@ class GDS3502(Comm):
             return_info += a
         return return_info.decode("utf-8")
 
-    def acquire_memory(self, channel: int) -> NDArray[np.float_]:
+    def acquire_memory(self, channel: int):
         """Return the memory
 
         Parameters
@@ -93,7 +93,8 @@ class GDS3502(Comm):
                 amplitudes.append(points[1])
             else:
                 amplitudes.append(-1 * (int(bin(~points[1] & 0xFF), 0)))
+        self.timescale = timescale
         self.memory = np.array(
-            timescale, np.array(amplitudes) * self.header_dict["Vertical Scale"] / 25
+            np.array(amplitudes) * self.header_dict["Vertical Scale"] / 25
         )
-        return self.memory
+        return amplitudes
