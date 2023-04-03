@@ -4,11 +4,14 @@
 
 from __future__ import annotations
 
+from  typing_extensions import Literal
+
 import numpy as np
 from numpy.typing import NDArray
 
 from .. import Comm
 
+Channel = Literal[1, 2]
 
 class GDS3502(Comm):
     def __init__(self, term: str = "\n") -> None:
@@ -49,12 +52,12 @@ class GDS3502(Comm):
             return_info += a
         return return_info.decode("utf-8")
 
-    def acquire_memory(self, channel: int) -> NDArray:
+    def acquire_memory(self, channel: Channel) -> NDArray:
         """Return the memory
 
         Parameters
         ----------
-        channel : int
+        channel : Channel
             Channel number (1 or 2)
 
         Returns
