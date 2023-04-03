@@ -59,7 +59,9 @@ class RemoteIn(SocketClient):
     def disconnect(self) -> str:
         """Close connection to SpecsLab Prodigy
 
-        Returns -------- str: Responce of "Disconnect command"
+        Returns
+        --------
+        str: Responce of "Disconnect command"
             Ex. '!0005 OK\n'
         """
         return self.sendcommand("Disconnect")
