@@ -19,9 +19,10 @@ There is three way to achieve it.
 
 Here, the way-1 is described.
 
-![NetworkConfiguration](./DigramPumpProbeSetup.png)
+<!-- ![NetworkConfiguration](./DigramPumpProbeSetup.png)
 
 Fig: The diagram of the way-3.
+-->
 
 ## 1. Make Prodigy act as the server
 
@@ -35,6 +36,8 @@ Select "Remote Control" from the menu.
 
 and then select the template, and check "Allow Remote Connections"
 
+- Confirm "Remote connections enabled. Listening on port 7010" in Log field.
+
 ![Remote_in](./ProdigyRemote_in.png)
 
 ## 2. Remote control through Jupyter
@@ -43,7 +46,27 @@ and then select the template, and check "Allow Remote Connections"
 - type the following
   > jupyter lab
 
+Web browser is automatically opened. And then select `Prodigy_Remote_in.ipynb`
+
 ![JupyterLab](./SS_Jupyter.png)
+
+```python
+## Setting for Prodigy connection
+import spd_controller.Specs.Prodigy as Prodigy
+from spd_controller.Specs.convert import itx
+prodigy = Prodigy.RemoteIn(host="127.0.0.1")
+prodigy.connect()
+```
+
+- the first two lines for load module about Prodigy (for connection & file export of the spectrum data)
+- the third line make a object for connecting Prodigy
+- the 4th line is for actual connection to Prodigy.
+
+```python
+## Setting for Stepping motor controller
+import spd_controller.sigma.sc104 as sc104
+sc104 = sc104.SC104()
+```
 
 <!--
 The below is for way-3.

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 """Class for Prodigy remote_in"""
 
 import socket
@@ -14,8 +15,6 @@ BUFSIZE = 1024
 
 
 class RemoteIn(SocketClient):
-    """Class for Prodigy Remote In"""
-
     def __init__(self, host: str = "144.213.126.140", port: int = 7010) -> None:
         super().__init__(host=host, port=port)
         self.id: int = 1
@@ -51,17 +50,22 @@ class RemoteIn(SocketClient):
 
         Returns
         --------
-        str: Responce of "Connect command"
-            Ex. '!0001 OK: ServerName:"SpecsLab Prodigy 4.86.2-r103043 " ProtocolVersion:1.18\n'
+        str:
+            Responce of "Connect command"
+
+        Example
+        -------
+            '!0001 OK: ServerName:"SpecsLab Prodigy 4.86.2-r103043 " ProtocolVersion:1.18\n'
         """
         return self.sendcommand("Connect")
 
     def disconnect(self) -> str:
-        """Close connection to SpecsLab Prodigy
+        r"""Close connection to SpecsLab Prodigy
 
         Returns
         --------
-        str: Responce of "Disconnect command"
+        str:
+            Responce of "Disconnect command"
             Ex. '!0005 OK\n'
         """
         return self.sendcommand("Disconnect")
