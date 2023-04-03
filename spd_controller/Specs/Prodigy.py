@@ -5,6 +5,7 @@ import socket
 from time import sleep
 
 import numpy as np
+
 import spd_controller.Specs.convert as convert
 
 from .. import SocketClient
@@ -275,12 +276,38 @@ class RemoteIn(SocketClient):
             self.param[key] = item
 
     def validate(self) -> str:
+        """Validate parameters
+
+        Returns
+        -------
+        str
+            Response of "ValidateSpectrum" command
+            “key:value” list of the actual parameter values of the spectrum command
+        """
         response = self.sendcommand("ValidateSpectrum")
         self.get_analyzer_parameter()
         self.get_non_energy_channel_info()
         return response
 
     def start(self, setsafeafter: bool = True) -> str:
+        """Start data acquisition.
+
+        Before acquisition, spectum must be validated.
+        During measuments, the current status is shown.
+
+        Parameters
+        ----------
+        setsafeafter
+            Specifies whether the analyzer should be set into the safe
+            state after the scan or not (Boolean value, as string).
+            If set to False the detector voltage is not ramped down
+            after the scan and prone to damage by other sources (like ion sources).
+
+        Returns
+        -------
+        str
+            Response of start command ("OK")
+        """
         if setsafeafter:
             command: str = "Start"
         else:
@@ -295,13 +322,46 @@ class RemoteIn(SocketClient):
         return response
 
     def clear(self) -> str:
+        """Clear the internal spectrum buffer and set controllers state to idle.
+
+        Returns
+        -------
+        str
+            Response of "ClearSpectrum" command.
+        """
         self.data = []  # for sureness
         return self.sendcommand("ClearSpectrum")
 
     def get_status(self) -> str:
+        """Return information about the status and the progress of the acquisition.
+
+        Response syntax is:
+        Ok ControllerState:<ContState> NumberOf AcquiredPoints:<NumPts> [optional: Message:<Text> Details: <Text>]
+
+        ContState:
+        * idle
+        * validated
+        * running
+        * paused
+        * finished
+        * aborted
+        * error
+
+        Returns
+        -------
+        str
+            Status
+        """
         return self.sendcommand("GetAcquisitionStatus")
 
     def get_data(self) -> list:
+        """Get the intensity map data from the buffer and stored in self.data
+
+        Returns
+        -------
+        list
+            Intensity map data (1D), same data are stored in self.data
+        """
         data: str = ""
         status: dict = {}
         for i in self.get_status()[10:].split():
@@ -363,7 +423,7 @@ class RemoteIn(SocketClient):
         self.get_excitation_energy()
         return response
 
-    def scan(self, num_scan: int = 1) -> list[float]:
+    def scan(self, num_scan: int = 1, setsafeafter: bool = True) -> list[float]:
         """Execut the multiple scanning
 
         Parameters
@@ -374,12 +434,12 @@ class RemoteIn(SocketClient):
         Returns
         ---------
         data: list[float]
-            Resultant intensity data.  (The same data are stored as self.data)
+            intensity map data.  (The same data are stored as self.data)
         """
         self.param["num_scan"] = num_scan
         data: list = []
         for _ in range(num_scan):
-            self.start(setsafeafter=True)
+            self.start(setsafeafter=setsafeafter)
             data += self.get_data()
             self.clear()
         if num_scan > 1:
