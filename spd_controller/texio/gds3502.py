@@ -4,14 +4,14 @@
 
 from __future__ import annotations
 
-from  typing_extensions import Literal
-
 import numpy as np
 from numpy.typing import NDArray
+from typing_extensions import Literal
 
 from .. import Comm
 
 Channel = Literal[1, 2]
+
 
 class GDS3502(Comm):
     def __init__(self, term: str = "\n") -> None:
@@ -29,6 +29,7 @@ class GDS3502(Comm):
         """
         super().__init__(term=term)
         port = self.connect("GEV150786")
+        self.connection = "usb"
         self.header_dict: dict[str, float | str] = {}
         self.memory: NDArray[np.float_]
         if port:
@@ -66,10 +67,7 @@ class GDS3502(Comm):
             Oscilloscope data
         """
         self.sendtext(":ACQuire{}:MEMory?".format(channel))
-        tmp: list[bytes] = self.comm.readlines()
-        result: bytearray = bytearray()
-        for a in tmp:
-            result += a
+        result: bytearray = bytearray(self.comm.readlines())
         data_index: int = 7 + result.find(b"#550000")
         header = result[:data_index].decode("utf-8")
         wave_data = result[data_index:-1]

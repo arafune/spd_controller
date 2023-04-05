@@ -228,12 +228,6 @@ class TcpSocketWrapper(socket.socket):
         """"""
         return self.recv(byte_size).decode("utf-8")
 
-    def recvline(self, byte_size: int) -> str:
-        received: str = self.recv(byte_size).decode("utf-8")
-        while not received.endswith(self.TERM):
-            received += self.recv(byte_size).decode("utf-8")
-        return received
-
 
 class SocketClient:
     """Tiny Socket client
@@ -268,12 +262,6 @@ class SocketClient:
     def recvtext(self, byte_size: int) -> str:
         """"""
         return self.socket.recv(byte_size).decode("utf-8")
-
-    def recvline(self, byte_size: int) -> str:
-        received: str = self.socket.recv(byte_size).decode("utf-8")
-        while not received.endswith(self.TERM):
-            received += self.socket.recv(byte_size).decode("utf-8")
-        return received
 
     def send_recv(self, input_data: str) -> str:
         DATASIZE = 512  # 受信データバイト数
