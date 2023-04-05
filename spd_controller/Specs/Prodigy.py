@@ -2,27 +2,48 @@
 
 """Class for Prodigy remote_in"""
 
-import socket
 from time import sleep
 
 import numpy as np
 
-import spd_controller.Specs.convert as convert
+from spd_controller.Specs.convert import itx, measure_type
 
-from .. import SocketClient
+from .. import TcpSocketWrapper
 
 BUFSIZE = 1024
 
 
-class RemoteIn(SocketClient):
-    def __init__(self, host: str = "144.213.126.140", port: int = 7010) -> None:
-        super().__init__(host=host, port=port)
+class RemoteIn:
+    def __init__(
+        self, host: str = "144.213.126.140", port: int = 7010, term: str = "\n"
+    ) -> None:
+        self.name: str = "Prodigy"
+        self.host: str = host
+        self.port: int = port
+        self.TERM: str = term
+        self.timeout = 2
+        self.verbose: bool = False
         self.id: int = 1
         self.samples: int = 0
         self.param: dict[str, int | float | str] = {}
         self.data: list[float] = []
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((self.host, self.port))
+
+    def connect(self) -> str:
+        r"""Open connection to SpecsLab Prodigy
+
+        Returns
+        --------
+        str:
+            Responce of "Connect command"
+
+        Example
+        -------
+        '!0001 OK: ServerName:"SpecsLab Prodigy 4.86.2-r103043 " ProtocolVersion:1.18\n'
+        """
+        self.sock = TcpSocketWrapper(term=self.TERM, verbose=self.verbose)
+        self.sock.settimeout(self.timeout)
+        self.sock.connect((self.host, self.port))
+        return self.sendcommand("Connect")
 
     def sendcommand(self, text: str, buffsize: int = BUFSIZE) -> str:
         r"""Send request command
@@ -42,22 +63,8 @@ class RemoteIn(SocketClient):
         """
         request_str: str = "?" + format(self.id, "04X") + " " + text
         self.id += 1
-        self.sendtext(request_str)
-        return self.recvtext(buffsize)
-
-    def connect(self) -> str:
-        r"""Open connection to SpecsLab Prodigy
-
-        Returns
-        --------
-        str:
-            Responce of "Connect command"
-
-        Example
-        -------
-        '!0001 OK: ServerName:"SpecsLab Prodigy 4.86.2-r103043 " ProtocolVersion:1.18\n'
-        """
-        return self.sendcommand("Connect")
+        self.sock.sendtext(request_str)
+        return self.sock.recvtext(buffsize)
 
     def disconnect(self) -> str:
         r"""Close connection to SpecsLab Prodigy
@@ -381,10 +388,10 @@ class RemoteIn(SocketClient):
             self.id, status["NumberOfAcquiredPoints"] - 1
         )
         self.id += 1
-        self.sendtext(request_str)
-        data = self.recvtext(byte_size=8192)
+        self.sock.sendtext(request_str)
+        data = self.sock.recvtext(byte_size=8192)
         while "]" not in data:
-            data += self.recvtext(byte_size=8192)
+            data += self.sock.recvtext(byte_size=8192)
         self.data = [float(i) for i in data[16:-2].split(",")]
         return self.data
 
@@ -454,7 +461,11 @@ class RemoteIn(SocketClient):
         return data
 
     def save_data(
-        self, filename: str, id: int, comment: str = "", measure_mode: str = "FAT"
+        self,
+        filename: str,
+        spectrum_id: int,
+        comment: str = "",
+        measure_mode: measure_type = "FAT",
     ) -> None:
         """Save the data as itx format
 
@@ -462,18 +473,22 @@ class RemoteIn(SocketClient):
         ----------
         filename: str
             file name of the data
-        id: int
+        spectrum_id: int
             Spectrum_ID
         comment: str
             comment string stored in itx file.
         measure_mode: str
             Measure mode name (FAT or SFAT)
         """
-        itx = convert.itx(
-            self.data, self.param, id, comment=comment, measure_mode=measure_mode
+        itx_data = itx(
+            self.data,
+            self.param,
+            spectrum_id,
+            comment=comment,
+            measure_mode=measure_mode,
         )
         with open(filename, "w") as itx_file:
-            itx_file.write(itx)
+            itx_file.write(itx_data)
 
 
 def parse_analyzer_parameter(response: str) -> tuple[str, int | float]:

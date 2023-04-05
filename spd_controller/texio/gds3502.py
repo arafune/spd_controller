@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 
 """Module for GDS3502 Oscilloscope (socket connection)"""
 
-from __future__ import annotations
-
-import socket
 
 import numpy as np
 from numpy.typing import NDArray
 from typing_extensions import Literal
 
-from .. import SocketClient
+from .. import TcpSocketWrapper
 
 Channel = Literal[1, 2]
 
 
-class GDS3502(SocketClient):
+class GDS3502:
     def __init__(
         self, host: str = "144.213.126.10", port: int = 3000, term: str = "\n"
     ) -> None:
@@ -31,11 +29,20 @@ class GDS3502(SocketClient):
         RuntimeError
             _description_
         """
-        super().__init__(host=host, port=port, term=term)
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.connect((self.host, self.port))
+        self.name: str = "GDS3502"
+        self.host: str = host
+        self.port: int = port
+        self.TERM: str = term
+        self.timeout = 2
+        self.verbose: bool = False
         self.header: dict[str, float | str] = {}
         self.memory: NDArray[np.float_]
+
+    def connect(self):
+        """Connect the texio GDS3501"""
+        self.sock = TcpSocketWrapper(term=self.TERM, verbose=self.verbose)
+        self.sock.settimeout(self.timeout)
+        self.sock.connect((self.host, self.port))
 
     def lrn(self) -> str:
         """Returns the oscilloscope settings as a data string
@@ -45,8 +52,8 @@ class GDS3502(SocketClient):
         str
             Oscilloscope setting
         """
-        self.sendtext("*LRN?")
-        return self.recvline(128)
+        self.sock.sendtext("*LRN?")
+        return self.sock.recvline(128)
 
     def acquire_memory(self, channel: Channel) -> NDArray:
         """Return the memory
@@ -61,8 +68,8 @@ class GDS3502(SocketClient):
         NDArray[np.float]
             Oscilloscope data
         """
-        self.sendtext(":ACQuire{}:MEMory?".format(channel))
-        result = self.recvline(8192)
+        self.sock.sendtext(":ACQuire{}:MEMory?".format(channel))
+        result = self.sock.recvline(8192)
         data_index: int = result.find("#550000") + 7
         header = result[:data_index]
         wave_data = result[data_index:-1].encode("utf-8")

@@ -34,7 +34,7 @@ X //WorkFunction      = 4.401
 def itx(
     data: list,
     param: dict,
-    id: int,
+    spectrum_id: int,
     num_scan: int = 1,
     comment: str = "",
     measure_mode: measure_type = "FAT",
@@ -50,7 +50,7 @@ def itx(
         [TODO:description]
     param
         [TODO:description]
-    id
+    spectrum_id
         [TODO:description]
     num_scan
         [TODO:description]
@@ -64,18 +64,18 @@ def itx(
         num_scan = param["num_scan"]
     itx = header(
         param=param,
-        id=id,
+        spectrum_id=spectrum_id,
         num_scan=num_scan,
         comment=comment,
         measure_mode=measure_mode,
     )
     if measure_mode == "FAT":
         itx += "WAVES/S/N=({}, {}) 'ID_{:04}'\nBEGIN\n".format(
-            param["NumNonEnergyChannels"], param["Samples"], id
+            param["NumNonEnergyChannels"], param["Samples"], spectrum_id
         )
     else:
         itx += "WAVES/S/N=({}, {}) 'ID_{:04}'\nBEGIN\n".format(
-            param["NumNonEnergyChannels"], param["NumEnergyChannels"], id
+            param["NumNonEnergyChannels"], param["NumEnergyChannels"], spectrum_id
         )
     data = np.array(data).reshape(param["NumNonEnergyChannels"], -1).tolist()
     for line in data:
@@ -86,12 +86,14 @@ def itx(
     )
     itx += "END\n"
     itx += "X SetScale /I x, {}, {}, \"{}\", 'ID_{:04}'\n".format(
-        angle_max, angle_min, param["Angle_Unit"], id
+        angle_max, angle_min, param["Angle_Unit"], spectrum_id
     )
     itx += "X SetScale /P y, {}, {},  \"eV\", 'ID_{:04}'\n".format(
-        param["StartEnergy"], param["StepWidth"], id
+        param["StartEnergy"], param["StepWidth"], spectrum_id
     )
-    itx += "X SetScale /I d, 0, 0, \"cps (Intensity)\", 'ID_{0:04}'\n".format(id)
+    itx += "X SetScale /I d, 0, 0, \"cps (Intensity)\", 'ID_{0:04}'\n".format(
+        spectrum_id
+    )
     return itx
 
 
@@ -123,7 +125,7 @@ def correct_angle_region(
 
 def header(
     param: dict,
-    id: int,
+    spectrum_id: int,
     num_scan: int = 1,
     comment: str = "",
     measure_mode: measure_type = "FAT",
@@ -136,7 +138,7 @@ def header(
     ----------
     param: dict
         [TODO:description]
-    id: int
+    spectrum_id: int
         [TODO:description]
     num_scan: int
         [TODO:description]
@@ -161,7 +163,7 @@ def header(
         comment,
         param["LensMode"],
         param["ScaanRange"],
-        id,
+        spectrum_id,
         num_scan,
         param["Samples"],
         param["StepWidth"],

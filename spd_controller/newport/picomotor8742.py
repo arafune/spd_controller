@@ -13,7 +13,7 @@ class Picomotor8742:
 
     def __init__(
         self,
-        ipaddr: str,
+        host: str = "144.213.126.101",
         port: int = 23,
         naxis: int = 4,
         timeout: int = 2,
@@ -21,7 +21,7 @@ class Picomotor8742:
         verbose: bool = False,
     ):
         self.name = name
-        self.ipaddr = ipaddr
+        self.host = host
         self.port = port
         self.timeout = timeout
         self.naxis = naxis
@@ -32,7 +32,7 @@ class Picomotor8742:
         """Connect the Picomotor device"""
         self.sock = TcpSocketWrapper(term="\n", verbose=self.verbose)
         self.sock.settimeout(self.timeout)
-        self.sock.connect((self.ipaddr, self.port))
+        self.sock.connect((self.host, self.port))
 
     def cmd(self, axis: int, cmd: str, *args) -> int:
         """Send a command to 8742 controller

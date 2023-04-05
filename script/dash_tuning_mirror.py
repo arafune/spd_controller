@@ -500,6 +500,6 @@ def update_mirror_position(n_intervals: int) -> tuple[int, int]:
 if __name__ == "__main__":
     flipper1 = mff101.MFF101("37003548")
     flipper2 = mff101.MFF101("37003278")
-    picomotor = picomotor8742.Picomotor8742("144.213.126.101")
+    picomotor = picomotor8742.Picomotor8742(host="144.213.126.101")
     picomotor.connect()
     app.run_server(debug=True, host="0.0.0.0", dev_tools_ui=None)

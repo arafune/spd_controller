@@ -202,7 +202,7 @@ class Comm:
 class TcpSocketWrapper(socket.socket):
     """Very thin wrapper of socket"""
 
-    def __init__(self, term = "\n", verbose: bool = False:
+    def __init__(self, term="\n", verbose: bool = False):
         self._verbose = verbose
         self.TERM = term
         super().__init__(socket.AF_INET, socket.SOCK_STREAM)
@@ -220,7 +220,7 @@ class TcpSocketWrapper(socket.socket):
             print(msg)
         return msg
 
-    def sendtext(self, text:str) -> int:
+    def sendtext(self, text: str) -> int:
         text = text + self.TERM
         return self.send(text.encode("utf-8"))
 
@@ -228,15 +228,19 @@ class TcpSocketWrapper(socket.socket):
         """"""
         return self.recv(byte_size).decode("utf-8")
 
-    def recvline(self, byte_size:int) -> str:
-        received:str = self.recv(byte_size).decode("utf-8")
+    def recvline(self, byte_size: int) -> str:
+        received: str = self.recv(byte_size).decode("utf-8")
         while not received.endswith(self.TERM):
             received += self.recv(byte_size).decode("utf-8")
         return received
 
 
 class SocketClient:
-    """Tiny Socket client"""
+    """Tiny Socket client
+
+    **This is obsolute class. Keep it just for the compatibility.  Do not use for making a new class**
+
+    """
 
     def __init__(self, host: str, port: int, term: str = "\n") -> None:
         self.host = host
@@ -265,8 +269,8 @@ class SocketClient:
         """"""
         return self.socket.recv(byte_size).decode("utf-8")
 
-    def recvline(self, byte_size:int) -> str:
-        received:str = self.socket.recv(byte_size).decode("utf-8")
+    def recvline(self, byte_size: int) -> str:
+        received: str = self.socket.recv(byte_size).decode("utf-8")
         while not received.endswith(self.TERM):
             received += self.socket.recv(byte_size).decode("utf-8")
         return received
