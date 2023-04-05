@@ -15,14 +15,14 @@ BUFSIZE = 1024
 
 class RemoteIn:
     def __init__(
-        self, host: str = "144.213.126.140", port: int = 7010, term: str = "\n"
+        self, host: str = "144.213.126.140", port: int = 7010, term: str = "\n", verbose=False
     ) -> None:
         self.name: str = "Prodigy"
         self.host: str = host
         self.port: int = port
         self.TERM: str = term
         self.timeout = 2
-        self.verbose: bool = False
+        self.verbose: bool = verbose
         self.id: int = 1
         self.samples: int = 0
         self.param: dict[str, int | float | str] = {}
