@@ -1,11 +1,7 @@
 #! /usr/bin/env python3
-"""GSC-02 controller
+"""GSC-02 controller to control variable ND filter.
 
-To control variable ND filter.
-
-To work Motorized ND Filter Holder.
-
-Hard ware side information:
+Hardware specification:
     * Model name OSMS-60YAW (SIGMAKOKI Co., Ltd.)
     * Motor Drive Cuurent: 0.75 (A)
     * 144000 pulse : 360 degree
@@ -44,8 +40,8 @@ class GSC02(Comm):
                 "Check the port. Cannot find the connection to the ND filter"
             )
 
-    def move_mechanical_zero(self, axis: int = 1, wait: bool = True) -> None:
-        """Go to "mechanical zero" position.
+    def move_to_origin(self, axis: int = 1, wait: bool = True) -> None:
+        """Go to mechanical origin.
 
         Parameters
         ----------
