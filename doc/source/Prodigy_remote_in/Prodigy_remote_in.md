@@ -2,7 +2,7 @@
 
 -- how to integrate the stepping motor system and the ARPES measurement.
 
-There is three way to achieve it.
+There are three ways to achieve it.
 
 1. Both of Prodigy and Stepping motor are controlled with the single Windows machine.
 
@@ -65,7 +65,7 @@ prodigy.connect()
 ```python
 ## Setting for Stepping motor controller
 import spd_controller.sigma.sc104 as sc104
-sc104 = sc104.SC104()
+sc104 = sc104.SC104(port="COM3")
 ```
 
 <!--

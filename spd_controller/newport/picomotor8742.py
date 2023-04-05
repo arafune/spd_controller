@@ -1,5 +1,9 @@
 import socket
 
+from typing_extensions import Literal
+
+Axis = Literal[1, 2, 3, 4]
+
 
 from .. import TcpSocketWrapper
 
@@ -35,7 +39,7 @@ class Picomotor8742:
 
         Parameters
         ----------
-        axis: int
+        axis: Axis
             axis number (1-4)
         cmd: str
             command with argument (if required)
@@ -65,14 +69,14 @@ class Picomotor8742:
         """
         self.cmd(axis, "PR{:d}".format(distance))
 
-    def move_indefinitely(self, axis: int = 1, positive: bool = True) -> None:
+    def move_indefinitely(self, axis: Axis = 1, positive: bool = True) -> None:
         """Move indefinitely
 
         Need stop command to stop.
 
         Parameters
         ----------
-        axis: int
+        axis: Axis
             Axis number
         positive: bool
             if True move in positive direction
@@ -82,12 +86,12 @@ class Picomotor8742:
         else:
             self.cmd(axis, "MV-")
 
-    def position(self, axis: int = 1) -> int:
+    def position(self, axis: Axis = 1) -> int:
         """Return Axis position in step
 
         Parameters
         ----------
-        axis: int
+        axis: Axis
             The axis number  (1-4)
 
         Returns
@@ -97,22 +101,22 @@ class Picomotor8742:
         """
         return int(self.ask(axis, "TP?"))
 
-    def force_stop(self, axis: int = 1) -> None:
+    def force_stop(self, axis: Axis = 1) -> None:
         """Force stop the actuator.
 
         Parameters
         -----------
-        axis: int
+        axis: Axis
             Axis number
         """
         self.cmd(axis, "ST")
 
-    def set_velocity(self, axis: int = 1, velocity: int = 2000) -> None:
+    def set_velocity(self, axis: Axis = 1, velocity: int = 2000) -> None:
         """Set velocity
 
         Parameters
         -----------
-        axis: int
+        axis: Axis
             Axis number
         velocity: int
             Velocity (steps/sec)  default is 2000
@@ -122,24 +126,24 @@ class Picomotor8742:
             return None
         self.cmd(axis, "VA{:d}".format(int(velocity)))
 
-    def set_acceleration(self, axis: int = 1, acceleration: int = 100000) -> None:
+    def set_acceleration(self, axis: Axis = 1, acceleration: int = 100000) -> None:
         """Set Acceleration
 
         Parameters
         -----------
-        axis: int
+        axis: Axis
             Axis number
         acceleration: int
             Acceleration (steps/sec^2)  default is 100000
         """
         self.cmd(axis, "AC{:d}".format(int(acceleration)))
 
-    def check_stop(self, axis: int = 1) -> bool:
+    def check_stop(self, axis: Axis = 1) -> bool:
         """Return True if the actuator is stop.
 
         Parameters
         -----------
-        axis: int
+        axis: Axis
             Axis number
 
         Returns
@@ -151,12 +155,12 @@ class Picomotor8742:
             return True
         return False
 
-    def acceleration(self, axis: int = 1) -> int:
+    def acceleration(self, axis: Axis = 1) -> int:
         """Return the acceleration
 
         Parameters
         ----------
-        axis: int
+        axis: Axis
             Axis number
 
         Returns
@@ -166,12 +170,12 @@ class Picomotor8742:
         """
         return int(self.ask(axis, "AC?"))
 
-    def velocity(self, axis: int = 1) -> int:
+    def velocity(self, axis: Axis = 1) -> int:
         """Return the velocity
 
         Parameters
         ----------
-        axis: int
+        axis: Axis
             Axis number
 
         Returns
@@ -181,12 +185,12 @@ class Picomotor8742:
         """
         return int(self.ask(axis, "VA?"))
 
-    def speed(self, axis: int = 1) -> int:
+    def speed(self, axis: Axis = 1) -> int:
         """Alias of self.velocity
 
         Parameters
         --------------
-        axis: int
+        axis: Axis
             Axis number
 
         Returns
@@ -196,12 +200,12 @@ class Picomotor8742:
         """
         return self.velocity(axis)
 
-    def set_speed(self, axis: int, speed: int):
+    def set_speed(self, axis: Axis, speed: int):
         """Alias of self.set_velocity
 
         Parameters
         ----------
-        axis: int
+        axis: Axis
             Axis number
         speed: int
             Speed to set (steps/sec)

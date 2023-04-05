@@ -1,14 +1,17 @@
 #!/usr/bin/python3
 """SIGMA TECH SC104
 
-9600 bps
-CR+LF
-8bit
-stop bit 1bit
-No parity
-
+Specification:
 * Repeat accuracy : < 0.2 micron
 * Minimum resolution: 0.1 micron
+
+Serial communication specification:
+* 9600 bps
+* CR+LF
+* 8bit
+* stop bit 1bit
+* No parity
+
 """
 
 from __future__ import annotations
@@ -21,28 +24,27 @@ from .. import Comm
 
 
 class SC104(Comm):
-    """Class for SC-104 Linear translation stage controller"""
+    """Class for SC-104 Linear translation stage controller
+
+    Parameters
+    ----------
+    term: str
+        termination character (default is CRLF)
+
+    port: str
+        port name
+
+    Raises
+    ------
+    RuntimeError:
+        Occurs when no port can be found.
+    """
 
     def __init__(self, term: str = "\r\n", port: str = "") -> None:
-        """
-        [TODO:summary]
+        """initialization
 
         [TODO:description]
 
-        Parameters
-        ----------
-        term
-            [TODO:description]
-
-        Returns
-        -------
-        None
-            [TODO:description]
-
-        Raises
-        ------
-        RuntimeError:
-            [TODO:description]
         """
         super().__init__(term=term)
         if port:
@@ -66,7 +68,7 @@ class SC104(Comm):
                     self.close()
             raise RuntimeError(
                 "Check the port. Cannot find the connection to the Delay line"
-        )
+            )
 
     def position(self) -> float:
         """Return the current postion.
@@ -231,7 +233,6 @@ class SC104(Comm):
         self, position_a: float, position_b: float, wait: bool = True
     ) -> None:
         """Reciprocate the stage between postion A and B.
-
 
         Parameters
         ----------

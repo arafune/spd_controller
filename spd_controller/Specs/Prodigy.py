@@ -46,7 +46,7 @@ class RemoteIn(SocketClient):
         return self.recvtext(buffsize)
 
     def connect(self) -> str:
-        """Open connection to SpecsLab Prodigy
+        r"""Open connection to SpecsLab Prodigy
 
         Returns
         --------
@@ -55,7 +55,7 @@ class RemoteIn(SocketClient):
 
         Example
         -------
-            '!0001 OK: ServerName:"SpecsLab Prodigy 4.86.2-r103043 " ProtocolVersion:1.18\n'
+        '!0001 OK: ServerName:"SpecsLab Prodigy 4.86.2-r103043 " ProtocolVersion:1.18\n'
         """
         return self.sendcommand("Connect")
 
@@ -65,8 +65,7 @@ class RemoteIn(SocketClient):
         Returns
         --------
         str:
-            Responce of "Disconnect command"
-            Ex. '!0005 OK\n'
+            Responce of "Disconnect command" (Ex. '!0005 OK\n')
         """
         return self.sendcommand("Disconnect")
 
@@ -267,6 +266,7 @@ class RemoteIn(SocketClient):
                     self.param[key] = item[1:-1]
 
     def get_analyzer_parameter(self) -> None:
+        """Store the analyzer parameter in self.param"""
         parameters = [
             "NumEnergyChannels",
             "NumNonEnergyChannels",
@@ -287,8 +287,8 @@ class RemoteIn(SocketClient):
         Returns
         -------
         str
-            Response of "ValidateSpectrum" command
-            “key:value” list of the actual parameter values of the spectrum command
+            Response of "ValidateSpectrum" command.
+            "key:value" list of the actual parameter values of the spectrum command
         """
         response = self.sendcommand("ValidateSpectrum")
         self.get_analyzer_parameter()
