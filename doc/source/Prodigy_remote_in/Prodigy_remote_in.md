@@ -46,7 +46,7 @@ and then select the template, and check "Allow Remote Connections"
 
 ![Remote_in](./ProdigyRemote_in.png)
 
-## 3Remote control through Jupyter
+## 3. Remote control through Jupyter
 
 - Open the "Windows terminal"
 - type the following

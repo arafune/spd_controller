@@ -26,6 +26,12 @@ API documentation
    :show-inheritance:
 
 
+.. autoclass:: spd_controller.TcpSocketWrapper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 .. autoclass:: spd_controller.SocketClient
    :members:
    :undoc-members:
