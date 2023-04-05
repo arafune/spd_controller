@@ -15,9 +15,9 @@ Channel = Literal[1, 2]
 
 class GDS3502:
     def __init__(
-        self, host: str = "144.213.126.10", port: int = 3000, term: str = "\n"
+        self, host: str = "144.213.126.10", port: int = 3000, term: str = "\n", verbose = False
     ) -> None:
-        """_summary_
+        r"""_summary_
 
         Parameters
         ----------
@@ -33,8 +33,8 @@ class GDS3502:
         self.host: str = host
         self.port: int = port
         self.TERM: str = term
-        self.timeout = 2
-        self.verbose: bool = False
+        self.timeout = 2 
+        self.verbose: bool = verbose
         self.header: dict[str, float | str] = {}
         self.memory: NDArray[np.float_]
 
@@ -69,7 +69,7 @@ class GDS3502:
             Oscilloscope data
         """
         self.sock.sendtext(":ACQuire{}:MEMory?".format(channel))
-        result = self.sock.recvline(8192)
+        result = self.sock.recvline(4096)
         data_index: int = result.find("#550000") + 7
         header = result[:data_index]
         wave_data = result[data_index:-1].encode("utf-8")
