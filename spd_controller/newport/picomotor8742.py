@@ -1,25 +1,7 @@
 import socket
 
 
-class TcpSocketWrapper(socket.socket):
-    """Very thin wrapper of socket"""
-
-    def __init__(self, verbose: bool = False):
-        self._verbose = verbose
-        super().__init__(socket.AF_INET, socket.SOCK_STREAM)
-
-    def send(self, bytes: bytes, flags: int = 0) -> int:
-        if self._verbose:
-            print("WRITING:", bytes)
-        return super().send(bytes, flags)
-
-    def recv(self, bufsize: int, flags: int = 0) -> bytes:
-        if self._verbose:
-            print("READING: ", end="")
-        msg = super().recv(bufsize, flags)
-        if self._verbose:
-            print(msg)
-        return msg
+from .. import TcpSocketWrapper
 
 
 class Picomotor8742:
@@ -44,7 +26,7 @@ class Picomotor8742:
 
     def connect(self):
         """Connect the Picomotor device"""
-        self.sock = TcpSocketWrapper(self.verbose)
+        self.sock = TcpSocketWrapper(term="\n", verbose=self.verbose)
         self.sock.settimeout(self.timeout)
         self.sock.connect((self.ipaddr, self.port))
 
