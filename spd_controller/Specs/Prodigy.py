@@ -14,8 +14,29 @@ BUFSIZE = 1024
 
 
 class RemoteIn:
+    r"""
+
+    parameters
+    ----------
+    host: str
+        hostname or IP address, default "144.213.126.146"
+
+    port: int
+        port number of for socket
+
+    term: str
+        line termination character, default is "\n"
+
+    verbose: bool
+        if True, verbose mode
+    """
+
     def __init__(
-        self, host: str = "144.213.126.140", port: int = 7010, term: str = "\n", verbose=False
+        self,
+        host: str = "144.213.126.140",
+        port: int = 7010,
+        term: str = "\n",
+        verbose=False,
     ) -> None:
         self.name: str = "Prodigy"
         self.host: str = host
