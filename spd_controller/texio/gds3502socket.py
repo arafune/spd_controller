@@ -14,6 +14,8 @@ Channel = Literal[1, 2]
 
 
 class GDS3502:
+    """_summary_"""
+
     def __init__(
         self,
         host: str = "144.213.126.10",
@@ -21,17 +23,18 @@ class GDS3502:
         term: str = "\n",
         verbose=False,
     ) -> None:
-        r"""_summary_
+        """Initialization of the GDS3502 (socket version)
 
         Parameters
         ----------
+        host : str, optional
+            hostname or IP address, by default "144.213.126.10"
+        port : int, optional
+            port number of socket server, by default 3000
         term : str, optional
-            _description_, by default "\n"
-
-        Raises
-        ------
-        RuntimeError
-            _description_
+            line termination character, by default "\n"
+        verbose : bool, optional
+            if true, the verbose mode, by default False
         """
         self.name: str = "GDS3502"
         self.host: str = host
@@ -59,6 +62,38 @@ class GDS3502:
         """
         self.sock.sendtext("*LRN?")
         return self.sock.makefile(mode="rb").readline().decode("utf-8")
+
+    def reset(self) -> None:
+        self.sock.sendtext(":CHANnel1IMPedance?")
+        impedance_1 = float(self.sock.recvtext(1024))
+        self.sock.sendtext(":CHANnel2IMPedance?")
+        impedance_2 = float(self.sock.recvtext(1024))
+        self.sock.sendtext("*RST")
+        self.sock.sendtext(":CHANnel1:IMPedance {}".format(impedance_1))
+        self.sock.sendtext(":CHANnel2:IMPedance {}".format(impedance_2))
+        self.sock.sendtext(":AUTOSet")
+
+    def set_impedance(self, channel: Channel, impedance: float = 5.0e1) -> None:
+        self.sock.sendtext(":CHANnel{}:IMPedance {}".format(channel, impedance))
+
+    def measure_frequency(self, channel: Channel) -> float:
+        """Measure the frequency from the channel.
+
+        [TODO:description]
+
+        Parameters
+        ----------
+        channel: Channel
+            [TODO:description]
+
+        Returns
+        -------
+        float
+            Measured frequency
+        """
+        self.sock.sendtext(":MEASsure:SOURce1  CH{}".format(channel))
+        self.sock.sendtext(":MEASsure:FREQuency?")
+        return float(self.sock.recvtext(1024))
 
     def acquire_memory(self, channel: Channel) -> NDArray:
         """Return the memory

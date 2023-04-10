@@ -53,6 +53,38 @@ class GDS3502(Comm):
             return_info += a
         return return_info.decode("utf-8")
 
+    def reset(self) -> None:
+        self.sendtext(":CHANnel1IMPedance?")
+        impedance_1 = float(self.comm.readline())
+        self.sendtext(":CHANnel2IMPedance?")
+        impedance_2 = float(self.comm.readline())
+        self.sendtext("*RST")
+        self.sendtext(":CHANnel1:IMPedance {}".format(impedance_1))
+        self.sendtext(":CHANnel2:IMPedance {}".format(impedance_2))
+        self.sendtext(":AUTOSet")
+
+    def set_impedance(self, channel: Channel, impedance: float = 5.0e1) -> None:
+        self.sendtext(":CHANnel{}:IMPedance {}".format(channel, impedance))
+
+    def measure_frequency(self, channel: Channel) -> float:
+        """Measure the frequency from the channel.
+
+        [TODO:description]
+
+        Parameters
+        ----------
+        channel: Channel
+            [TODO:description]
+
+        Returns
+        -------
+        float
+            Measured frequency
+        """
+        self.sendtext(":MEASsure:SOURce1  CH{}".format(channel))
+        self.sendtext(":MEASsure:FREQuency?")
+        return float(self.comm.readline())
+
     def acquire_memory(self, channel: Channel) -> NDArray:
         """Return the memory
 
