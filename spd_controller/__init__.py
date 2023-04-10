@@ -9,6 +9,25 @@ import serial
 from serial.tools import list_ports
 
 
+class SerialWrapper(serial.Serial):
+    def __init__(self, term="\n", verbose: bool = False):
+        self._verbose = verbose
+        self.TERM = term
+
+    def send(self, bytes: bytes):
+        return super().write(bytes)
+
+    def sendtext(self, text: str):
+        text = text + self.TERM
+        return self.send(text.encode("utf-8"))
+
+    def recvbytes(self) -> bytes:
+        return super().readline()
+
+    def recvtext(self) -> str:
+        return self.recvbytes().decode("utf-8")
+
+
 class Comm:
     """
     Serial communicadtion  (Very thin wrapper of serial class)
