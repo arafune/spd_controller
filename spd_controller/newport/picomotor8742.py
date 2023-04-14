@@ -1,11 +1,8 @@
-import socket
-
 from typing_extensions import Literal
 
-Axis = Literal[1, 2, 3, 4]
-
-
 from .. import TcpSocketWrapper
+
+Axis = Literal[1, 2, 3, 4]
 
 
 class Picomotor8742:
@@ -67,7 +64,10 @@ class Picomotor8742:
         distance: int
             Relative distance (step)
         """
-        self.cmd(axis, "PR{:d}".format(distance))
+        try:
+            self.cmd(axis, "PR{:d}".format(distance))
+        except TypeError:
+            pass
 
     def move_indefinitely(self, axis: Axis = 1, positive: bool = True) -> None:
         """Move indefinitely

@@ -101,6 +101,19 @@ def mirror_component(id: int):
                         size="sm",
                         id=f"right_{id}omega",
                     ),
+                    dbc.Tooltip(
+                        "Anti-clockwise rotation indefinitely",
+                        target=f"left_{id}omega",
+                        placement="top",
+                    ),
+                    dbc.Tooltip(
+                        "Clockwise rotation indefiniteely",
+                        target=f"right_{id}omega",
+                        placement="top",
+                    ),
+                    dbc.Tooltip(
+                        "Stop rootating", target=f"stop_{id}omega", placement="top"
+                    ),
                 ],
                 style={"display": "inline-block", "width": "30%"},
             ),
@@ -316,9 +329,6 @@ def move_mirror_indefinitely(axis: int, action: str) -> bool:
 def move_3omega_mirror_indefinitely(
     right_button: int, left_button: int, stop_button: int
 ):
-    assert isinstance(right_button, int)
-    assert isinstance(left_button, int)
-    assert isinstance(stop_button, int)
     button_clicked = ctx.triggered_id
     if button_clicked == "right_3omega":
         return move_mirror_indefinitely(1, "right")
@@ -337,9 +347,6 @@ def move_3omega_mirror_indefinitely(
 def move_1omega_mirror_indefinitely(
     right_button: int, left_button: int, stop_button: int
 ):
-    assert isinstance(right_button, int)
-    assert isinstance(left_button, int)
-    assert isinstance(stop_button, int)
     button_clicked = ctx.triggered_id
     if button_clicked == "right_1omega":
         return move_mirror_indefinitely(2, "right")
@@ -356,9 +363,6 @@ def move_1omega_mirror_indefinitely(
     Input("velocity_3omega_low", "n_clicks"),
 )
 def change_3omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
-    assert isinstance(max_speed, int)
-    assert isinstance(middle_speed, int)
-    assert isinstance(low_speed, int)
     selected_item = ctx.triggered_id
     if selected_item == "velocity_3omega_max":
         picomotor.set_velocity(1, 2000)
@@ -378,9 +382,6 @@ def change_3omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
     Input("velocity_1omega_low", "n_clicks"),
 )
 def change_1omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
-    assert isinstance(max_speed, int)
-    assert isinstance(middle_speed, int)
-    assert isinstance(low_speed, int)
     selected_item = ctx.triggered_id
     if selected_item == "velocity_1omega_max":
         picomotor.set_velocity(2, 2000)
