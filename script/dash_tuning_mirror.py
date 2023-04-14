@@ -11,6 +11,8 @@ from dash import Input, Output, State, ctx, dcc, html
 import spd_controller.newport.picomotor8742 as picomotor8742
 import spd_controller.thorlabs.mff101 as mff101
 
+from spd_controller.newport.picomotor8742 import Axis
+
 external_stylesheets = [dbc.themes.MATERIA]
 
 app = dash.Dash(
@@ -294,7 +296,7 @@ def flipbutton2(n_clicks: int) -> dict[str, str]:
 # ----------- Callback: Mirror
 
 
-def move_mirror_indefinitely(axis: int, action: str) -> bool:
+def move_mirror_indefinitely(axis: Axis, action: str) -> bool:
     """Move mirror indefinitely
 
     Parameters
