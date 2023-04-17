@@ -2,10 +2,12 @@
 """SIGMA TECH SC104
 
 Specification:
+
 * Repeat accuracy : < 0.2 micron
 * Minimum resolution: 0.1 micron
 
 Serial communication specification:
+
 * 9600 bps
 * CR+LF
 * 8bit

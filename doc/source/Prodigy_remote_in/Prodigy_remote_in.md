@@ -6,7 +6,7 @@ There are three ways to achieve it.
 
 1. Both of Prodigy and Stepping motor are controlled with the single Windows machine.
 
-   - All works are done (of coursely) with the Winodows machine.
+   - All works are done (of coursely) with the Windows machine.
 
 2. Prodigy works on the Windows machine (Server 1), and the stepping motor is controled with another Windows machine (Server 2).
 
