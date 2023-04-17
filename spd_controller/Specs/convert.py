@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import numpy as np
 from typing_extensions import Literal
 
-measure_type = Literal["FAT", "SFAT"]
+Measure_type = Literal["FAT", "SFAT"]
 
 header_template = """IGOR
 X //Created Date (UTC): {}
@@ -37,12 +37,10 @@ def itx(
     spectrum_id: int,
     num_scan: int = 1,
     comment: str = "",
-    measure_mode: measure_type = "FAT",
+    measure_mode: Measure_type = "FAT",
 ):
-    """
-    [TODO:summary]
+    """Build the the itx-style data from the intensity map
 
-    [TODO:description]
 
     Parameters
     ----------
@@ -108,11 +106,11 @@ def correct_angle_region(
     Parameters
     ----------
     angle_min
-        [TODO:description]
+        Minimum angle of emission
     angle_max
-        [TODO:description]
+        Maximum angle of emission
     num_pixel
-        [TODO:description]
+        The number of pixels for non-energy channels (i.e. angle)
 
     Returns
     -------
@@ -128,7 +126,7 @@ def header(
     spectrum_id: int,
     num_scan: int = 1,
     comment: str = "",
-    measure_mode: measure_type = "FAT",
+    measure_mode: Measure_type = "FAT",
 ) -> str:
     """Make itx file header
 
@@ -144,7 +142,7 @@ def header(
         [TODO:description]
     comment: str
         [TODO:description]
-    measure_mode : measure_type
+    measure_mode : Measure_type
         [TODO:description]
 
     Returns

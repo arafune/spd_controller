@@ -6,7 +6,7 @@ from time import sleep
 
 import numpy as np
 
-from spd_controller.Specs.convert import itx, measure_type
+from spd_controller.Specs.convert import Measure_type, itx
 
 from .. import TcpSocketWrapper
 
@@ -486,7 +486,7 @@ class RemoteIn:
         filename: str,
         spectrum_id: int,
         comment: str = "",
-        measure_mode: measure_type = "FAT",
+        measure_mode: Measure_type = "FAT",
     ) -> None:
         """Save the data as itx format
 
@@ -498,7 +498,7 @@ class RemoteIn:
             Spectrum_ID
         comment: str
             comment string stored in itx file.
-        measure_mode: str
+        measure_mode: Measure_type
             Measure mode name (FAT or SFAT)
         """
         itx_data = itx(
@@ -513,7 +513,10 @@ class RemoteIn:
 
 
 def parse_analyzer_parameter(response: str) -> tuple[str, int | float]:
-    """
+    r"""Parse the analyzer parameter, especially for NumNonEnergyChannels:
+    Examples
+    -----------
+
     '!0016 OK: Name:"NumNonEnergyChannels" Value:200\n'
         -> ("NumNonEnergyChannels", 200)
     """
