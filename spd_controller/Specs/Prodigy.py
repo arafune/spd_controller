@@ -81,6 +81,13 @@ class RemoteIn:
           specific for each command; the order of parameters is arbitrary.
 
         Each command and response are terminated by a newline character “\n”.
+
+        Parameters
+        ----------
+        text: str
+            Text as command to send Prodigy
+        buffsize: int, optional
+            buffer size  (default: BUFSIZE=1024)
         """
         request_str: str = "?" + format(self.id, "04X") + " " + text
         self.id += 1
@@ -122,16 +129,16 @@ class RemoteIn:
             Kinetic energy of the end data point in eV
         step: float
             Delta between measurement points in eV
-        dwell: float
+        dwell: float, optional
             Dwell time of the detector in seconds
-        pass_energy: float
-            Pass energy in eV
-        lens: str
-            Lens mode (as string)
-        scanrange: str
-            HSA voltage range for scanning (as string)
-        wich_check:bool
-            if True, CheckSpectrumFAT is excecuted after DefineSpectrumFAT
+        pass_energy: float, optional
+            Pass energy in eV (default: 5)
+        lens: str, optional
+            Lens mode (as string)  (default: WideAngleMode)
+        scanrange: str, optional
+            HSA voltage range for scanning (as string) (default: 40V)
+        wich_check:bool, optional
+            if True, CheckSpectrumFAT is excecuted after DefineSpectrumFAT (default: True)
         """
         command: str = "DefineSpectrumFAT "
         argument: str = "StartEnergy:{} EndEnergy:{} StepWidth:{} "
@@ -172,18 +179,16 @@ class RemoteIn:
             Kinetic energy of the first data point in eV
         end_energy: float
             Kinetic energy of the end data point in eV
-        Samples: int
-            Number of acquisition samples (Default: 1)
-        dwell: float
-            Dwell time of the detector in seconds
-        pass_energy: float
-            Pass energy in eV
-        lens: str
-            Lens mode (as string)
-        scanrange: str
-            HSA voltage range for scanning (as string)
-        with_check: bool
-            if True, CheckSpectrum is executed after DefinSpectrum
+        samples: int, optional
+            Number of acquisition samples (default: 1)
+        dwell: float, optional
+            Dwell time of the detector in seconds (default: 0.096)
+        lens: str, optional
+            Lens mode (as string)  (default: WideAngleMode)
+        scanrange: str, optional
+            HSA voltage range for scanning (as string) (default: 40V)
+        with_check: bool, optional
+            if True, CheckSpectrum is executed after DefinSpectrum  (default: True)
         """
         command: str = "DefineSpectrumSFAT "
         argument: str = "StartEnergy:{} EndEnergy:{} Samples:{} "
@@ -222,13 +227,14 @@ class RemoteIn:
             Kinetic energy of the end data point in eV
         step: float
             Delta between measurement points in eV
-        dwell: float
-            Dwell time of the detector in seconds
-        pass_energy: float
-            Pass energy in eV
-        lens: str
-            Lens mode (as string)
-        ScanRange: HSA voltage range for scanning (as string)
+        dwell: float, optional
+            Dwell time of the detector in seconds  (default: 0.096)
+        pass_energy: float, optional
+            Pass energy in eV (default: 5)
+        lens: str, optional
+            Lens mode (as string) (default: WideAngleMode)
+        scanRange: str, optional
+            HSA voltage range for scanning (as string) (default: 40V)
         """
         command: str = "CheckSpectrumFAT "
         argument: str = "StartEnergy:{} EndEnergy:{} StepWidth:{} "
@@ -262,15 +268,16 @@ class RemoteIn:
             Kinetic energy of the first data point in eV
         end_energy: float
             Kinetic energy of the end data point in eV
-        Samples: int
-            Number of acquisition samples (Default: 1)
-        dwell: float
-            Dwell time of the detector in seconds
-        pass_energy: float
-            Pass energy in eV
-        lens: str
-            Lens mode (as string)
-        ScanRange: HSA voltage range for scanning (as string)
+        samples: int, optional
+            Number of acquisition samples (default: 1)
+        dwell: float, optional
+            Dwell time of the detector in seconds (default 0.096)
+        pass_energy: float, optional
+            Pass energy in eV (default 5)
+        lens: str, optional
+            Lens mode (as string) (default: WideAngleMode)
+        scanRange: str, optional
+            HSA voltage range for scanning (as string) (default: 40V)
         """
         command: str = "CheckSpectrumSFAT "
         argument: str = "StartEnergy:{} EndEnergy:{} Samples:{} "
@@ -283,6 +290,22 @@ class RemoteIn:
         return response
 
     def parse_check_response(self, response: str) -> None:
+        """
+        [TODO:summary]
+
+        [TODO:description]
+
+        Parameters
+        ----------
+        response
+            [TODO:description]
+
+        Returns
+        -------
+        None
+            [TODO:description]
+        """
+
         for i in response[10:].split():
             key, item = i.split(":", 2)
             try:
@@ -331,11 +354,12 @@ class RemoteIn:
 
         Parameters
         ----------
-        setsafeafter
+        setsafeafter: bool, optional
             Specifies whether the analyzer should be set into the safe
             state after the scan or not (Boolean value, as string).
             If set to False the detector voltage is not ramped down
             after the scan and prone to damage by other sources (like ion sources).
+            (default: True)
 
         Returns
         -------
@@ -373,6 +397,7 @@ class RemoteIn:
         Ok ControllerState:<ContState> NumberOf AcquiredPoints:<NumPts> [optional: Message:<Text> Details: <Text>]
 
         ContState:
+
         * idle
         * validated
         * running
@@ -428,7 +453,7 @@ class RemoteIn:
         self.param["Angle_max"] = float(tmp[2].split(":")[-1])
 
     def get_excitation_energy(self) -> None:
-        """Read the *Recoreded* Photon energy information
+        """Read the **recoreded** Photon energy information
 
         The value is used in the itx file as "Excitation Energy"
         """
@@ -440,7 +465,7 @@ class RemoteIn:
         )
 
     def set_excitation_energy(self, excitation_energy: float) -> str:
-        """Change the *recoreded* Excitation photon energy value.
+        """Change the **recoreded** Excitation photon energy value.
 
         Note:
             Actual photon energy is not affected.
@@ -462,8 +487,14 @@ class RemoteIn:
 
         Parameters
         -----------
-        num_scan: int
-            number of scan
+        num_scan: int, optional
+            number of scan  (default: 1)
+        setsafeafter: bool, optional
+            Specifies whether the analyzer should be set into the safe
+            state after the scan or not (Boolean value, as string).
+            If set to False the detector voltage is not ramped down
+            after the scan and prone to damage by other sources (like ion sources).
+            (default: True)
 
         Returns
         ---------
@@ -496,10 +527,10 @@ class RemoteIn:
             file name of the data
         spectrum_id: int
             Spectrum_ID
-        comment: str
-            comment string stored in itx file.
-        measure_mode: Measure_type
-            Measure mode name (FAT or SFAT)
+        comment: str, optional
+            comment string stored in itx file. (default: "")
+        measure_mode: Measure_type, optional
+            Measure mode name (FAT or SFAT) (default: FAT)
         """
         itx_data = itx(
             self.data,
