@@ -346,6 +346,17 @@ class RemoteIn:
         self.get_non_energy_channel_info()
         return response
 
+    def set_safe_state(self) -> str:
+        """Set the davice into safe state
+
+        Returns
+        --------
+        str:
+            Response of the requested command ("OK")
+        """
+        response = self.sendcommand("SetSafeState")
+        return response
+
     def start(self, setsafeafter: bool = True) -> str:
         """Start data acquisition.
 
@@ -545,6 +556,7 @@ class RemoteIn:
 
 def parse_analyzer_parameter(response: str) -> tuple[str, int | float]:
     r"""Parse the analyzer parameter, especially for NumNonEnergyChannels:
+
     Examples
     -----------
 
