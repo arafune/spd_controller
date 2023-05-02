@@ -380,7 +380,7 @@ class RemoteIn:
         if setsafeafter:
             command: str = "Start"
         else:
-            command = 'Start SetSafeStartAfter:"false"'
+            command = 'Start SetSafeStateAfter:"false"'
         response = self.sendcommand(command)
         estimate_duration: float = self.param["DwellTime"] * self.param["Samples"]
         sleep(estimate_duration)

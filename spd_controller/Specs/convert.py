@@ -160,7 +160,7 @@ def header(
         mode,
         comment,
         param["LensMode"],
-        param["ScaanRange"],
+        param["ScanRange"],
         spectrum_id,
         num_scan,
         param["Samples"],
