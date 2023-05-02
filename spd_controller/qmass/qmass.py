@@ -482,13 +482,13 @@ class Qmass:
     def convert_mbar(self, data: bytearray) -> float:
         """Convert pressure (mbar) from byte data.
 
-        Parameter
-        ---------
+        Parameters
+        ----------
         data: bytes object
             data from Microvision
 
-        Return
-        ------
+        Returns
+        -------
         float
             Pressure data
 
@@ -509,8 +509,8 @@ class Qmass:
         the mass spectrum.  In leak check mode, single scan means
         128 times measurement.
 
-        Return
-        ------
+        Returns
+        -------
         data: list
 
         """

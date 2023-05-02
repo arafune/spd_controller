@@ -2,9 +2,10 @@
 """GSC-02 controller to control variable ND filter.
 
 Hardware specification:
-    * Model name OSMS-60YAW (SIGMAKOKI Co., Ltd.)
-    * Motor Drive Cuurent: 0.75 (A)
-    * 144000 pulse : 360 degree
+
+* Model name OSMS-60YAW (SIGMAKOKI Co., Ltd.)
+* Motor Drive Cuurent: 0.75 (A)
+* 144000 pulse : 360 degree
 """
 
 from __future__ import annotations
@@ -17,7 +18,15 @@ from .. import Comm
 
 
 class GSC02(Comm):
-    """Class for DSC-02 controller"""
+    """Class for DSC-02 controller
+
+    Parameters
+    ------------
+    term: str, optional
+        termination character (default: CRLF)
+    port: str, optional
+        port name
+    """
 
     def __init__(self, term: str = "\r\n", port: str = "") -> None:
         super().__init__(term=term)
@@ -40,6 +49,18 @@ class GSC02(Comm):
                 "Check the port. Cannot find the connection to the ND filter"
             )
 
+    def angle(self) -> float:
+        """Return the current angle of the rotation stage
+
+        Returns
+        -------
+        float
+            The current angle of the stage
+        """
+        self.sendtext("Q:")
+        reply: str = self.recvtext().strip().split(",")[0]
+        return int(reply) * 0.0025
+
     def move_to_origin(self, axis: int = 1, wait: bool = True) -> None:
         """Go to mechanical origin.
 
@@ -52,7 +73,7 @@ class GSC02(Comm):
         if wait:
             self.waiting_for_rotation()
 
-    def move_to_rel(self, pulse: int, axis: int = 1, wait: bool = True) -> None:
+    def move_rel(self, pulse: int, axis: int = 1, wait: bool = True) -> None:
         """Rotate the stage by the input value
 
         Parameters
@@ -84,7 +105,7 @@ class GSC02(Comm):
         """
 
         pulse = int(angle_deg / 0.0025)
-        self.move_to_rel(pulse, axis=axis, wait=wait)
+        self.move_rel(pulse, axis=axis, wait=wait)
 
     def set_angle(self, angle_deg: float, axis: int = 1, wait: bool = True) -> None:
         """Set the angle of the ND filter
@@ -100,18 +121,6 @@ class GSC02(Comm):
         current_angle = self.angle()
         rotate_angle = angle_deg - current_angle
         self.rotate(rotate_angle, axis=axis, wait=wait)
-
-    def angle(self) -> float:
-        """Return the current angle of the rotation stage
-
-        Returns
-        -------
-        float
-            The current angle of the stage
-        """
-        self.sendtext("Q:")
-        reply: str = self.recvtext().strip().split(",")[0]
-        return int(reply) * 0.0025
 
     def rotating(self) -> float | None:
         """Check the ND filter is rotating

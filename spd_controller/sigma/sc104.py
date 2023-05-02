@@ -118,7 +118,7 @@ class SC104(Comm):
         -----------
         pos: float
             position. Default unit is mm.
-        micron: Boolean
+        micron: Boolean, optional
             if True, the unit of position is micron (default: False)
         wait : bool, optional
             If true show the current position during move, by default True
@@ -252,9 +252,6 @@ class SC104(Comm):
             except KeyboardInterrupt:
                 self.recvbytes()
                 break
-
-    def goto_overlap(self) -> None:
-        pass
 
 
 if __name__ == "__main__":
