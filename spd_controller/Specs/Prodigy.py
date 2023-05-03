@@ -150,6 +150,7 @@ class RemoteIn:
         if with_check:
             command = "CheckSpectrumFAT "
             response = self.sendcommand(command + argument)
+            self.parse_check_response(response)
         return response
 
     def defineSFAT(
@@ -200,6 +201,7 @@ class RemoteIn:
         if with_check:
             command = "CheckSpectrumSFAT"
             response = self.sendcommand(command + argument)
+            self.parse_check_response(response)
         return response
 
     def checkFAT(
@@ -342,6 +344,7 @@ class RemoteIn:
             "key:value" list of the actual parameter values of the spectrum command
         """
         response = self.sendcommand("ValidateSpectrum")
+        self.parse_check_response(response)
         self.get_analyzer_parameter()
         self.get_non_energy_channel_info()
         return response
