@@ -5,7 +5,6 @@ import binascii
 import serial
 from serial.tools import list_ports
 
-__all__: list[str] = ["k10cr1", "mff101"]
 __version__: str = "0.1.0"
 
 
@@ -20,7 +19,7 @@ class THORLABS_MOTION_CONTROL:
         serial_num: str| int
             serial number of the MFF101
         """
-        self.serial_num = str(serial_num)
+        self.serial_num: str = str(serial_num)
         self.ready = False
         self.connect()
         if not self.ready:

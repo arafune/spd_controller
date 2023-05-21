@@ -46,7 +46,8 @@ class RemoteIn:
         self.verbose: bool = verbose
         self.id: int = 1
         self.samples: int = 0
-        self.param: dict[str, int | float | str] = {}
+        # self.param: ProdigyParameter = {"Samples": 1, "DwellTime": 0.1}
+        self.param: dict[str, str | float | int]
         self.data: list[float] = []
 
     def connect(self) -> str:
@@ -385,8 +386,13 @@ class RemoteIn:
         else:
             command = 'Start SetSafeStateAfter:"false"'
         response = self.sendcommand(command)
-        estimate_duration: float = self.param["DwellTime"] * self.param["Samples"]
-        sleep(estimate_duration)
+        if isinstance(self.param["Samples"], int) and isinstance(
+            self.param["DwellTime"], float
+        ):
+            estimate_duration: float = self.param["DwellTime"] * self.param["Samples"]
+            sleep(estimate_duration)
+        else:
+            raise RuntimeError("DwellTime or Samples are wront type")
         status: str = self.get_status()
         while "running" in status:
             sleep(10)
