@@ -36,7 +36,7 @@ class RemoteIn:
         host: str = "144.213.126.140",
         port: int = 7010,
         term: str = "\n",
-        verbose=False,
+        verbose: bool = False,
     ) -> None:
         self.name: str = "Prodigy"
         self.host: str = host
@@ -461,7 +461,7 @@ class RemoteIn:
         self.data = [float(i) for i in data[16:-2].split(",")]
         return self.data
 
-    def get_non_energy_channel_info(self):
+    def get_non_energy_channel_info(self) -> None:
         """Read information about non energy (i.e. Angle) channel
 
         The data are stored in the self.param property
