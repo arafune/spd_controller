@@ -46,21 +46,19 @@ class RemoteIn:
         self.verbose: bool = verbose
         self.id: int = 1
         self.samples: int = 0
-        # self.param: ProdigyParameter = {"Samples": 1, "DwellTime": 0.1}
-        self.param: dict[str, str | float | int]
+        self.param: dict[str, str | float | int] = {}
         self.data: list[float] = []
 
     def connect(self) -> str:
         r"""Open connection to SpecsLab Prodigy
 
+        The following message appear in the Specs RemoteIn Log:
+        '!0001 OK: ServerName:"SpecsLab Prodigy 4.86.2-r103043 " ProtocolVersion:1.18\n'
+
         Returns
         --------
         str:
             Responce of "Connect command"
-
-        Example
-        -------
-        '!0001 OK: ServerName:"SpecsLab Prodigy 4.86.2-r103043 " ProtocolVersion:1.18\n'
         """
         self.sock = TcpSocketWrapper(term=self.TERM, verbose=self.verbose)
         self.sock.settimeout(self.timeout)
@@ -191,6 +189,11 @@ class RemoteIn:
             HSA voltage range for scanning (as string) (default: 40V)
         with_check: bool, optional
             if True, CheckSpectrum is executed after DefinSpectrum  (default: True)
+
+        Returns
+        -------
+        str
+            Message of the response
         """
         command: str = "DefineSpectrumSFAT "
         argument: str = "StartEnergy:{} EndEnergy:{} Samples:{} "
@@ -238,6 +241,11 @@ class RemoteIn:
             Lens mode (as string) (default: WideAngleMode)
         scanRange: str, optional
             HSA voltage range for scanning (as string) (default: 40V)
+
+        Returns
+        -------
+        str
+            Message of the response
         """
         command: str = "CheckSpectrumFAT "
         argument: str = "StartEnergy:{} EndEnergy:{} StepWidth:{} "
@@ -281,6 +289,11 @@ class RemoteIn:
             Lens mode (as string) (default: WideAngleMode)
         scanRange: str, optional
             HSA voltage range for scanning (as string) (default: 40V)
+
+        Returns
+        -------
+        str
+            Message of the response
         """
         command: str = "CheckSpectrumSFAT "
         argument: str = "StartEnergy:{} EndEnergy:{} Samples:{} "
@@ -293,20 +306,18 @@ class RemoteIn:
         return response
 
     def parse_check_response(self, response: str) -> None:
-        """
-        [TODO:summary]
+        """Parse the string of the Command reply:
 
-        [TODO:description]
+        Result is stored in self.param dict object.
 
         Parameters
         ----------
-        response
+        response: str
             [TODO:description]
 
         Returns
         -------
         None
-            [TODO:description]
         """
 
         for i in response[10:].split():

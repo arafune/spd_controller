@@ -33,29 +33,28 @@ X //WorkFunction      = 4.401
 
 def itx(
     data: list,
-    param: dict,
+    param: dict[str, str | float | int],
     spectrum_id: int,
     num_scan: int = 1,
     comment: str = "",
     measure_mode: Measure_type = "FAT",
-):
+) -> str:
     """Build the the itx-style data from the intensity map
-
 
     Parameters
     ----------
-    data
-        [TODO:description]
-    param
-        [TODO:description]
-    spectrum_id
-        [TODO:description]
-    num_scan
-        [TODO:description]
-    comment
-        [TODO:description]
-    measure_mode : [TODO:type]
-        [TODO:description]
+    data: list[float]
+        Intensity data
+    param: dict[ str, str|float|int]
+        Spectrum parameter
+    spectrum_id: int
+        Unique id for spectrum
+    num_scan: int
+        Number of scan.
+    comment: str
+        Comment string.  Used in "//User Comment"
+    measure_mode : str
+        Measurement mode (FAT/SFAT)
     """
     itx: str = ""
     if "num_scan" in param.keys() and num_scan == 1:
@@ -98,10 +97,7 @@ def itx(
 def correct_angle_region(
     angle_min: float, angle_max: float, num_pixel: int
 ) -> tuple[float, float]:
-    """
-    [TODO:summary]
-
-    [TODO:description]
+    """Correct the angle value to fit igor.
 
     Parameters
     ----------
@@ -115,7 +111,7 @@ def correct_angle_region(
     Returns
     -------
     tuple[float, float]
-        [TODO:description]
+        minimum angle value and maximum angle value
     """
     diff: float = ((angle_max - angle_min) / num_pixel) / 2
     return angle_min + diff, angle_max - diff
@@ -130,20 +126,18 @@ def header(
 ) -> str:
     """Make itx file header
 
-    [TODO:description]
-
     Parameters
     ----------
-    param: dict
-        [TODO:description]
+    param: dict[ str, str | float | int]
+        Spectrum parameter
     spectrum_id: int
-        [TODO:description]
+        Unique id for spectrum
     num_scan: int
-        [TODO:description]
+        Number of scan.
     comment: str
-        [TODO:description]
+        Comment string.  Used in "//User Comment"
     measure_mode : Measure_type
-        [TODO:description]
+        Measurement mode (FAT/SFAT)
 
     Returns
     -------
