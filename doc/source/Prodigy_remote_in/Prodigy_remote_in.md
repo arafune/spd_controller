@@ -150,6 +150,10 @@ sleep(1)
 prodigy.set_safe_state()
 ```
 
+Note (about `set_safe_state()` command and `setsafeafter` argument):
+Specifies whether the analyzer should be set into the safe state after the scan or not (Boolean value, as string).
+If set to False the detector voltage is not ramped down after the scan and prone to damage by other sources (like ion sources). (default: True)
+
 <!--
 The below is for way-3.
 
