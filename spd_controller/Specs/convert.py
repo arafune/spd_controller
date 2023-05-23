@@ -30,6 +30,8 @@ X //Detector Voltage  = {}
 X //WorkFunction      = 4.401
 """
 
+DIGIT_ID = 3
+
 
 def itx(
     data: list,
@@ -57,7 +59,11 @@ def itx(
         Measurement mode (FAT/SFAT)
     """
     itx: str = ""
-    if "num_scan" in param.keys() and num_scan == 1:
+    if (
+        "num_scan" in param.keys()
+        and num_scan == 1
+        and isinstance(param["num_scan"], int)
+    ):
         num_scan = param["num_scan"]
     itx = header(
         param=param,
@@ -66,31 +72,41 @@ def itx(
         comment=comment,
         measure_mode=measure_mode,
     )
+    wavename: str = "ID_" + str(spectrum_id).zfill(DIGIT_ID)
     if measure_mode == "FAT":
-        itx += "WAVES/S/N=({}, {}) 'ID_{:04}'\nBEGIN\n".format(
-            param["NumNonEnergyChannels"], param["Samples"], spectrum_id
+        itx += ("WAVES/S/N=({},{}) '" + wavename + "'\nBEGIN\n").format(
+            param["NumNonEnergyChannels"], param["Samples"]
         )
     else:
-        itx += "WAVES/S/N=({}, {}) 'ID_{:04}'\nBEGIN\n".format(
-            param["NumNonEnergyChannels"], param["NumEnergyChannels"], spectrum_id
+        itx += ("WAVES/S/N=({},{}) '" + wavename + "'\nBEGIN\n").format(
+            param["NumNonEnergyChannels"], param["NumEnergyChannels"]
         )
-    data = np.array(data).reshape(param["NumNonEnergyChannels"], -1).tolist()
+    if isinstance(param["NumNonEnergyChannels"], int):
+        data = np.array(data).reshape(param["NumNonEnergyChannels"], -1).tolist()
+    else:
+        raise RuntimeError("NumNonEnergyChannels should be int.")
     for line in data:
         itx += " ".join([str(_) for _ in line])
         itx += "\n"
-    angle_max, angle_min = correct_angle_region(
-        param["Angle_min"], param["Angle_max"], param["NumNonEnergyChannels"]
-    )
+    if (
+        isinstance(param["Angle_min"], float)
+        and isinstance(param["Angle_max"], float)
+        and isinstance(param["NumNonEnergyChannels"], int)
+    ):
+        angle_max, angle_min = correct_angle_region(
+            param["Angle_min"], param["Angle_max"], param["NumNonEnergyChannels"]
+        )
+    else:
+        raise RuntimeError("Angle_min and Angle_max should be float.")
+
     itx += "END\n"
-    itx += "X SetScale /I x, {}, {}, \"{}\", 'ID_{:04}'\n".format(
-        angle_max, angle_min, param["Angle_Unit"], spectrum_id
+    itx += "X SetScale /I x, {}, {}, \"{}\", '{}'\n".format(
+        angle_max, angle_min, param["Angle_Unit"], wavename
     )
-    itx += "X SetScale /P y, {}, {},  \"eV\", 'ID_{:04}'\n".format(
-        param["StartEnergy"], param["StepWidth"], spectrum_id
+    itx += "X SetScale /P y, {}, {},  \"eV\", '{}'\n".format(
+        param["StartEnergy"], param["StepWidth"], wavename
     )
-    itx += "X SetScale /I d, 0, 0, \"cps (Intensity)\", 'ID_{0:04}'\n".format(
-        spectrum_id
-    )
+    itx += "X SetScale /I d, 0, 0, \"cps (Intensity)\", '{}'\n".format(wavename)
     return itx
 
 
