@@ -5,10 +5,12 @@ Web application to control (two) mirror flipper and (twot) mirror angle, by usin
 ## How to use
 
 - Server side
-In many case, the web-based control system is running. Not needed.
 
-  1. `ssh 144.213.126.146` on the client machine to login the server.
-  2. `python3 dash_tune_mirror.py`
+In many case, the web-based control system is running. If you cannot access the web page, check the following.
+
+1. `ssh 144.213.126.146` on the client machine to login the server.
+2. `python3 dash_tune_mirror.py`
+
 - Client side
   1. Access 144.213.126.146:8050 with the web browser
 
