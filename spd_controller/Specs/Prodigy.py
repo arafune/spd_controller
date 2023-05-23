@@ -47,7 +47,7 @@ class RemoteIn:
         self.id: int = 1
         self.samples: int = 0
         # self.param: ProdigyParameter = {"Samples": 1, "DwellTime": 0.1}
-        self.param: dict[str, str | float | int]
+        self.param: dict[str, str | float | int] = {}
         self.data: list[float] = []
 
     def connect(self) -> str:
