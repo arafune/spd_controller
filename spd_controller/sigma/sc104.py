@@ -43,11 +43,7 @@ class SC104(Comm):
     """
 
     def __init__(self, term: str = "\r\n", port: str = "") -> None:
-        """initialization
-
-        [TODO:description]
-
-        """
+        """initialization"""
         super().__init__(term=term)
         if port:
             self.open(tty=port, baud=9600)
@@ -199,11 +195,19 @@ class SC104(Comm):
         self.sendtext(command)
         return None
 
-    def wait_during_move(self) -> None:
-        """Wait and print the current position during the move"""
+    def wait_during_move(self, printing: bool = False) -> None:
+        """Wait moving ends
+
+        Parameters
+        ----------
+        printing: bool
+            if True, print the "current" position
+
+        """
         current_position: float | None = self.moving()
         while current_position:
-            print("{:.4f}".format(current_position))
+            if printing:
+                print("{:.4f}".format(current_position))
             current_position = self.moving()
 
     def force_stop(self) -> float:
