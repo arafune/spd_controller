@@ -108,7 +108,7 @@ class RemoteIn:
         start_energy: float,
         end_energy: float,
         step: float,
-        dwell: float = 0.096,
+        dwell: float = 0.1,
         pass_energy: float = 5,
         lens: str = "WideAngleMode",
         scanrange: str = "40V",
@@ -157,7 +157,7 @@ class RemoteIn:
         start_energy: float,
         end_energy: float,
         samples: int = 1,
-        dwell: float = 0.096,
+        dwell: float = 0.1,
         lens: str = "WideAngleMode",
         scanrange: str = "40V",
         with_check: bool = True,
@@ -182,7 +182,7 @@ class RemoteIn:
         samples: int, optional
             Number of acquisition samples (default: 1)
         dwell: float, optional
-            Dwell time of the detector in seconds (default: 0.096)
+            Dwell time of the detector in seconds (default: 0.1)
         lens: str, optional
             Lens mode (as string)  (default: WideAngleMode)
         scanrange: str, optional
@@ -213,7 +213,7 @@ class RemoteIn:
         start_energy: float,
         end_energy: float,
         step: float,
-        dwell: float = 0.096,
+        dwell: float = 0.1,
         pass_energy: float = 5,
         lens: str = "WideAngleMode",
         scanrange: str = "40V",
@@ -234,7 +234,7 @@ class RemoteIn:
         step: float
             Delta between measurement points in eV
         dwell: float, optional
-            Dwell time of the detector in seconds  (default: 0.096)
+            Dwell time of the detector in seconds  (default: 0.1)
         pass_energy: float, optional
             Pass energy in eV (default: 5)
         lens: str, optional
@@ -262,7 +262,7 @@ class RemoteIn:
         start_energy: float,
         end_energy: float,
         samples: int = 1,
-        dwell: float = 0.096,
+        dwell: float = 0.1,
         lens: str = "WideAngleMode",
         scanrange: str = "40V",
     ) -> str:
@@ -282,7 +282,7 @@ class RemoteIn:
         samples: int, optional
             Number of acquisition samples (default: 1)
         dwell: float, optional
-            Dwell time of the detector in seconds (default 0.096)
+            Dwell time of the detector in seconds (default 0.1)
         pass_energy: float, optional
             Pass energy in eV (default 5)
         lens: str, optional
@@ -585,7 +585,6 @@ def parse_analyzer_parameter(response: str) -> tuple[str, int | float]:
     """
     res = response[10:].rsplit(" ", 1)
     try:
-        output = (res[0].split(":")[-1][1:-1], int(res[1].split(":")[-1]))
+        return (res[0].split(":")[-1][1:-1], int(res[1].split(":")[-1]))
     except ValueError:
-        output = (res[0].split(":")[-1][1:-1], float(res[1].split(":")[-1]))
-    return output
+        return (res[0].split(":")[-1][1:-1], float(res[1].split(":")[-1]))
