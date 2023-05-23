@@ -24,13 +24,13 @@ Here, the way-1 is described.
 Fig: The diagram of the way-3.
 -->
 
-## 1. Setting SC104 to connect with RS-232C
+## Setting SC104 to connect with RS-232C
 
 Confirm the "Mode" is RS232C. If not, press "Mode" button.
 
 ![SC104_display](./SC104_controller_display.png)
 
-## 2. Make Prodigy act as the server
+## Make Prodigy act as the server
 
 Confirm that "SC104" is _NOT_ connected with prodigy by checking "Device Control"
 
@@ -46,9 +46,10 @@ and then select the template, and check "Allow Remote Connections"
 
 ![Remote_in](./ProdigyRemote_in.png)
 
-## 3. Remote control through Jupyter
+## Remote control through Jupyter
 
 - Open the "Windows terminal"
+- Go to the directory for data storing, and then copy "Prodigy_Remote_in.ipynb" to this folder.
 - type the following
   > jupyter lab
 
