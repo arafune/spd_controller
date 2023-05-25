@@ -117,11 +117,11 @@ def correct_angle_region(
 
     Parameters
     ----------
-    angle_min
+    angle_min: float
         Minimum angle of emission
-    angle_max
+    angle_max: float
         Maximum angle of emission
-    num_pixel
+    num_pixel: int
         The number of pixels for non-energy channels (i.e. angle)
 
     Returns
