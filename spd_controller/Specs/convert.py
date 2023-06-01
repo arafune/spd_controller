@@ -40,6 +40,7 @@ def itx(
     num_scan: int = 1,
     comment: str = "",
     measure_mode: Measure_type = "FAT",
+    correct_angle: bool = True,
 ) -> str:
     """Build the the itx-style data from the intensity map
 
@@ -93,9 +94,12 @@ def itx(
         and isinstance(param["Angle_max"], float)
         and isinstance(param["NumNonEnergyChannels"], int)
     ):
-        angle_max, angle_min = correct_angle_region(
-            param["Angle_min"], param["Angle_max"], param["NumNonEnergyChannels"]
-        )
+        if correct_angle:
+            angle_max, angle_min = correct_angle_region(
+                param["Angle_min"], param["Angle_max"], param["NumNonEnergyChannels"]
+            )
+        else:
+            angle_max, angle_min = param["Angle_min"], param["Angle_max"]
     else:
         raise RuntimeError("Angle_min and Angle_max should be float.")
 
@@ -165,6 +169,8 @@ def header(
     else:
         mode = "Snapshot"
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")
+    if param["User Comment"]:
+        comment += ";" + param["User Comment"]
     return header_template.format(
         now,
         mode,
