@@ -42,7 +42,7 @@ class RemoteIn:
         self.host: str = host
         self.port: int = port
         self.TERM: str = term
-        self.timeout = 2
+        self.timeout = 10
         self.verbose: bool = verbose
         self.id: int = 1
         self.samples: int = 0
