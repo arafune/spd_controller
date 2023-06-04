@@ -2,9 +2,11 @@
 
 """Class for Prodigy remote_in"""
 
+from pathlib import Path
 from time import sleep
 
 import numpy as np
+
 from spd_controller.Specs.convert import Measure_type, itx
 
 from .. import TcpSocketWrapper
@@ -569,6 +571,10 @@ class RemoteIn:
             comment=comment,
             measure_mode=measure_mode,
         )
+        if Path(filename).exists():
+            RuntimeError(
+                "The file {} already exists. Check your command.".format(filename)
+            )
         with open(filename, "w") as itx_file:
             itx_file.write(itx_data)
 
