@@ -5,7 +5,6 @@
 from time import sleep
 
 import numpy as np
-
 from spd_controller.Specs.convert import Measure_type, itx
 
 from .. import TcpSocketWrapper

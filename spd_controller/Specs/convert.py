@@ -6,6 +6,7 @@ import numpy as np
 from typing_extensions import Literal
 
 Measure_type = Literal["FAT", "SFAT"]
+WORKFUNCTION_ANALYZER = 4.401
 
 header_template = """IGOR
 X //Created Date (UTC): {}
@@ -27,7 +28,7 @@ X //Kinetic Energy    = {}
 X //Pass Energy       = {}
 X //Bias Voltage      = {}
 X //Detector Voltage  = {}
-X //WorkFunction      = 4.401
+X //WorkFunction      = {}
 """
 
 DIGIT_ID = 3
@@ -187,4 +188,5 @@ def header(
         param["PassEnergy"],
         param["Bias Voltage Electrons"],
         param["Detector Voltage"],
+        WORKFUNCTION_ANALYZER,
     )
