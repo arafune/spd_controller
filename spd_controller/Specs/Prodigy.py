@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Class for Prodigy remote_in"""
+"""Class for Prodigy remote_in."""
 
 from pathlib import Path
 from time import sleep
@@ -15,12 +15,10 @@ BUFSIZE = 1024
 
 
 class RemoteIn:
-    r"""
-
-    parameters
+    r"""parameters
     ----------
     host: str
-        hostname or IP address, default "144.213.126.146"
+        hostname or IP address, default "144.213.126.146".
 
     port: int
         port number of for socket
@@ -37,8 +35,10 @@ class RemoteIn:
         host: str = "144.213.126.140",
         port: int = 7010,
         term: str = "\n",
+        *,
         verbose: bool = False,
     ) -> None:
+        """Initialize."""
         self.name: str = "Prodigy"
         self.host: str = host
         self.port: int = port
@@ -51,13 +51,13 @@ class RemoteIn:
         self.data: list[float] = []
 
     def connect(self) -> str:
-        r"""Open connection to SpecsLab Prodigy
+        r"""Open connection to SpecsLab Prodigy.
 
         The following message appear in the Specs RemoteIn Log:
         '!0001 OK: ServerName:"SpecsLab Prodigy 4.86.2-r103043 " ProtocolVersion:1.18\n'
 
         Returns
-        --------
+        -------
         str:
             Responce of "Connect command"
         """
@@ -67,7 +67,7 @@ class RemoteIn:
         return self.sendcommand("Connect")
 
     def sendcommand(self, text: str, buffsize: int = BUFSIZE) -> str:
-        r"""Send request command
+        r"""Send request command.
 
         Request command syntax is as follows:
         ?<id> Command [InParams]
@@ -77,7 +77,8 @@ class RemoteIn:
         * id: Unique request identifier (hexadecimal value, always 4 digits)
         * Command: Command name (character token, camel case, commands with
           spaces must be enclosed in double quotes)
-        * InParams: Optional list of input parameters (“key:value”-list, space separated),
+        * InParams: Optional list of input parameters
+          (“key:value”-list, space separated),
           specific for each command; the order of parameters is arbitrary.
 
         Each command and response are terminated by a newline character “\n”.
@@ -95,10 +96,10 @@ class RemoteIn:
         return self.sock.recvtext(buffsize)
 
     def disconnect(self) -> str:
-        r"""Close connection to SpecsLab Prodigy
+        r"""Close connection to SpecsLab Prodigy.
 
         Returns
-        --------
+        -------
         str:
             Responce of "Disconnect command" (Ex. '!0005 OK\n')
         """
@@ -113,9 +114,10 @@ class RemoteIn:
         pass_energy: float = 5,
         lens: str = "WideAngleMode",
         scanrange: str = "40V",
+        *,
         with_check: bool = True,
     ) -> str:
-        """Set measurment parameters of Phoibos (FAT mode)
+        """Set measurment parameters of Phoibos (FAT mode).
 
         Send FAT spectrum specification for subsequent acquisition.
         Existing data must be cleared first.
@@ -138,13 +140,20 @@ class RemoteIn:
         scanrange: str, optional
             HSA voltage range for scanning (as string) (default: 40V)
         wich_check:bool, optional
-            if True, CheckSpectrumFAT is excecuted after DefineSpectrumFAT (default: True)
+            if True, CheckSpectrumFAT is excecuted after DefineSpectrumFAT
+            (default: True)
         """
         command: str = "DefineSpectrumFAT "
         argument: str = "StartEnergy:{} EndEnergy:{} StepWidth:{} "
         argument += 'DwellTime:{} PassEnergy:{} LensMode:"{}" ScanRange:"{}"'
         argument = argument.format(
-            start_energy, end_energy, step, dwell, pass_energy, lens, scanrange
+            start_energy,
+            end_energy,
+            step,
+            dwell,
+            pass_energy,
+            lens,
+            scanrange,
         )
         response = self.sendcommand(command + argument)
         if with_check:
@@ -161,9 +170,10 @@ class RemoteIn:
         dwell: float = 0.1,
         lens: str = "WideAngleMode",
         scanrange: str = "40V",
+        *,
         with_check: bool = True,
     ) -> str:
-        """Set measurment parameters of Phoibos (SFAT (Snapshot) mode)
+        """Set measurment parameters of Phoibos (SFAT (Snapshot) mode).
 
         Send SFAT spectrum (snapshot) specification for subsequent
         acquisition.
@@ -200,7 +210,12 @@ class RemoteIn:
         argument: str = "StartEnergy:{} EndEnergy:{} Samples:{} "
         argument += 'DwellTime:{} LensMode:"{}" ScanRange:"{}"'
         argument = argument.format(
-            start_energy, end_energy, samples, dwell, lens, scanrange
+            start_energy,
+            end_energy,
+            samples,
+            dwell,
+            lens,
+            scanrange,
         )
         response = self.sendcommand(command + argument)
         if with_check:
@@ -240,7 +255,7 @@ class RemoteIn:
             Pass energy in eV (default: 5)
         lens: str, optional
             Lens mode (as string) (default: WideAngleMode)
-        scanRange: str, optional
+        scanrange: str, optional
             HSA voltage range for scanning (as string) (default: 40V)
 
         Returns
@@ -252,7 +267,13 @@ class RemoteIn:
         argument: str = "StartEnergy:{} EndEnergy:{} StepWidth:{} "
         argument += 'DwellTime:{} PassEnergy:{} LensMode:"{}" ScanRange:"{}"'
         argument = argument.format(
-            start_energy, end_energy, step, dwell, pass_energy, lens, scanrange
+            start_energy,
+            end_energy,
+            step,
+            dwell,
+            pass_energy,
+            lens,
+            scanrange,
         )
         response = self.sendcommand(command + argument)
         self.parse_check_response(response)
@@ -288,7 +309,7 @@ class RemoteIn:
             Pass energy in eV (default 5)
         lens: str, optional
             Lens mode (as string) (default: WideAngleMode)
-        scanRange: str, optional
+        scanrange: str, optional
             HSA voltage range for scanning (as string) (default: 40V)
 
         Returns
@@ -300,14 +321,19 @@ class RemoteIn:
         argument: str = "StartEnergy:{} EndEnergy:{} Samples:{} "
         argument += 'DwellTime:{} LensMode:"{}" ScanRange:"{}"'
         argument = argument.format(
-            start_energy, end_energy, samples, dwell, lens, scanrange
+            start_energy,
+            end_energy,
+            samples,
+            dwell,
+            lens,
+            scanrange,
         )
         response = self.sendcommand(command + argument)
         self.parse_check_response(response)
         return response
 
     def parse_check_response(self, response: str) -> None:
-        """Parse the string of the Command reply:
+        """Parse the string of the Command reply.
 
         Result is stored in self.param dict object.
 
@@ -320,7 +346,6 @@ class RemoteIn:
         -------
         None
         """
-
         for i in response[10:].split():
             key, item = i.split(":", 2)
             try:
@@ -332,7 +357,7 @@ class RemoteIn:
                     self.param[key] = item[1:-1]
 
     def get_analyzer_parameter(self) -> None:
-        """Store the analyzer parameter in self.param"""
+        """Store the analyzer parameter in self.param."""
         parameters = [
             "NumEnergyChannels",
             "NumNonEnergyChannels",
@@ -342,13 +367,13 @@ class RemoteIn:
         ]
         for parameter_name in parameters:
             command = 'GetAnalyzerParameterValue ParameterName:"{}"'.format(
-                parameter_name
+                parameter_name,
             )
             key, item = parse_analyzer_parameter(self.sendcommand(command))
             self.param[key] = item
 
     def validate(self) -> str:
-        """Validate parameters
+        """Validate parameters.
 
         Returns
         -------
@@ -363,17 +388,16 @@ class RemoteIn:
         return response
 
     def set_safe_state(self) -> str:
-        """Set the davice into safe state
+        """Set the davice into safe state.
 
         Returns
-        --------
+        -------
         str:
             Response of the requested command ("OK")
         """
-        response = self.sendcommand("SetSafeState")
-        return response
+        return self.sendcommand("SetSafeState")
 
-    def start(self, setsafeafter: bool = True) -> str:
+    def start(self, *, setsafeafter: bool = True) -> str:
         """Start data acquisition.
 
         Before acquisition, spectum must be validated.
@@ -399,12 +423,14 @@ class RemoteIn:
             command = 'Start SetSafeStateAfter:"false"'
         response = self.sendcommand(command)
         if isinstance(self.param["Samples"], int) and isinstance(
-            self.param["DwellTime"], float
+            self.param["DwellTime"],
+            float,
         ):
             estimate_duration: float = self.param["DwellTime"] * self.param["Samples"]
             sleep(estimate_duration)
         else:
-            raise RuntimeError("DwellTime or Samples are wront type")
+            msg = "DwellTime or Samples are wront type"
+            raise RuntimeError(msg)
         status: str = self.get_status()
         while "running" in status:
             sleep(10)
@@ -446,7 +472,7 @@ class RemoteIn:
         return self.sendcommand("GetAcquisitionStatus")
 
     def get_data(self) -> list:
-        """Get the intensity map data from the buffer and stored in self.data
+        """Get the intensity map data from the buffer and stored in self.data.
 
         Returns
         -------
@@ -463,7 +489,8 @@ class RemoteIn:
                 status[key] = item
         assert status["ControllerState"] == "finished"
         request_str: str = "?{:04X} GetAcquisitionData FromIndex:0 ToIndex:{}".format(
-            self.id, status["NumberOfAcquiredPoints"] - 1
+            self.id,
+            status["NumberOfAcquiredPoints"] - 1,
         )
         self.id += 1
         self.sock.sendtext(request_str)
@@ -474,7 +501,7 @@ class RemoteIn:
         return self.data
 
     def get_non_energy_channel_info(self) -> None:
-        """Read information about non energy (i.e. Angle) channel
+        """Read information about non energy (i.e. Angle) channel.
 
         The data are stored in the self.param property
         """
@@ -485,7 +512,7 @@ class RemoteIn:
         self.param["Angle_max"] = float(tmp[2].split(":")[-1])
 
     def get_excitation_energy(self) -> None:
-        """Read the **recoreded** Photon energy information
+        """Read the **recoreded** Photon energy information.
 
         The value is used in the itx file as "Excitation Energy"
         """
@@ -493,7 +520,7 @@ class RemoteIn:
         command += 'DeviceCommand:"UVS.Source"'
         response: str = self.sendcommand(command)
         self.param["ExcitationEnergy"] = float(
-            response[10:-1].split()[-1].split()[-1].split(":")[-1]
+            response[10:-1].split()[-1].split()[-1].split(":")[-1],
         )
 
     def set_excitation_energy(self, excitation_energy: float) -> str:
@@ -503,7 +530,7 @@ class RemoteIn:
             Actual photon energy is not affected.
 
         Parameters
-        -----------
+        ----------
         excitation_energy: float
             Photon energy for excitation.
         """
@@ -514,11 +541,11 @@ class RemoteIn:
         self.get_excitation_energy()
         return response
 
-    def scan(self, num_scan: int = 1, setsafeafter: bool = True) -> list[float]:
-        """Execut the multiple scanning
+    def scan(self, num_scan: int = 1, *, setsafeafter: bool = True) -> list[float]:
+        """Execute the multiple scanning.
 
         Parameters
-        -----------
+        ----------
         num_scan: int, optional
             number of scan  (default: 1)
         setsafeafter: bool, optional
@@ -529,7 +556,7 @@ class RemoteIn:
             (default: True)
 
         Returns
-        ---------
+        -------
         data: list[float]
             intensity map data.  (The same data are stored as self.data)
         """
@@ -551,7 +578,7 @@ class RemoteIn:
         comment: str = "",
         measure_mode: Measure_type = "FAT",
     ) -> None:
-        """Save the data as itx format
+        """Save the data as itx format.
 
         Parameters
         ----------
@@ -573,18 +600,17 @@ class RemoteIn:
         )
         if Path(filename).exists():
             RuntimeError(
-                "The file {} already exists. Check your command.".format(filename)
+                f"The file {filename} already exists. Check your command.",
             )
         with open(filename, "w") as itx_file:
             itx_file.write(itx_data)
 
 
 def parse_analyzer_parameter(response: str) -> tuple[str, int | float]:
-    r"""Parse the analyzer parameter, especially for NumNonEnergyChannels:
+    r"""Parse the analyzer parameter, especially for NumNonEnergyChannels.
 
     Examples
-    -----------
-
+    --------
     '!0016 OK: Name:"NumNonEnergyChannels" Value:200\n'
         -> ("NumNonEnergyChannels", 200)
     """

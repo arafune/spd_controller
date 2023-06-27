@@ -1,4 +1,5 @@
-from typing_extensions import Literal
+import contextlib
+from typing import Literal
 
 from .. import TcpSocketWrapper
 
@@ -6,7 +7,7 @@ Axis = Literal[1, 2, 3, 4]
 
 
 class Picomotor8742:
-    """Newport Picomotor 8742 (ethernet connection) class"""
+    """Newport Picomotor 8742 (ethernet connection) class."""
 
     def __init__(
         self,
@@ -15,8 +16,9 @@ class Picomotor8742:
         naxis: int = 4,
         timeout: int = 2,
         name: str = "Picomotor8742",
+        *,
         verbose: bool = False,
-    ):
+    ) -> None:
         self.name = name
         self.host = host
         self.port = port
@@ -25,14 +27,14 @@ class Picomotor8742:
         self.verbose = verbose
         self.sock = None
 
-    def connect(self):
-        """Connect the Picomotor device"""
+    def connect(self) -> None:
+        """Connect the Picomotor device."""
         self.sock = TcpSocketWrapper(term="\n", verbose=self.verbose)
         self.sock.settimeout(self.timeout)
         self.sock.connect((self.host, self.port))
 
     def cmd(self, axis: int, cmd: str, *args) -> int:
-        """Send a command to 8742 controller
+        """Send a command to 8742 controller.
 
         Parameters
         ----------
@@ -41,7 +43,7 @@ class Picomotor8742:
         cmd: str
             command with argument (if required)
         """
-        cmdstr = "{:d}{:s}".format(axis, cmd)
+        cmdstr = f"{axis:d}{cmd:s}"
         cmdstr += ",".join(map(str, args)) + "\n"
         return self.sock.send(cmdstr.encode("utf-8"))
 
@@ -55,7 +57,7 @@ class Picomotor8742:
         return ans.strip()
 
     def move_rel(self, axis: int = 1, distance: int = 0) -> None:
-        """Move relatively
+        """Move relatively.
 
         Parameters
         ----------
@@ -64,13 +66,11 @@ class Picomotor8742:
         distance: int
             Relative distance (step)
         """
-        try:
-            self.cmd(axis, "PR{:d}".format(distance))
-        except TypeError:
-            pass
+        with contextlib.suppress(TypeError):
+            self.cmd(axis, f"PR{distance:d}")
 
     def move_indefinitely(self, axis: Axis = 1, positive: bool = True) -> None:
-        """Move indefinitely
+        """Move indefinitely.
 
         Need stop command to stop.
 
@@ -87,7 +87,7 @@ class Picomotor8742:
             self.cmd(axis, "MV-")
 
     def position(self, axis: Axis = 1) -> int:
-        """Return Axis position in step
+        """Return Axis position in step.
 
         Parameters
         ----------
@@ -95,7 +95,7 @@ class Picomotor8742:
             The axis number  (1-4)
 
         Returns
-        ----------
+        -------
         int
             axis position in steps
         """
@@ -105,17 +105,17 @@ class Picomotor8742:
         """Force stop the actuator.
 
         Parameters
-        -----------
+        ----------
         axis: Axis
             Axis number
         """
         self.cmd(axis, "ST")
 
     def set_velocity(self, axis: Axis = 1, velocity: int = 2000) -> None:
-        """Set velocity
+        """Set velocity.
 
         Parameters
-        -----------
+        ----------
         axis: Axis
             Axis number
         velocity: int
@@ -123,26 +123,26 @@ class Picomotor8742:
         """
         if velocity > 2000:
             print("The velocity should be less than 2000")
-            return None
-        self.cmd(axis, "VA{:d}".format(int(velocity)))
+            return
+        self.cmd(axis, f"VA{int(velocity):d}")
 
     def set_acceleration(self, axis: Axis = 1, acceleration: int = 100000) -> None:
-        """Set Acceleration
+        """Set Acceleration.
 
         Parameters
-        -----------
+        ----------
         axis: Axis
             Axis number
         acceleration: int
             Acceleration (steps/sec^2)  default is 100000
         """
-        self.cmd(axis, "AC{:d}".format(int(acceleration)))
+        self.cmd(axis, f"AC{int(acceleration):d}")
 
     def check_stop(self, axis: Axis = 1) -> bool:
         """Return True if the actuator is stop.
 
         Parameters
-        -----------
+        ----------
         axis: Axis
             Axis number
 
@@ -156,7 +156,7 @@ class Picomotor8742:
         return False
 
     def acceleration(self, axis: Axis = 1) -> int:
-        """Return the acceleration
+        """Return the acceleration.
 
         Parameters
         ----------
@@ -171,7 +171,7 @@ class Picomotor8742:
         return int(self.ask(axis, "AC?"))
 
     def velocity(self, axis: Axis = 1) -> int:
-        """Return the velocity
+        """Return the velocity.
 
         Parameters
         ----------
@@ -186,22 +186,22 @@ class Picomotor8742:
         return int(self.ask(axis, "VA?"))
 
     def speed(self, axis: Axis = 1) -> int:
-        """Alias of self.velocity
+        """Alias of self.velocity.
 
         Parameters
-        --------------
+        ----------
         axis: Axis
             Axis number
 
         Returns
-        ----------
+        -------
         int:
             Speed (steps/sec)
         """
         return self.velocity(axis)
 
-    def set_speed(self, axis: Axis, speed: int):
-        """Alias of self.set_velocity
+    def set_speed(self, axis: Axis, speed: int) -> None:
+        """Alias of self.set_velocity.
 
         Parameters
         ----------

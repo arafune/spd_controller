@@ -16,11 +16,11 @@ class K10CR1(THORLABS_MOTION_CONTROL):
         return DU * 180 / 24576000
 
     def identify(self) -> int | None:
-        """Identify itself by flashing its front panel LEDs"""
+        """Identify itself by flashing its front panel LEDs."""
         return self.write("230200005001")  # 23, 02, 00, 00, 50, 01
 
     def set_home_speed(self, speed_deg_s: float) -> None:
-        """Set the velocity for homing
+        """Set the velocity for homing.
 
         Parameters
         ----------
@@ -39,9 +39,8 @@ class K10CR1(THORLABS_MOTION_CONTROL):
             + home_direction
             + limit_switch
             + velocity
-            + offset_distance
+            + offset_distance,
         )
-        return None
 
     def home(self) -> bytes:
         """Start to a home position.
@@ -59,7 +58,7 @@ class K10CR1(THORLABS_MOTION_CONTROL):
         Thus, the third and 4th bytes is "06 00"
 
         Parameters
-        -----------
+        ----------
         angle_deg: float
             Relative rotation angle in degree.
         """
@@ -82,7 +81,6 @@ class K10CR1(THORLABS_MOTION_CONTROL):
         header: str = "53040600d001"  # 53, 04, 06, 00, d0, 01
         cmd: str = header + channel + abs_position
         self.write(cmd)
-        # return self.rd(20)
 
     def zerobacklash(self) -> None:
         backlash_position = decimal_to_hex(self.angle_to_DU(0), 4)
@@ -92,7 +90,7 @@ class K10CR1(THORLABS_MOTION_CONTROL):
         self.write(cmd)
 
     def jog(self) -> bytes:
-        """Jog starts
+        """Jog starts.
 
         Returns
         -------
@@ -107,7 +105,7 @@ class K10CR1(THORLABS_MOTION_CONTROL):
         """Return the current angle.
 
         Returns
-        --------------
+        -------
         float
             The current angle (degree)
         """

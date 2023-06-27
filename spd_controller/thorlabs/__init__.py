@@ -9,13 +9,13 @@ __version__: str = "0.1.0"
 
 
 class THORLABS_MOTION_CONTROL:
-    """An abstract layer for Thorlabs Motion Control"""
+    """An abstract layer for Thorlabs Motion Control."""
 
     def __init__(self, serial_num: str | int) -> None:
-        """Set-up and connect to device with serial number
+        """Set-up and connect to device with serial number.
 
         Parameters
-        ---------------
+        ----------
         serial_num: str| int
             serial number of the MFF101
         """
@@ -24,21 +24,21 @@ class THORLABS_MOTION_CONTROL:
         self.connect()
         if not self.ready:
             print(
-                "Unable to connect to device with serial number: {}".format(serial_num)
+                f"Unable to connect to device with serial number: {serial_num}",
             )
         else:
             print(
-                "Connect successful to device with serial number: {}".format(serial_num)
+                f"Connect successful to device with serial number: {serial_num}",
             )
 
     def connect(self) -> None:
-        """Searhes all com ports for device with matching serial number and opens a connection"""
+        """Searhes all com ports for device with matching serial number and opens a connection."""
         ports = list_ports.comports()
         for port in ports:
             try:
                 if port.serial_number.startswith(self.serial_num):
                     self.ser = serial.Serial(
-                        baudrate=115200, timeout=0.1, port=port.device
+                        baudrate=115200, timeout=0.1, port=port.device,
                     )
                     self.ready = True
                     break
@@ -46,15 +46,15 @@ class THORLABS_MOTION_CONTROL:
                 pass
 
     def rd(self, bytelen: int) -> bytes:
-        """Read buffer
+        """Read buffer.
 
         Parameters
-        ---------------
+        ----------
         bytelen: int
             length of byte to read
 
         Returns
-        ---------
+        -------
         bytes
         """
         x = self.ser.readline()
@@ -63,10 +63,10 @@ class THORLABS_MOTION_CONTROL:
         return x
 
     def write(self, x: str) -> int | None:
-        """Write buffer
+        """Write buffer.
 
         Parameters
-        -----------
+        ----------
         x: str
             String to buffer
         """
@@ -75,7 +75,7 @@ class THORLABS_MOTION_CONTROL:
 
 
 def decimal_to_hex(x: int, byte_length: int) -> str:
-    """Generate hex string from integer
+    """Generate hex string from integer.
 
     After python3.2 to_byte method has been prepared.
 
@@ -96,7 +96,7 @@ def decimal_to_hex(x: int, byte_length: int) -> str:
 
 
 def bytes_to_decimal(x: bytes) -> int:
-    """Return the int from the bytes.   Essentially btd return the same value
+    """Return the int from the bytes.   Essentially btd return the same value.
 
     Parameters
     ----------

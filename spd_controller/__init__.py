@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import annotations
 
 import socket
@@ -10,12 +9,19 @@ from serial.tools import list_ports
 
 
 class SerialWrapper(serial.Serial):
-    def __init__(self, term="\n", verbose: bool = False):
+    """Thin wrapper of serial.Serial.
+
+    Attribute
+    ---------
+    """
+
+    def __init__(self, term: str = "\n", *, verbose: bool = False) -> None:
+        """Initialize."""
         self._verbose = verbose
         self.TERM = term
 
-    def send(self, bytes: bytes):
-        return super().write(bytes)
+    def send(self, bytes_: bytes):
+        return super().write(bytes_)
 
     def sendtext(self, text: str):
         text = text + self.TERM
@@ -29,12 +35,10 @@ class SerialWrapper(serial.Serial):
 
 
 class Comm:
-    """
-    Serial communicadtion  (Very thin wrapper of serial class)
-    """
+    """Serial communicadtion  (Very thin wrapper of serial class)."""
 
     def __init__(self, term: str = "\r") -> None:
-        """Initialization
+        r"""Initialize.
 
         Parameters
         ----------
@@ -47,7 +51,7 @@ class Comm:
         self.event = threading.Event()
 
     def connect(self, serial_num: str) -> str | None:
-        """Searches all serial ports for device with matching serial number (USB)
+        """Search all serial ports for device with matching serial number (USB).
 
         Parameters
         ----------
@@ -66,6 +70,7 @@ class Comm:
                     return port.device
             except AttributeError:
                 pass
+        return None
 
     def recv(self, timeout: float = 3.0) -> tuple[bool, bytearray]:
         """Receive the data (within waiting time).
@@ -78,7 +83,8 @@ class Comm:
         Returns
         -------
         tuple[bool, bytearray]
-           True in the first item if the received appropriately.  The bytearray is the byte returned.
+           True in the first item if the received appropriately.
+           The bytearray is the byte returned.
         """
         time_start = time.time()
         time_end = time_start
@@ -91,7 +97,7 @@ class Comm:
             if time_end - time_start > timeout:
                 result = False
                 self.stop()
-                print("timeout:{0}sec".format(timeout))
+                print(f"timeout:{timeout}sec")
                 break
 
             buff: bytes = self.comm.read()
@@ -104,7 +110,7 @@ class Comm:
         return (result, self.recvData)
 
     def send(self, data: bytes) -> None:
-        """Send the byte to the device
+        """Send the byte to the device.
 
         Parameters
         ----------
@@ -114,7 +120,7 @@ class Comm:
         self.comm.write(data)
 
     def sendtext(self, text: str) -> None:
-        """An syntax sugar of send.
+        """Syntax sugar of send.
 
         As the argument of send should be byte, which is annoying.
 
@@ -123,7 +129,6 @@ class Comm:
         text : str
             Text string to send.
         """
-
         text = text + self.TERM
         self.comm.write(text.encode("utf-8"))
 
@@ -138,17 +143,17 @@ class Comm:
         return self.comm.readline()
 
     def recvtext(self) -> str:
-        r"""Read the text endwith the TERM (default: \\r) from the device
+        r"""Read the text endwith the TERM (default: \\r) from the device.
 
         Returns
-        ---------
+        -------
         str
             returned text
         """
         return self.recvbytes().decode("utf-8")
 
     def stop(self) -> None:
-        """Stop the data transfer"""
+        """Stop the data transfer."""
         self.event.set()
 
     def open(
@@ -159,7 +164,7 @@ class Comm:
         rtscts: bool = False,
         port: str | None = None,
     ) -> bool:
-        """Open the serial port
+        """Open the serial port.
 
         Parameters
         ----------
@@ -183,11 +188,19 @@ class Comm:
         try:
             if port:
                 self.comm = serial.Serial(
-                    baudrate=baud, xonxoff=xonxoff, timeout=1, rtscts=rtscts, port=port
+                    baudrate=baud,
+                    xonxoff=xonxoff,
+                    timeout=1,
+                    rtscts=rtscts,
+                    port=port,
                 )
             else:
                 self.comm = serial.Serial(
-                    tty, baud, xonxoff=xonxoff, timeout=1, rtscts=rtscts
+                    tty,
+                    baud,
+                    xonxoff=xonxoff,
+                    timeout=1,
+                    rtscts=rtscts,
                 )
             self.is_portopen = True
         except Exception:
@@ -211,7 +224,7 @@ class Comm:
         return self.comm.read(size)
 
     def close(self) -> None:
-        """Close the port, explicitly"""
+        """Close the port, explicitly."""
         self.stop()
         if self.is_portopen:
             self.comm.close()
@@ -219,9 +232,9 @@ class Comm:
 
 
 class TcpSocketWrapper(socket.socket):
-    """Very thin wrapper of socket"""
+    """Very thin wrapper of socket."""
 
-    def __init__(self, term="\n", verbose: bool = False):
+    def __init__(self, term="\n", verbose: bool = False) -> None:
         self._verbose = verbose
         self.TERM = term
         super().__init__(socket.AF_INET, socket.SOCK_STREAM)
@@ -249,7 +262,7 @@ class TcpSocketWrapper(socket.socket):
 
 
 class SocketClient:
-    """Tiny Socket client
+    """Tiny Socket client.
 
     **This is obsolute class. Keep it just for the compatibility.  Do not use for making a new class**
 
@@ -262,17 +275,17 @@ class SocketClient:
         self.socket = None
 
     def sendtext(self, text: str) -> int:
-        """An syntax suger of sendtext
+        """An syntax suger of sendtext.
 
         To send the command to Remote_In Prodigy, the text is converted to byte with linefeed character self.
 
         Parameters
-        ------------
+        ----------
         text: str
             input text
 
         Returns
-        --------
+        -------
         int: number of byte send
         """
         text = text + self.TERM
