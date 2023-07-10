@@ -4,7 +4,7 @@
 import socket
 import threading
 from datetime import datetime
-from logging import DEBUG, INFO, Formatter, StreamHandler, getLogger
+from logging import INFO, Formatter, StreamHandler, getLogger
 
 import netifaces  # pip install netiface
 from dmm2700 import DMM2700
@@ -37,7 +37,6 @@ class SocketServer:
 
     # サーバー起動
     def run_server(self):
-
         # server_socketインスタンスを生成
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
             server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
