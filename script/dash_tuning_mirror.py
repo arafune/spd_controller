@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
-"""Dash based application for tunig mirror and flipper"""
+"""Dash based application for tunig mirror and flipper."""
 
 from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import dash
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 from dash import Input, Output, State, ctx, dcc, html
 
-import spd_controller.newport.picomotor8742 as picomotor8742
-import spd_controller.thorlabs.mff101 as mff101
+from spd_controller.newport import picomotor8742
+from spd_controller.thorlabs import mff101
 
-from spd_controller.newport.picomotor8742 import Axis
+if TYPE_CHECKING:
+    from spd_controller.newport.picomotor8742 import Axis
 
 external_stylesheets = [dbc.themes.MATERIA]
 
@@ -27,7 +30,7 @@ app = dash.Dash(
 
 
 def flipper_component(id: int):
-    """Flipper flipper_component
+    """Flipper flipper_component.
 
     Parameters
     ----------
@@ -37,10 +40,11 @@ def flipper_component(id: int):
     return html.Div(
         [
             html.H3(
-                f"Flipper {id}", style={"marginLeft": "2em", "display": "inline-block"}
+                f"Flipper {id}",
+                style={"marginLeft": "2em", "display": "inline-block"},
             ),
             dbc.Button(
-                "Flip {}!".format(id),
+                f"Flip {id}!",
                 size="large",
                 color="primary",
                 id=f"flip{id}",
@@ -65,7 +69,7 @@ def flipper_component(id: int):
 
 
 def mirror_component(id: int):
-    """Mirror flipper_component
+    """Mirror flipper_component.
 
     Parameters
     ----------
@@ -74,7 +78,7 @@ def mirror_component(id: int):
     """
     return html.Div(
         [
-            html.H3(f"Mirrror {id}ω", style={"marginLeft": "2em"}),
+            html.H3(f"Mirror {id}ω", style={"marginLeft": "2em"}),
             html.Div(
                 [
                     daq.LEDDisplay(
@@ -114,7 +118,9 @@ def mirror_component(id: int):
                         placement="top",
                     ),
                     dbc.Tooltip(
-                        "Stop rootating", target=f"stop_{id}omega", placement="top"
+                        "Stop rootating",
+                        target=f"stop_{id}omega",
+                        placement="top",
                     ),
                 ],
                 style={"display": "inline-block", "width": "30%"},
@@ -125,13 +131,19 @@ def mirror_component(id: int):
                         label="Velocity",
                         children=[
                             dbc.DropdownMenuItem(
-                                "Max", id=f"velocity_{id}omega_max", n_clicks=0
+                                "Max",
+                                id=f"velocity_{id}omega_max",
+                                n_clicks=0,
                             ),
                             dbc.DropdownMenuItem(
-                                "Middle", id=f"velocity_{id}omega_middle", n_clicks=0
+                                "Middle",
+                                id=f"velocity_{id}omega_middle",
+                                n_clicks=0,
                             ),
                             dbc.DropdownMenuItem(
-                                "Low", id=f"velocity_{id}omega_low", n_clicks=0
+                                "Low",
+                                id=f"velocity_{id}omega_low",
+                                n_clicks=0,
                             ),
                         ],
                         className="mb-3",
@@ -223,11 +235,11 @@ app.layout = html.Article(
 # ---------- Flipper Button
 
 
-def flipbutton(id, n_clicks) -> dict[str, str]:
-    """Base of the callback function for flipbutton1
+def flipbutton(flipper_id: int, n_clicks: int) -> dict[str, str]:
+    """Base of the callback function for flipbutton1.
 
     Parameters
-    --------------
+    ----------
     n_clicks: int
         number of clicks
 
@@ -236,12 +248,13 @@ def flipbutton(id, n_clicks) -> dict[str, str]:
     dict [str, str]
         css style of the border
     """
-    if id == 1:
+    if flipper_id == 1:
         flipper = flipper1
-    elif id == 2:
+    elif flipper_id == 2:
         flipper = flipper2
     else:
-        raise RuntimeError("We have only 2 flippers")
+        msg = "We have only 2 flippers"
+        raise RuntimeError(msg)
     if n_clicks is not None:
         flipper.flip()
     if flipper.position() in (1, 18):
@@ -261,7 +274,7 @@ def flipbutton(id, n_clicks) -> dict[str, str]:
 
 @app.callback(Output("flipper1", "style"), Input("flip1", "n_clicks"))
 def flipbutton1(n_clicks: int) -> dict[str, str]:
-    """Flip the flipper1
+    """Flip the flipper1.
 
     Parameters
     ----------
@@ -278,7 +291,7 @@ def flipbutton1(n_clicks: int) -> dict[str, str]:
 
 @app.callback(Output("flipper2", "style"), Input("flip2", "n_clicks"))
 def flipbutton2(n_clicks: int) -> dict[str, str]:
-    """Flip the flipper2
+    """Flip the flipper2.
 
     Parameters
     ----------
@@ -293,11 +306,8 @@ def flipbutton2(n_clicks: int) -> dict[str, str]:
     return flipbutton(2, n_clicks)
 
 
-# ----------- Callback: Mirror
-
-
 def move_mirror_indefinitely(axis: Axis, action: str) -> bool:
-    """Move mirror indefinitely
+    """Move mirror indefinitely.
 
     Parameters
     ----------
@@ -312,14 +322,13 @@ def move_mirror_indefinitely(axis: Axis, action: str) -> bool:
         Return true/false to set "disable" property of the dash component
     """
     if action == "left":
-        picomotor.move_indefinitely(axis, False)
+        picomotor.move_indefinitely(axis, positive=False)
         return True
-    elif action == "right":
-        picomotor.move_indefinitely(axis, True)
+    if action == "right":
+        picomotor.move_indefinitely(axis, positive=True)
         return True
-    else:
-        picomotor.force_stop(axis)
-        return False
+    picomotor.force_stop(axis)
+    return False
 
 
 @app.callback(
@@ -329,15 +338,16 @@ def move_mirror_indefinitely(axis: Axis, action: str) -> bool:
     Input("stop_3omega", "n_clicks"),
 )
 def move_3omega_mirror_indefinitely(
-    right_button: int, left_button: int, stop_button: int
+    right_button: int,
+    left_button: int,
+    stop_button: int,
 ):
     button_clicked = ctx.triggered_id
     if button_clicked == "right_3omega":
         return move_mirror_indefinitely(1, "right")
-    elif button_clicked == "left_3omega":
+    if button_clicked == "left_3omega":
         return move_mirror_indefinitely(1, "left")
-    else:
-        return move_mirror_indefinitely(1, "stop")
+    return move_mirror_indefinitely(1, "stop")
 
 
 @app.callback(
@@ -347,15 +357,16 @@ def move_3omega_mirror_indefinitely(
     Input("stop_1omega", "n_clicks"),
 )
 def move_1omega_mirror_indefinitely(
-    right_button: int, left_button: int, stop_button: int
+    right_button: int,
+    left_button: int,
+    stop_button: int,
 ):
     button_clicked = ctx.triggered_id
     if button_clicked == "right_1omega":
         return move_mirror_indefinitely(2, "right")
-    elif button_clicked == "left_1omega":
+    if button_clicked == "left_1omega":
         return move_mirror_indefinitely(2, "left")
-    else:
-        return move_mirror_indefinitely(2, "stop")
+    return move_mirror_indefinitely(2, "stop")
 
 
 @app.callback(
@@ -369,12 +380,11 @@ def change_3omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
     if selected_item == "velocity_3omega_max":
         picomotor.set_velocity(1, 2000)
         return "Max"
-    elif selected_item == "velocity_3omega_middle":
+    if selected_item == "velocity_3omega_middle":
         picomotor.set_velocity(1, 200)
         return "Middle"
-    else:
-        picomotor.set_velocity(1, 20)
-        return "Low"
+    picomotor.set_velocity(1, 20)
+    return "Low"
 
 
 @app.callback(
@@ -388,27 +398,25 @@ def change_1omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
     if selected_item == "velocity_1omega_max":
         picomotor.set_velocity(2, 2000)
         return "Max"
-
-    elif selected_item == "velocity_1omega_middle":
+    if selected_item == "velocity_1omega_middle":
         picomotor.set_velocity(2, 200)
         return "Middle"
-    else:
-        picomotor.set_velocity(1, 20)
-        return "Low"
+    picomotor.set_velocity(1, 20)
+    return "Low"
 
 
 def move_start(axis: int, distance: int) -> tuple[bool, bool, bool]:
-    """Function for move_start_button
+    """Move_start_button.
 
     Parameters
-    -------------
+    ----------
     axis: int
         Axis number
     distance: int
         Relative distance(step)
 
     Returns
-    --------
+    -------
     tuple[bool, bool, bool]
        value for "disabled" property of button
     """
@@ -424,8 +432,7 @@ def move_start(axis: int, distance: int) -> tuple[bool, bool, bool]:
     Input("move_start_3omega", "n_clicks"),
 )
 def move_start_3omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
-    """
-    Trigger of 3ω mirror moving
+    """Trigger of 3ω mirror moving.
 
     Parameters
     ----------
@@ -452,8 +459,7 @@ def move_start_3omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     Input("move_start_1omega", "n_clicks"),
 )
 def move_start_1omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
-    """Trigger of 3ω mirror moving
-
+    """Trigger of 3ω mirror moving.
 
     Parameters
     ----------
@@ -478,8 +484,7 @@ def move_start_1omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     Input("realtime_interval", "n_intervals"),
 )
 def update_mirror_position(n_intervals: int) -> tuple[int, int]:
-    """Return the current mirror tilt
-
+    """Return the current mirror tilt.
 
     Parameters
     ----------

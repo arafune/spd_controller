@@ -15,7 +15,9 @@ BUFSIZE = 1024
 
 
 class RemoteIn:
-    r"""parameters
+    r"""Prodigy Remote in class.
+
+    Parameters
     ----------
     host: str
         hostname or IP address, default "144.213.126.146".
@@ -139,7 +141,7 @@ class RemoteIn:
             Lens mode (as string)  (default: WideAngleMode)
         scanrange: str, optional
             HSA voltage range for scanning (as string) (default: 40V)
-        wich_check:bool, optional
+        with_check:bool, optional
             if True, CheckSpectrumFAT is excecuted after DefineSpectrumFAT
             (default: True)
         """
