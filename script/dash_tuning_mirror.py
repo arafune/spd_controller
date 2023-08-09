@@ -74,7 +74,8 @@ def mirror_component(id: int):
     """
     return html.Div(
         [
-            html.H3(f"Mirrror {id}ω", style={"marginLeft": "2em"}),
+            html.H3(f"Mirror {id}ω", style={"marginLeft": "2em", "marginTop": "0.3em"}),
+
             html.Div(
                 [
                     daq.LEDDisplay(
@@ -92,7 +93,7 @@ def mirror_component(id: int):
                         id=f"left_{id}omega",
                     ),
                     dbc.Button(
-                        "stop",
+                        "■",
                         color="primary",
                         size="sm",
                         id=f"stop_{id}omega",
@@ -114,7 +115,7 @@ def mirror_component(id: int):
                         placement="top",
                     ),
                     dbc.Tooltip(
-                        "Stop rootating", target=f"stop_{id}omega", placement="top"
+                        "Stop rotating", target=f"stop_{id}omega", placement="top"
                     ),
                 ],
                 style={"display": "inline-block", "width": "30%"},
