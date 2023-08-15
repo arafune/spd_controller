@@ -264,7 +264,8 @@ class TcpSocketWrapper(socket.socket):
 class SocketClient:
     """Tiny Socket client.
 
-    **This is obsolute class. Keep it just for the compatibility.  Do not use for making a new class**
+    **This is obsolute class. Keep it just for the compatibility.
+    Do not use for making a new class**
 
     """
 
@@ -277,7 +278,8 @@ class SocketClient:
     def sendtext(self, text: str) -> int:
         """An syntax suger of sendtext.
 
-        To send the command to Remote_In Prodigy, the text is converted to byte with linefeed character self.
+        To send the command to Remote_In Prodigy, the text is converted to byte with
+        linefeed character self.
 
         Parameters
         ----------
