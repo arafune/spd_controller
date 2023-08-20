@@ -59,7 +59,7 @@ class RemoteIn:
         Returns
         -------
         str:
-            Responce of "Connect command"
+            Response of "Connect command"
         """
         self.sock = TcpSocketWrapper(term=self.TERM, verbose=self.verbose)
         self.sock.settimeout(self.timeout)
@@ -101,7 +101,7 @@ class RemoteIn:
         Returns
         -------
         str:
-            Responce of "Disconnect command" (Ex. '!0005 OK\n')
+            Response of "Disconnect command" (Ex. '!0005 OK\n')
         """
         return self.sendcommand("Disconnect")
 
@@ -117,7 +117,7 @@ class RemoteIn:
         *,
         with_check: bool = True,
     ) -> str:
-        """Set measurment parameters of Phoibos (FAT mode).
+        """Set measurement parameters of Phoibos (FAT mode).
 
         Send FAT spectrum specification for subsequent acquisition.
         Existing data must be cleared first.
@@ -140,7 +140,7 @@ class RemoteIn:
         scanrange: str, optional
             HSA voltage range for scanning (as string) (default: 40V)
         wich_check:bool, optional
-            if True, CheckSpectrumFAT is excecuted after DefineSpectrumFAT
+            if True, CheckSpectrumFAT is exeecuted after DefineSpectrumFAT
             (default: True)
         """
         command: str = "DefineSpectrumFAT "
@@ -173,7 +173,7 @@ class RemoteIn:
         *,
         with_check: bool = True,
     ) -> str:
-        """Set measurment parameters of Phoibos (SFAT (Snapshot) mode).
+        """Set measurement parameters of Phoibos (SFAT (Snapshot) mode).
 
         Send SFAT spectrum (snapshot) specification for subsequent
         acquisition.
@@ -400,7 +400,7 @@ class RemoteIn:
     def start(self, *, setsafeafter: bool = True) -> str:
         """Start data acquisition.
 
-        Before acquisition, spectum must be validated.
+        Before acquisition, spectrum must be validated.
         During measuments, the current status is shown.
 
         Parameters
@@ -429,7 +429,7 @@ class RemoteIn:
             estimate_duration: float = self.param["DwellTime"] * self.param["Samples"]
             sleep(estimate_duration)
         else:
-            msg = "DwellTime or Samples are wront type"
+            msg = "DwellTime or Samples are wrong type"
             raise RuntimeError(msg)
         status: str = self.get_status()
         while "running" in status:
