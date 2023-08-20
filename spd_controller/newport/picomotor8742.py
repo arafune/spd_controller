@@ -25,10 +25,10 @@ class Picomotor8742:
         self.timeout = timeout
         self.naxis = naxis
         self.verbose = verbose
-        self.sock = None
+        self.sock: TcpSocketWrapper | None = None
 
     def connect(self) -> None:
-        """Connect the Picomotor device."""
+        """Connect the 8742 Picomotor device."""
         self.sock = TcpSocketWrapper(term="\n", verbose=self.verbose)
         self.sock.settimeout(self.timeout)
         self.sock.connect((self.host, self.port))
@@ -45,11 +45,13 @@ class Picomotor8742:
         """
         cmdstr = f"{axis:d}{cmd:s}"
         cmdstr += ",".join(map(str, args)) + "\n"
+        assert self.sock is not None
         return self.sock.send(cmdstr.encode("utf-8"))
 
     def ask(self, axis: int, cmd: str, *args) -> bytes:
         """"""
         self.cmd(axis, cmd, *args)
+        assert self.sock is not None
         ans = self.sock.recv(128)
         if ans[0] == 255:
             ans = self.sock.recv(128)

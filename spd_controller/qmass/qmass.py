@@ -478,7 +478,7 @@ class Qmass:
         header += f"Accuracy:{self.accuracy}\n"
         self.f_save.write(header)
 
-    def convert_mbar(self, data: bytearray) -> float:
+    def convert_mbar(self, data: bytearray) -> float | None:
         """Convert pressure (mbar) from byte data.
 
         Parameters

@@ -3,3 +3,4 @@ script/.ipynb_checkpoints
 *.pyc
 __pycache__
 doc/build
+semaphore_pol.txt

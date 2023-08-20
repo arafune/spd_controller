@@ -33,7 +33,9 @@ class MFF101(THORLABS_MOTION_CONTROL):
 
         MGMSG_MOT_MOVE_JOG   (64 04 (Chan Ident) Direction d s)
             * Chan Ident: The channel being acdressed
-            * Direction : The direction to Jog.  Set this byte to 0x01 to jog forward, or to 0x02 to jog in the reverse diregtion.
+            * Direction : The direction to Jog.
+                          Set this byte to 0x01 to jog forward, or to 0x02 to jog in the
+                          reverse diregtion.
         """
         return self.write("6A0401015001")
 
@@ -42,7 +44,9 @@ class MFF101(THORLABS_MOTION_CONTROL):
 
         MGMSG_MOT_MOVE_JOG   (64 04 (Chan Ident) Direction d s)
             * Chan Ident: The channel being acdressed
-            * Direction : The direction to Jog.  Set this byte to 0x01 to jog forward, or to 0x02 to jog in the reverse diregtion.
+            * Direction : The direction to Jog.
+                          Set this byte to 0x01 to jog forward, or to 0x02 to jog in the
+                          reverse diregtion.
         """
         return self.write("6A0401025001")
 
