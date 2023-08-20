@@ -1,6 +1,5 @@
 #! /usr/bin/env/ python3
-"""SC104 and GSC02 controller with Dash
-"""
+"""SC104 and GSC02 controller with Dash."""
 from __future__ import annotations
 
 import dash
@@ -52,7 +51,7 @@ delay_line_setting = html.Div(
                     style={"display": "inline-block", "margin-left": "2%"},
                 ),
                 delayline_input,
-            ]
+            ],
         ),
     ],
     style={"display": "inline-block", "margin-left": "3%"},
@@ -80,7 +79,7 @@ delay_line_back_forth = html.Div(
                             label="Position 1",
                             labelPosition="top",
                         ),
-                    ]
+                    ],
                 ),
                 html.Div(
                     [
@@ -93,9 +92,9 @@ delay_line_back_forth = html.Div(
                             label="Position 2",
                             labelPosition="bottom",
                         ),
-                    ]
+                    ],
                 ),
-            ]
+            ],
         ),
     ],
     style={"display": "inline-block", "margin-right": "5%", "margin-left": "25%"},
@@ -106,7 +105,7 @@ ndfilter_setting = html.Div(
         html.P(id="current_angle"),
         html.P("SET ND filter angle (degree):  ", style={"display": "inline-block"}),
         ndfilter_input,
-    ]
+    ],
 )
 
 #  app.layout
@@ -123,7 +122,7 @@ app.layout = html.Div(
         ndfilter_setting,
         html.Hr(),
         dcc.Interval(id="intervals", interval=250, max_intervals=-1),
-    ]
+    ],
 )
 
 
@@ -144,10 +143,7 @@ def input_value(
     backforth_position2: float,
 ) -> tuple[bool, bool]:
     position_now: float | None = s.moving()
-    if position_now is None:
-        position_now = s.position()
-    else:
-        position_now = s.force_stop()
+    position_now = s.position() if position_now is None else s.force_stop()
     if back_and_force_is_on:
         is_disable_simple_input: bool = True
         if s.check_stop():
@@ -175,9 +171,9 @@ def update(
     position_now: float | None = s.moving()
     if position_now is None:
         position_now = s.position()
-    position_msg: str = "Current Position: {:.4f} mm".format(position_now)
+    position_msg: str = f"Current Position: {position_now:.4f} mm"
     angle_now: float = g.angle()
-    angle_msg: str = "Current Angle: {:.2f} degree".format(angle_now)
+    angle_msg: str = f"Current Angle: {angle_now:.2f} degree"
     return (
         position_msg,
         angle_msg,

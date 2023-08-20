@@ -71,7 +71,7 @@ class Picomotor8742:
         with contextlib.suppress(TypeError):
             self.cmd(axis, f"PR{distance:d}")
 
-    def move_indefinitely(self, axis: Axis = 1, positive: bool = True) -> None:
+    def move_indefinitely(self, axis: Axis = 1, *, positive: bool = True) -> None:
         """Move indefinitely.
 
         Need stop command to stop.
