@@ -69,7 +69,7 @@ class SC104(Comm):
             )
 
     def position(self) -> float:
-        """Return the current postion.
+        """Return the current position.
 
         Returns
         -------
@@ -167,7 +167,7 @@ class SC104(Comm):
             return int(tmp[0]) * 1.0e-4
 
     def set_speed(self, speed: float) -> None:
-        """Set stage spped in mm/s unit.
+        """Set stage speed in mm/s unit.
 
         Parameters
         ----------
@@ -179,12 +179,12 @@ class SC104(Comm):
         self.sendtext(command)
 
     def set_acceralation_time(self, acc: int) -> None:
-        """Set accelaration/deceleration time  (default 100ms).
+        """Set acceleration/deceleration time  (default 100ms).
 
         Parameters
         ----------
         acc: int
-            Accelaration/deceleration time in ms unit.
+            Acceleration/deceleration time in ms unit.
         """
         assert acc > 0
         command: str = f"ACC: 1 {acc}"
@@ -237,7 +237,7 @@ class SC104(Comm):
         *,
         wait: bool = True,
     ) -> None:
-        """Reciprocate the stage between postion A and B.
+        """Reciprocate the stage between position A and B.
 
         Parameters
         ----------
@@ -259,7 +259,7 @@ class SC104(Comm):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument("position", metavar="Postion", type=float)
+    parser.add_argument("position", metavar="Position", type=float)
     args = parser.parse_args()
     s = SC104()
     s.move_abs(args.position, wait=False)

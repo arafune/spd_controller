@@ -52,11 +52,11 @@ class Picomotor8742:
         """"""
         self.cmd(axis, cmd, *args)
         assert self.sock is not None
-        ans = self.sock.recv(128)
-        if ans[0] == 255:
-            ans = self.sock.recv(128)
-        assert ans[-2:] == b"\r\n"
-        return ans.strip()
+        answer = self.sock.recv(128)
+        if answer[0] == 255:
+            answer = self.sock.recv(128)
+        assert answer[-2:] == b"\r\n"
+        return answer.strip()
 
     def move_rel(self, axis: int = 1, distance: int = 0) -> None:
         """Move relatively.

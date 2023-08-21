@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Read voltage from Keithley 2000
 
-Caution: An old DMM K2000 dows not work with RS232. """
+Caution: An old DMM K2000 does not work with RS232. """
 from __future__ import annotations
 
 import argparse
@@ -60,7 +60,7 @@ class K2000(Comm):
         return True
 
     def measure(self) -> float:
-        """Meaurement
+        """Measure the voltage.
 
         From Data Read Single.vi
         """
