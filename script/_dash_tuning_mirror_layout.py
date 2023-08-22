@@ -219,7 +219,7 @@ def move_by_step(nl_order: NLORDER) -> html.Div:
 
 
 def mirror_component(nl_order: NLORDER) -> html.Div:
-    """Provide Mirror contol component.
+    """Provide Mirror control component.
 
     Parameters
     ----------

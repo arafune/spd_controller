@@ -112,8 +112,8 @@ ndfilter_setting = html.Div(
 
 app.layout = html.Div(
     [
-        html.Title("Delay line & ND filter contoller"),
-        html.H1("Delay line & ND filter contoller", style={"textAlign": "center"}),
+        html.Title("Delay line & ND filter controller"),
+        html.H1("Delay line & ND filter controller", style={"textAlign": "center"}),
         html.Hr(),
         html.H2("Delay line", style={"text-align": "center"}),
         html.Div([delay_line_setting, delay_line_back_forth]),

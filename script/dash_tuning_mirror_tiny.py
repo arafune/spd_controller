@@ -194,10 +194,10 @@ def move_mirror_indefinitely(axis: Axis, action: str) -> bool:
         Return true/false to set "disable" property of the dash component
     """
     if action == "left":
-        picomotor.move_indefinitely(axis, False)
+        picomotor.move_indefinitely(axis, positive=False)
         return True
     elif action == "right":
-        picomotor.move_indefinitely(axis, True)
+        picomotor.move_indefinitely(axis, positive=True)
         return True
     else:
         picomotor.force_stop(axis)
