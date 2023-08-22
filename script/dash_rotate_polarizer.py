@@ -94,7 +94,7 @@ def rel_rotate_start(angle: float, n_clicks: int) -> dict[str, str]:
     State("angle_value", "value"),
     Input("rel_rotate_button", "n_clicks"),
 )
-def rel_rotate_start(angle: float, n_clicks: int) -> dict[str, str]:
+def abs_rotate_start(angle: float, n_clicks: int) -> dict[str, str]:
     if n_clicks is not None:
         polarizer.move_abs(angle)
         return {"display": "inline-block", "marginLeft": "3em"}

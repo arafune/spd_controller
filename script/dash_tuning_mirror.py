@@ -75,7 +75,6 @@ def mirror_component(id: int):
     return html.Div(
         [
             html.H3(f"Mirror {id}ω", style={"marginLeft": "2em", "marginTop": "0.3em"}),
-
             html.Div(
                 [
                     daq.LEDDisplay(
@@ -281,7 +280,7 @@ def flipbutton1(n_clicks: int) -> dict[str, str]:
 def flipbutton2(n_clicks: int) -> dict[str, str]:
     """Flip the flipper2
 
-    Parameters
+    Prameters
     ----------
     n_clicks : int
         number of clicks of the button
