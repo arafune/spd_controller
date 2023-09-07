@@ -42,6 +42,7 @@ app = dash.Dash(
 input_rotation_angle = dbc.Input(
     id="angle_value",
     type="number",
+    value=0,
     debounce=True,
     size="lg",
     placeholder="Angle",
@@ -101,4 +102,4 @@ def abs_rotate_start(angle: float, n_clicks: int) -> dict[str, str]:
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True, host="0.0.0.0")
+    app.run_server(debug=True, host="0.0.0.0", port="8051")
