@@ -404,7 +404,7 @@ class Qmass:
     def leak_check(self) -> int:
         """Set Leak check mode.
 
-        Mass offset canbe set. But not supported yet.
+        Mass offset can be set. But not supported yet.
 
         Parameters
         ----------
@@ -515,7 +515,7 @@ class Qmass:
 
         """
         self.is_scanning = True
-        log_fmt = "{:02x} {:02x} {:02x} Pres.: {:.2e} {:5.2f} {}"
+        log_fmt = "{:02x} {:02x} {:02x} Pressure.: {:.2e} {:5.2f} {}"
         save_fmt = "{:5.3f}\t{:.5e}\n"
         leak_chk_fmt = "Pressure:{:.3e}: {}"
         data = []

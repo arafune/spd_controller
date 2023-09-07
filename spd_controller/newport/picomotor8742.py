@@ -1,3 +1,4 @@
+from __future__ import annotations
 import contextlib
 from typing import Literal
 
@@ -33,7 +34,7 @@ class Picomotor8742:
         self.sock.settimeout(self.timeout)
         self.sock.connect((self.host, self.port))
 
-    def cmd(self, axis: int, cmd: str, *args) -> int:
+    def cmd(self, axis: int, cmd: str, *args: str | bytes) -> int:
         """Send a command to 8742 controller.
 
         Parameters
@@ -48,7 +49,7 @@ class Picomotor8742:
         assert self.sock is not None
         return self.sock.send(cmdstr.encode("utf-8"))
 
-    def ask(self, axis: int, cmd: str, *args) -> bytes:
+    def ask(self, axis: int, cmd: str, *args: str | bytes) -> bytes:
         """"""
         self.cmd(axis, cmd, *args)
         assert self.sock is not None
