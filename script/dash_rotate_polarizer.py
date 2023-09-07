@@ -6,8 +6,6 @@ import dash_bootstrap_components as dbc
 from dash import html, Input, Output, State
 from spd_controller.thorlabs.k10cr1 import K10CR1
 
-polarizer = K10CR1("55274554")
-
 
 class Semaphore:
     def __init__(self, filename: str = "semaphore_pol.txt") -> None:
@@ -101,4 +99,11 @@ def abs_rotate_start(angle: float, n_clicks: int) -> dict[str, str]:
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True, host="0.0.0.0")
+    polarizer = K10CR1("55274554")
+    if not polarizer.ready:
+        from unittest.mock import MagicMock
+
+        polarizer = MagicMock()
+        polarizer.move_rel = MagicMock(side_effect="moverel")
+        polarizer.move_abs = MagicMock(side_effect="moveabs")
+    app.run_server(debug=True, host="0.0.0.0", PORT="8051")
