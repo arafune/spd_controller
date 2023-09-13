@@ -1,7 +1,24 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-
 from . import THORLABS_MOTION_CONTROL
+
+from random import random
+
+
+class MockMFF101:
+    def __init__(self, serial_num: str | int):
+        self.serial_num = int(serial_num)
+        self.ready = True
+
+    def position(self) -> int:
+        tmp = random()
+        if tmp > 0.5:
+            return 1
+        else:
+            return 2
+
+    def flip(self) -> None:
+        print(f"flip : {self.serial_num} ")
 
 
 class MFF101(THORLABS_MOTION_CONTROL):
@@ -14,7 +31,7 @@ class MFF101(THORLABS_MOTION_CONTROL):
         """Identify itself by flashing the LED.
 
         MGMSG_MODE_IDENTIFY
-        """
+       """
         return self.write("230200005001")
 
     def position(self) -> int:

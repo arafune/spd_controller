@@ -105,8 +105,6 @@ def position_display(nl_order: NLORDER) -> list:
 def speed_change_button(nl_order: NLORDER) -> html.Div:
     """Provide speed change selection button.
 
-    [TODO:description]
-
     Parameters
     ----------
     nl_order
@@ -291,9 +289,9 @@ flipper1_button = dbc.Button(
 
 
 flipper2_button = dbc.Button(
-    "Flipper1",
+    "Flipper2",
     color="danger",
-    id="flipper_1",
+    id="flipper_2",
     style={
         "display": "inline-block",
         "marginLeft": "1em",

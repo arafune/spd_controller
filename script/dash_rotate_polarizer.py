@@ -4,7 +4,19 @@
 import dash
 import dash_bootstrap_components as dbc
 from dash import html, Input, Output, State
-from spd_controller.thorlabs.k10cr1 import K10CR1
+from spd_controller.thorlabs.k10cr1 import K10CR1, MockK10CR1
+from logging import DEBUG, Formatter, Logger, StreamHandler, getLogger
+
+LOGLEVEL = DEBUG
+logger: Logger = getLogger(__name__)
+fmt = "%(asctime)s %(levelname)s %(name)s :%(message)s"
+formatter: Formatter = Formatter(fmt)
+handler = StreamHandler()
+handler.setLevel(LOGLEVEL)
+logger.setLevel(LOGLEVEL)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.propagate = False
 
 
 class Semaphore:
@@ -90,7 +102,7 @@ def rel_rotate_start(angle: float, n_clicks: int) -> dict[str, str]:
 @app.callback(
     Output("abs_rotate_button", "style"),
     State("angle_value", "value"),
-    Input("rel_rotate_button", "n_clicks"),
+    Input("abs_rotate_button", "n_clicks"),
 )
 def abs_rotate_start(angle: float, n_clicks: int) -> dict[str, str]:
     if n_clicks is not None:
@@ -101,9 +113,6 @@ def abs_rotate_start(angle: float, n_clicks: int) -> dict[str, str]:
 if __name__ == "__main__":
     polarizer = K10CR1("55274554")
     if not polarizer.ready:
-        from unittest.mock import MagicMock
-
-        polarizer = MagicMock()
-        polarizer.move_rel = MagicMock(side_effect="moverel")
-        polarizer.move_abs = MagicMock(side_effect="moveabs")
-    app.run_server(debug=True, host="0.0.0.0", PORT="8051")
+        polarizer = MockK10CR1("55274554")
+        logger.debug("Use Mock K10CR1")
+    app.run_server(debug=True, host="0.0.0.0", port="8051")

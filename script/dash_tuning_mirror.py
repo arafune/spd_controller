@@ -1,485 +1,282 @@
 #!/usr/bin/env python3
-"""Dash based application for tunig mirror and flipper"""
+"""Dash based application for tuning mirror and flipper."""
 
-from __future__ import annotations
+import argparse
+from typing import Literal
+from logging import DEBUG, INFO, Formatter, Logger, StreamHandler, getLogger
 
 import dash
 import dash_bootstrap_components as dbc
-import dash_daq as daq
+from _dash_tuning_mirror_layout import (
+    flipper1_button,
+    flipper2_button,
+    mirror_component,
+)
 from dash import Input, Output, State, ctx, dcc, html
 
-import spd_controller.newport.picomotor8742 as picomotor8742
-import spd_controller.thorlabs.mff101 as mff101
-
-from spd_controller.newport.picomotor8742 import Axis
+from spd_controller.newport.picomotor8742 import Axis, MockPicomoter8742, Picomotor8742
+from spd_controller.thorlabs.mff101 import MFF101, MockMFF101
 
 external_stylesheets = [dbc.themes.MATERIA]
+
+LOGLEVEL = (DEBUG, INFO)[1]
+logger: Logger = getLogger(__name__)
+fmt = "%(asctime)s %(levelname)s %(name)s :%(message)s"
+formatter: Formatter = Formatter(fmt)
+handler = StreamHandler()
+handler.setLevel(LOGLEVEL)
+logger.setLevel(LOGLEVEL)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.propagate = False
+
 
 app = dash.Dash(
     __name__,
     external_stylesheets=external_stylesheets,
-    title="Mirror tuning",
+    title="mirror tuning",
     update_title="",
     suppress_callback_exceptions=True,
 )
 
-# ---------- Layout
-
-
-def flipper_component(id: int):
-    """Flipper flipper_component
-
-    Parameters
-    ----------
-    id : int
-        1 or 2
-    """
-    return html.Div(
-        [
-            html.H3(
-                f"Flipper {id}", style={"marginLeft": "2em", "display": "inline-block"}
-            ),
-            dbc.Button(
-                "Flip {}!".format(id),
-                size="large",
-                color="primary",
-                id=f"flip{id}",
-                style={
-                    "display": "inline-block",
-                    "align-items": "center",
-                    "justify-content": "center",
-                    "marginLeft": "5%",
-                    "marginBottom": ".3em",
-                    "marginTop": ".3em",
-                },
-            ),
-        ],
-        id=f"flipper{id}",
-        style={
-            "margin": "2em",
-            "border-style": "solid",
-            "border-radius": "10pt",
-            "border-color": "green",
-        },
-    )
-
-
-def mirror_component(id: int):
-    """Mirror flipper_component
-
-    Parameters
-    ----------
-    id: int
-        1 or 3
-    """
-    return html.Div(
-        [
-            html.H3(f"Mirror {id}ω", style={"marginLeft": "2em", "marginTop": "0.3em"}),
-            html.Div(
-                [
-                    daq.LEDDisplay(
-                        value="0",
-                        color="red",
-                        id=f"position_{id}omega",
-                        size=24,
-                        style={"marginLeft": "1em"},
-                    ),
-                    dbc.Button(
-                        "◀",
-                        color="primary",
-                        size="sm",
-                        style={"marginLeft": "2em"},
-                        id=f"left_{id}omega",
-                    ),
-                    dbc.Button(
-                        "■",
-                        color="primary",
-                        size="sm",
-                        id=f"stop_{id}omega",
-                    ),
-                    dbc.Button(
-                        "▶",
-                        color="primary",
-                        size="sm",
-                        id=f"right_{id}omega",
-                    ),
-                    dbc.Tooltip(
-                        "Anti-clockwise rotation indefinitely",
-                        target=f"left_{id}omega",
-                        placement="top",
-                    ),
-                    dbc.Tooltip(
-                        "Clockwise rotation indefiniteely",
-                        target=f"right_{id}omega",
-                        placement="top",
-                    ),
-                    dbc.Tooltip(
-                        "Stop rotating", target=f"stop_{id}omega", placement="top"
-                    ),
-                ],
-                style={"display": "inline-block", "width": "30%"},
-            ),
-            html.Div(
-                [
-                    dbc.DropdownMenu(
-                        label="Velocity",
-                        children=[
-                            dbc.DropdownMenuItem(
-                                "Max", id=f"velocity_{id}omega_max", n_clicks=0
-                            ),
-                            dbc.DropdownMenuItem(
-                                "Middle", id=f"velocity_{id}omega_middle", n_clicks=0
-                            ),
-                            dbc.DropdownMenuItem(
-                                "Low", id=f"velocity_{id}omega_low", n_clicks=0
-                            ),
-                        ],
-                        className="mb-3",
-                        size="sm",
-                        id=f"velocity_{id}omega",
-                        style={"display": "inline-block"},
-                    ),
-                    dbc.Tooltip(
-                        "Max: 2000 (step/s), Middle: 200, Low:20",
-                        target=f"velocity_{id}omega",
-                        placement="top",
-                    ),
-                    html.P(
-                        children="Max",
-                        id=f"current_velocity_{id}omega",
-                        style={"display": "inline-block", "marginLeft": "1em"},
-                    ),
-                ],
-                style={"display": "inline-block", "marginLeft": "2em"},
-            ),
-            html.Div(
-                [
-                    dbc.Input(
-                        type="number",
-                        min=-1000,
-                        max=1000,
-                        step=1,
-                        placeholder="Input steps from here",
-                        inputmode="numeric",
-                        debounce=True,
-                        disabled=False,
-                        value=0,
-                        id=f"move_{id}omega",
-                        size="md",
-                        style={
-                            "display": "inline-block",
-                            "width": "10em",
-                        },
-                    ),
-                    dbc.Button(
-                        "Move",
-                        color="primary",
-                        id=f"move_start_{id}omega",
-                        style={
-                            "display": "inline-block",
-                            "marginLeft": "1em",
-                        },
-                    ),
-                ],
-                style={
-                    "text-align": "center",
-                    "marginBottom": ".3em",
-                },
-            ),
-        ],
-        id=f"mirror{id}",
-        style={
-            "border-style": "solid",
-            "border-radius": "10pt",
-            "border-color": "red",
-            "margin": "2em",
-        },
-    )
-
 
 app.layout = html.Article(
     children=[
-        html.H1("Tuning Mirrors", style={"text-align": "center"}),
+        html.H1("Turning Mirrors/flippers", style={"text-align": "center"}),
         dcc.Interval(id="realtime_interval", interval=1000),
+        html.Div([]),  # flipper
+        flipper1_button,
+        flipper2_button,
         html.Div(
             [
-                flipper_component(1),
-                flipper_component(2),
+                mirror_component(nl_order=3),
+                mirror_component(nl_order=1),
             ],
-            style={"display": "inline-block", "width": "50%", "verticalAlign": "top"},
-        ),
-        html.Div(
-            [
-                mirror_component(3),
-                mirror_component(1),
-            ],
-            style={"display": "inline-block", "width": "50%", "verticalAlign": "top"},
         ),
     ],
-    lang="english",
 )
-
-# Callback
-# ---------- Flipper Button
-
-
-def flipbutton(id, n_clicks) -> dict[str, str]:
-    """Base of the callback function for flipbutton1
-
-    Parameters
-    --------------
-    n_clicks: int
-        number of clicks
-
-    Returns
-    -------
-    dict [str, str]
-        css style of the border
-    """
-    if id == 1:
-        flipper = flipper1
-    elif id == 2:
-        flipper = flipper2
-    else:
-        raise RuntimeError("We have only 2 flippers")
-    if n_clicks is not None:
-        flipper.flip()
-    if flipper.position() in (1, 18):
-        return {
-            "margin": "2em",
-            "border-style": "solid",
-            "border-radius": "10pt",
-            "border-color": "green",
-        }
-    return {
-        "margin": "2em",
-        "border-style": "solid",
-        "border-radius": "10pt",
-        "border-color": "blue",
-    }
-
-
-@app.callback(Output("flipper1", "style"), Input("flip1", "n_clicks"))
-def flipbutton1(n_clicks: int) -> dict[str, str]:
-    """Flip the flipper1
-
-    Parameters
-    ----------
-    n_clicks : int
-        number of clicks of the button
-
-    Returns
-    -------
-    dict[str, str]
-        css style of the border
-    """
-    return flipbutton(1, n_clicks)
-
-
-@app.callback(Output("flipper2", "style"), Input("flip2", "n_clicks"))
-def flipbutton2(n_clicks: int) -> dict[str, str]:
-    """Flip the flipper2
-
-    Parameters
-    ----------
-    n_clicks : int
-        number of clicks of the button
-
-    Returns
-    -------
-    dict[str, str]
-        css style of the border
-    """
-    return flipbutton(2, n_clicks)
-
-
-# ----------- Callback: Mirror
 
 
 def move_mirror_indefinitely(axis: Axis, action: str) -> bool:
-    """Move mirror indefinitely
+    """Move mirror indefinitely.
 
     Parameters
     ----------
     axis: int
         Axis number
     action: str
-        "left", "right", or other (= "stop")
+        "cw", "ccw", or other (= "stop")
 
     Returns
     -------
     bool
         Return true/false to set "disable" property of the dash component
     """
-    if action == "left":
+    if action == "ccw":
         picomotor.move_indefinitely(axis, positive=False)
         return True
-    elif action == "right":
+    if action == "cw":
         picomotor.move_indefinitely(axis, positive=True)
         return True
-    else:
-        picomotor.force_stop(axis)
-        return False
+    picomotor.force_stop(axis)
+    return False
+
+
+# --------
+
+
+def move_start(
+    axis: Literal[1, 2, 3, 4], distance: int
+) -> tuple[bool, bool, bool, bool, bool]:
+    picomotor.move_rel(axis, distance)
+    return False, False, False, False, False
 
 
 @app.callback(
-    Output("move_start_3omega", "disabled"),
-    Input("right_3omega", "n_clicks"),
-    Input("left_3omega", "n_clicks"),
-    Input("stop_3omega", "n_clicks"),
+    Output("right_3", "disabled"),
+    Output("left_3", "disabled"),
+    Output("up_3", "disabled"),
+    Output("down_3", "disabled"),
+    Output("stop_3", "disabled"),
+    State("movement_3", "value"),
+    Input("move_h_3", "n_clicks"),
+    Input("move_v_3", "n_clicks"),
+)
+def move_3omega(
+    distance: int, n_clicks_h: int | None, n_clicks_v: int | None
+) -> tuple[bool, bool, bool, bool, bool]:
+    logger.debug(f"n_clics_h 3ω {n_clicks_h}")
+    logger.debug(f"n_clics_v 3ω {n_clicks_v}")
+    button_clicked = ctx.triggered_id
+    if button_clicked == "move_h_3":
+        return move_start(1, distance)
+    elif button_clicked == "move_v_3":
+        return move_start(2, distance)
+    return True, True, True, True, True
+
+
+@app.callback(
+    Output("right_1", "disabled"),
+    Output("left_1", "disabled"),
+    Output("up_1", "disabled"),
+    Output("down_1", "disabled"),
+    Output("stop_1", "disabled"),
+    State("movement_1", "value"),
+    Input("move_h_1", "n_clicks"),
+    Input("move_v_1", "n_clicks"),
+)
+def move_1omega(
+    distance: int, n_clicks_h: int | None, n_clicks_v: int | None
+) -> tuple[bool, bool, bool, bool, bool]:
+    logger.debug(f"n_clics_h ω {n_clicks_h}")
+    logger.debug(f"n_clics_v ω {n_clicks_v}")
+    button_clicked = ctx.triggered_id
+    if button_clicked == "move_h_1":
+        return move_start(3, distance)
+    elif button_clicked == "move_v_1":
+        return move_start(4, distance)
+    return True, True, True, True, True
+
+
+@app.callback(
+    Output("move_h_3", "disabled"),
+    Output("move_v_3", "disabled"),
+    Input("right_3", "n_clicks"),
+    Input("left_3", "n_clicks"),
+    Input("up_3", "n_clicks"),
+    Input("down_3", "n_clicks"),
+    Input("stop_3", "n_clicks"),
 )
 def move_3omega_mirror_indefinitely(
-    right_button: int, left_button: int, stop_button: int
-):
+    right_button: int,
+    left_button: int,
+    up_button: int,
+    down_button: int,
+    stop_button: int,
+) -> tuple[bool, bool]:
+    logger.debug(f"right_button 3ω {right_button}")
+    logger.debug(f"left_button 3ω {left_button}")
+    logger.debug(f"up_button 3ω {up_button}")
+    logger.debug(f"down_button 3ω {down_button}")
+    logger.debug(f"stop_button 3ω {stop_button}")
     button_clicked = ctx.triggered_id
-    if button_clicked == "right_3omega":
-        return move_mirror_indefinitely(1, "right")
-    elif button_clicked == "left_3omega":
-        return move_mirror_indefinitely(1, "left")
+    if button_clicked == "right_3":
+        ret_bool = move_mirror_indefinitely(1, "ccw")
+        return ret_bool, ret_bool
+    elif button_clicked == "left_3":
+        ret_bool = move_mirror_indefinitely(1, "cw")
+        return ret_bool, ret_bool
+    elif button_clicked == "up_3":
+        ret_bool = move_mirror_indefinitely(2, "ccw")
+        return ret_bool, ret_bool
+    elif button_clicked == "down_3":
+        ret_bool = move_mirror_indefinitely(2, "cw")
+        return ret_bool, ret_bool
     else:
-        return move_mirror_indefinitely(1, "stop")
+        return move_mirror_indefinitely(1, "stop"), move_mirror_indefinitely(2, "stop")
 
 
 @app.callback(
-    Output("move_start_1omega", "disabled"),
-    Input("right_1omega", "n_clicks"),
-    Input("left_1omega", "n_clicks"),
-    Input("stop_1omega", "n_clicks"),
+    Output("move_h_1", "disabled"),
+    Output("move_v_1", "disabled"),
+    Input("right_1", "n_clicks"),
+    Input("left_1", "n_clicks"),
+    Input("up_1", "n_clicks"),
+    Input("down_1", "n_clicks"),
+    Input("stop_1", "n_clicks"),
 )
 def move_1omega_mirror_indefinitely(
-    right_button: int, left_button: int, stop_button: int
-):
+    right_button: int,
+    left_button: int,
+    up_button: int,
+    down_button: int,
+    stop_button: int,
+) -> tuple[bool, bool]:
+    logger.debug(f"right_button ω {right_button}")
+    logger.debug(f"left_button ω {left_button}")
+    logger.debug(f"up_button ω {up_button}")
+    logger.debug(f"down_button ω {down_button}")
+    logger.debug(f"stop_button ω {stop_button}")
     button_clicked = ctx.triggered_id
-    if button_clicked == "right_1omega":
-        return move_mirror_indefinitely(2, "right")
-    elif button_clicked == "left_1omega":
-        return move_mirror_indefinitely(2, "left")
+    if button_clicked == "right_1":
+        ret_bool = move_mirror_indefinitely(3, "ccw")
+        return ret_bool, ret_bool
+    elif button_clicked == "left_1":
+        ret_bool = move_mirror_indefinitely(3, "cw")
+        return ret_bool, ret_bool
+    elif button_clicked == "up_1":
+        ret_bool = move_mirror_indefinitely(4, "ccw")
+        return ret_bool, ret_bool
+    elif button_clicked == "down_1":
+        ret_bool = move_mirror_indefinitely(4, "cw")
+        return ret_bool, ret_bool
     else:
-        return move_mirror_indefinitely(2, "stop")
+        return move_mirror_indefinitely(3, "stop"), move_mirror_indefinitely(4, "stop")
 
 
 @app.callback(
-    Output("current_velocity_3omega", "children"),
-    Input("velocity_3omega_max", "n_clicks"),
-    Input("velocity_3omega_middle", "n_clicks"),
-    Input("velocity_3omega_low", "n_clicks"),
+    Output("current_velocity_3", "children"),
+    Input("velocity_3_max", "n_clicks"),
+    Input("velocity_3_middle", "n_clicks"),
+    Input("velocity_3_min", "n_clicks"),
 )
-def change_3omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
+def change_3omega_mirror_velocity(
+    max_speed: int, middle_speed: int, minimum_speed: int
+) -> str:
+    logger.debug(f"max_speed button 3ω {max_speed}")
+    logger.debug(f"middle_speed button 3ω {middle_speed}")
+    logger.debug(f"minimu_speed button 3ω {minimum_speed}")
     selected_item = ctx.triggered_id
-    if selected_item == "velocity_3omega_max":
+    if selected_item == "velocity_3_max":
         picomotor.set_velocity(1, 2000)
-        return "Max"
-    elif selected_item == "velocity_3omega_middle":
-        picomotor.set_velocity(1, 200)
-        return "Middle"
-    else:
-        picomotor.set_velocity(1, 20)
-        return "Low"
-
-
-@app.callback(
-    Output("current_velocity_1omega", "children"),
-    Input("velocity_1omega_max", "n_clicks"),
-    Input("velocity_1omega_middle", "n_clicks"),
-    Input("velocity_1omega_low", "n_clicks"),
-)
-def change_1omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
-    selected_item = ctx.triggered_id
-    if selected_item == "velocity_1omega_max":
         picomotor.set_velocity(2, 2000)
-        return "Max"
-
-    elif selected_item == "velocity_1omega_middle":
+        return "Max speed"
+    elif selected_item == "velocity_3_middle":
+        picomotor.set_velocity(1, 200)
         picomotor.set_velocity(2, 200)
-        return "Middle"
+        return "Middle speed"
     else:
         picomotor.set_velocity(1, 20)
-        return "Low"
-
-
-def move_start(axis: int, distance: int) -> tuple[bool, bool, bool]:
-    """Function for move_start_button
-
-    Parameters
-    -------------
-    axis: int
-        Axis number
-    distance: int
-        Relative distance(step)
-
-    Returns
-    --------
-    tuple[bool, bool, bool]
-       value for "disabled" property of button
-    """
-    picomotor.move_rel(axis, distance)
-    return False, False, False
+        picomotor.set_velocity(2, 20)
+        return "Low speed"
 
 
 @app.callback(
-    Output("left_3omega", "disabled"),
-    Output("stop_3omega", "disabled"),
-    Output("right_3omega", "disabled"),
-    State("move_3omega", "value"),
-    Input("move_start_3omega", "n_clicks"),
+    Output("current_velocity_1", "children"),
+    Input("velocity_1_max", "n_clicks"),
+    Input("velocity_1_middle", "n_clicks"),
+    Input("velocity_1_min", "n_clicks"),
 )
-def move_start_3omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
-    """
-    Trigger of 3ω mirror moving
-
-    Parameters
-    ----------
-    distance: int
-        number of steps
-    n_clicks
-        number of clicks of the dash button
-
-    Returns
-    -------
-    tuple[bool, bool, bool]
-        "disable" property of the dash component
-    """
-    if n_clicks is not None:
-        return move_start(1, distance)
-    return True, True, True
-
-
-@app.callback(
-    Output("left_1omega", "disabled"),
-    Output("stop_1omega", "disabled"),
-    Output("right_1omega", "disabled"),
-    State("move_1omega", "value"),
-    Input("move_start_1omega", "n_clicks"),
-)
-def move_start_1omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
-    """Trigger of 3ω mirror moving
-
-
-    Parameters
-    ----------
-    distance
-        number of steps
-    n_clicks
-        number of clicks of the dash button
-
-    Returns
-    -------
-    tuple[bool, bool, bool]
-        "disable" property of the dash component
-    """
-    if n_clicks is not None:
-        return move_start(2, distance)
-    return True, True, True
+def change_1omega_mirror_velocity(
+    max_speed: int, middle_speed: int, minimum_speed: int
+) -> str:
+    logger.debug(f"max_speed button ω {max_speed}")
+    logger.debug(f"middle_speed button ω {middle_speed}")
+    logger.debug(f"minimu_speed button ω {minimum_speed}")
+    selected_item = ctx.triggered_id
+    if selected_item == "velocity_1_max":
+        picomotor.set_velocity(3, 2000)
+        picomotor.set_velocity(4, 2000)
+        return "Max speed"
+    elif selected_item == "velocity_1_middle":
+        picomotor.set_velocity(3, 200)
+        picomotor.set_velocity(4, 200)
+        return "Middle speed"
+    else:
+        picomotor.set_velocity(3, 20)
+        picomotor.set_velocity(4, 20)
+        return "Low speed"
 
 
 @app.callback(
-    Output("position_3omega", "value"),
-    Output("position_1omega", "value"),
+    Output("position_h_3ω", "value"),
+    Output("position_v_3ω", "value"),
+    Output("position_h_1ω", "value"),
+    Output("position_v_1ω", "value"),
     Input("realtime_interval", "n_intervals"),
 )
-def update_mirror_position(n_intervals: int) -> tuple[int, int]:
+def update_mirror_positon(n_intervals: int | None) -> tuple[int, int, int, int]:
     """Return the current mirror tilt
-
 
     Parameters
     ----------
@@ -494,15 +291,40 @@ def update_mirror_position(n_intervals: int) -> tuple[int, int]:
     if n_intervals is not None:
         mirror_position1 = picomotor.position(1)
         mirror_position2 = picomotor.position(2)
-        return mirror_position1, mirror_position2
-    return 0, 0
+        mirror_position3 = picomotor.position(3)
+        mirror_position4 = picomotor.position(4)
+        return mirror_position1, mirror_position2, mirror_position3, mirror_position4
+    return 0, 0, 0, 0
 
 
-# --Main
+# ---
 
 if __name__ == "__main__":
-    flipper1 = mff101.MFF101("37003548")
-    flipper2 = mff101.MFF101("37003278")
-    picomotor = picomotor8742.Picomotor8742(host="144.213.126.101")
-    picomotor.connect()
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument(
+        "--use_mock", action="store_true", help="Use Mock for check", default=False
+    )
+    args = parser.parse_args()
+    idcodes = ("37003548", "37003278")
+    host_address = "144.213.126.101"
+    flipper1: MFF101 | MockMFF101 = MFF101(str(idcodes[0]))
+    if not flipper1.ready:
+        flipper1 = MockMFF101(str(idcodes[0]))
+        logger.debug(f"Use MockMFF101 for {idcodes[0]}")
+    flipper2: MFF101 | MockMFF101 = MFF101(str(idcodes[1]))
+    if not flipper2.ready:
+        flipper2 = MockMFF101(str(idcodes[1]))
+        logger.debug(f"Use MockMFF101 for {idcodes[1]}")
+    picomotor: Picomotor8742 | MockPicomoter8742 = Picomotor8742(host=host_address)
+    try:
+        picomotor.connect()
+    except (TimeoutError, OSError):
+        logger.debug("Use MockPicomoter8742")
+        picomotor = MockPicomoter8742()
+    if args.use_mock:
+        LOGLEVEL = DEBUG
+        logger.debug("Use Mock Mode")
+        flipper1 = MockMFF101(str(idcodes[0]))
+        flipper2 = MockMFF101(str(idcodes[1]))
+        picomotor = MockPicomoter8742()
     app.run_server(debug=True, host="0.0.0.0", dev_tools_ui=None)

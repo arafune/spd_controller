@@ -3,14 +3,26 @@
 
 from __future__ import annotations
 
+from logging import INFO, Formatter, Logger, StreamHandler, getLogger
 import dash
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 from dash import Input, Output, State, ctx, dcc, html
 
-import spd_controller.newport.picomotor8742 as picomotor8742
 
-from spd_controller.newport.picomotor8742 import Axis
+from spd_controller.newport.picomotor8742 import Axis, Picomotor8742, MockPicomoter8742
+
+LOGLEVEL = INFO
+logger: Logger = getLogger(__name__)
+fmt = "%(asctime)s %(levelname)s %(name)s :%(message)s"
+formatter: Formatter = Formatter(fmt)
+handler = StreamHandler()
+handler.setLevel(LOGLEVEL)
+logger.setLevel(LOGLEVEL)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.propagate = False
+
 
 external_stylesheets = [dbc.themes.MATERIA]
 
@@ -305,7 +317,7 @@ def move_start(axis: int, distance: int) -> tuple[bool, bool, bool]:
     State("move_3omega", "value"),
     Input("move_start_3omega", "n_clicks"),
 )
-def move_start_3omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
+def move_start_3omega(distance: int, n_clicks: int | None) -> tuple[bool, bool, bool]:
     """
     Trigger of 3ω mirror moving
 
@@ -333,7 +345,7 @@ def move_start_3omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     State("move_1omega", "value"),
     Input("move_start_1omega", "n_clicks"),
 )
-def move_start_1omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
+def move_start_1omega(distance: int, n_clicks: int | None) -> tuple[bool, bool, bool]:
     """Trigger of 3ω mirror moving
 
 
@@ -358,8 +370,9 @@ def move_start_1omega(distance: int, n_clicks: int) -> tuple[bool, bool, bool]:
     Output("position_3omega", "value"),
     Output("position_1omega", "value"),
     Input("realtime_interval", "n_intervals"),
+    Input("realtime_interval", "n_intervals"),
 )
-def update_mirror_position(n_intervals: int) -> tuple[int, int]:
+def update_mirror_position(n_intervals: int | None) -> tuple[int, int]:
     """Return the current mirror tilt
 
 
@@ -383,6 +396,10 @@ def update_mirror_position(n_intervals: int) -> tuple[int, int]:
 # --Main
 
 if __name__ == "__main__":
-    picomotor = picomotor8742.Picomotor8742(host="144.213.126.101")
-    picomotor.connect()
+    picomotor: Picomotor8742 | MockPicomoter8742 = Picomotor8742(host="144.213.126.101")
+    try:
+        picomotor.connect()
+    except (TimeoutError, OSError):
+        logger.info("Testing mode")
+        picomotor = MockPicomoter8742()
     app.run_server(debug=True, host="0.0.0.0", dev_tools_ui=None)
