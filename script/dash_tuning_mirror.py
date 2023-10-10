@@ -4,6 +4,7 @@
 import argparse
 from typing import Literal
 from logging import DEBUG, INFO, Formatter, Logger, StreamHandler, getLogger
+from enum import Enum
 
 import dash
 import dash_bootstrap_components as dbc
@@ -29,6 +30,13 @@ logger.setLevel(LOGLEVEL)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.propagate = False
+
+
+class AXIS(Enum):
+    h_3omega = 1
+    h_omega = 2
+    v_3omega = 3
+    v_omega = 4
 
 
 app = dash.Dash(
@@ -109,9 +117,9 @@ def move_3omega(
     logger.debug(f"n_clics_v 3ω {n_clicks_v}")
     button_clicked = ctx.triggered_id
     if button_clicked == "move_h_3":
-        return move_start(1, distance)
+        return move_start(AXIS.h_3omega.value, distance)
     elif button_clicked == "move_v_3":
-        return move_start(2, distance)
+        return move_start(AXIS.v_3omega.value, distance)
     return True, True, True, True, True
 
 
@@ -132,9 +140,9 @@ def move_1omega(
     logger.debug(f"n_clics_v ω {n_clicks_v}")
     button_clicked = ctx.triggered_id
     if button_clicked == "move_h_1":
-        return move_start(3, distance)
+        return move_start(AXIS.h_omega.value, distance)
     elif button_clicked == "move_v_1":
-        return move_start(4, distance)
+        return move_start(AXIS.v_omega.value, distance)
     return True, True, True, True, True
 
 
@@ -161,19 +169,25 @@ def move_3omega_mirror_indefinitely(
     logger.debug(f"stop_button 3ω {stop_button}")
     button_clicked = ctx.triggered_id
     if button_clicked == "right_3":
-        ret_bool = move_mirror_indefinitely(1, "ccw")
+        ret_bool = move_mirror_indefinitely(AXIS.h_3omega.value, "ccw")
         return ret_bool, ret_bool
     elif button_clicked == "left_3":
-        ret_bool = move_mirror_indefinitely(1, "cw")
+        ret_bool = move_mirror_indefinitely(AXIS.h_3omega.value, "cw")
         return ret_bool, ret_bool
     elif button_clicked == "up_3":
-        ret_bool = move_mirror_indefinitely(2, "ccw")
+        ret_bool = move_mirror_indefinitely(AXIS.v_3omega.value, "ccw")
         return ret_bool, ret_bool
     elif button_clicked == "down_3":
-        ret_bool = move_mirror_indefinitely(2, "cw")
+        ret_bool = move_mirror_indefinitely(AXIS.v_3omega.value, "cw")
         return ret_bool, ret_bool
     else:
-        return move_mirror_indefinitely(1, "stop"), move_mirror_indefinitely(2, "stop")
+        return move_mirror_indefinitely(
+            AXIS.h_3omega.value,
+            "stop",
+        ), move_mirror_indefinitely(
+            AXIS.v_3omega.value,
+            "stop",
+        )
 
 
 @app.callback(
@@ -199,16 +213,16 @@ def move_1omega_mirror_indefinitely(
     logger.debug(f"stop_button ω {stop_button}")
     button_clicked = ctx.triggered_id
     if button_clicked == "right_1":
-        ret_bool = move_mirror_indefinitely(3, "ccw")
+        ret_bool = move_mirror_indefinitely(AXIS.h_omega.value, "ccw")
         return ret_bool, ret_bool
     elif button_clicked == "left_1":
-        ret_bool = move_mirror_indefinitely(3, "cw")
+        ret_bool = move_mirror_indefinitely(AXIS.h_omega.value, "cw")
         return ret_bool, ret_bool
     elif button_clicked == "up_1":
-        ret_bool = move_mirror_indefinitely(4, "ccw")
+        ret_bool = move_mirror_indefinitely(AXIS.v_omega.value, "ccw")
         return ret_bool, ret_bool
     elif button_clicked == "down_1":
-        ret_bool = move_mirror_indefinitely(4, "cw")
+        ret_bool = move_mirror_indefinitely(AXIS.v_omega.value, "cw")
         return ret_bool, ret_bool
     else:
         return move_mirror_indefinitely(3, "stop"), move_mirror_indefinitely(4, "stop")
@@ -228,16 +242,16 @@ def change_3omega_mirror_velocity(
     logger.debug(f"minimu_speed button 3ω {minimum_speed}")
     selected_item = ctx.triggered_id
     if selected_item == "velocity_3_max":
-        picomotor.set_velocity(1, 2000)
-        picomotor.set_velocity(2, 2000)
+        picomotor.set_velocity(AXIS.h_3omega.value, 2000)
+        picomotor.set_velocity(AXIS.v_3omega.value, 2000)
         return "Max speed"
     elif selected_item == "velocity_3_middle":
-        picomotor.set_velocity(1, 200)
-        picomotor.set_velocity(2, 200)
+        picomotor.set_velocity(AXIS.h_3omega.value, 200)
+        picomotor.set_velocity(AXIS.v_3omega.value, 200)
         return "Middle speed"
     else:
-        picomotor.set_velocity(1, 20)
-        picomotor.set_velocity(2, 20)
+        picomotor.set_velocity(AXIS.h_3omega.value, 20)
+        picomotor.set_velocity(AXIS.v_3omega.value, 20)
         return "Low speed"
 
 
@@ -255,16 +269,16 @@ def change_1omega_mirror_velocity(
     logger.debug(f"minimu_speed button ω {minimum_speed}")
     selected_item = ctx.triggered_id
     if selected_item == "velocity_1_max":
-        picomotor.set_velocity(3, 2000)
-        picomotor.set_velocity(4, 2000)
+        picomotor.set_velocity(AXIS.h_omega.value, 2000)
+        picomotor.set_velocity(AXIS.v_omega.value, 2000)
         return "Max speed"
     elif selected_item == "velocity_1_middle":
-        picomotor.set_velocity(3, 200)
-        picomotor.set_velocity(4, 200)
+        picomotor.set_velocity(AXIS.h_omega.value, 200)
+        picomotor.set_velocity(AXIS.v_omega.value, 200)
         return "Middle speed"
     else:
-        picomotor.set_velocity(3, 20)
-        picomotor.set_velocity(4, 20)
+        picomotor.set_velocity(AXIS.h_omega.value, 20)
+        picomotor.set_velocity(AXIS.v_omega.value, 20)
         return "Low speed"
 
 
@@ -289,10 +303,10 @@ def update_mirror_positon(n_intervals: int | None) -> tuple[int, int, int, int]:
         step of the actuator
     """
     if n_intervals is not None:
-        mirror_position1 = picomotor.position(1)
-        mirror_position2 = picomotor.position(2)
-        mirror_position3 = picomotor.position(3)
-        mirror_position4 = picomotor.position(4)
+        mirror_position1 = picomotor.position(AXIS.h_3omega.value)
+        mirror_position2 = picomotor.position(AXIS.v_3omega.value)
+        mirror_position3 = picomotor.position(AXIS.h_omega.value)
+        mirror_position4 = picomotor.position(AXIS.v_omega.value)
         return mirror_position1, mirror_position2, mirror_position3, mirror_position4
     return 0, 0, 0, 0
 
