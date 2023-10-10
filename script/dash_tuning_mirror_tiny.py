@@ -8,6 +8,7 @@ import dash
 import dash_bootstrap_components as dbc
 import dash_daq as daq
 from dash import Input, Output, State, ctx, dcc, html
+from enum import Enum
 
 
 from spd_controller.newport.picomotor8742 import Axis, Picomotor8742, MockPicomoter8742
@@ -25,6 +26,12 @@ logger.propagate = False
 
 
 external_stylesheets = [dbc.themes.MATERIA]
+
+
+class AXIS(Enum):
+    h_3omega = 1
+    h_omega = 2
+
 
 app = dash.Dash(
     __name__,
@@ -225,13 +232,16 @@ def move_mirror_indefinitely(axis: Axis, action: str) -> bool:
 def move_3omega_mirror_indefinitely(
     right_button: int, left_button: int, stop_button: int
 ):
+    logger.debug(f"right button 3omega: {right_button}")
+    logger.debug(f"left button 3omega: {left_button}")
+    logger.debug(f"stop button 3omega: {stop_button}")
     button_clicked = ctx.triggered_id
     if button_clicked == "right_3omega":
-        return move_mirror_indefinitely(1, "right")
+        return move_mirror_indefinitely(AXIS.h_3omega.value, "right")
     elif button_clicked == "left_3omega":
-        return move_mirror_indefinitely(1, "left")
+        return move_mirror_indefinitely(AXIS.h_3omega.value, "left")
     else:
-        return move_mirror_indefinitely(1, "stop")
+        return move_mirror_indefinitely(AXIS.h_3omega.value, "stop")
 
 
 @app.callback(
@@ -243,13 +253,16 @@ def move_3omega_mirror_indefinitely(
 def move_1omega_mirror_indefinitely(
     right_button: int, left_button: int, stop_button: int
 ):
+    logger.debug(f"right button omega: {right_button}")
+    logger.debug(f"left button omega: {left_button}")
+    logger.debug(f"stop button omega: {stop_button}")
     button_clicked = ctx.triggered_id
     if button_clicked == "right_1omega":
-        return move_mirror_indefinitely(2, "right")
+        return move_mirror_indefinitely(AXIS.h_omega.value, "right")
     elif button_clicked == "left_1omega":
-        return move_mirror_indefinitely(2, "left")
+        return move_mirror_indefinitely(AXIS.h_omega.value, "left")
     else:
-        return move_mirror_indefinitely(2, "stop")
+        return move_mirror_indefinitely(AXIS.h_omega.value, "stop")
 
 
 @app.callback(
@@ -259,15 +272,18 @@ def move_1omega_mirror_indefinitely(
     Input("velocity_3omega_low", "n_clicks"),
 )
 def change_3omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
+    logger.debug(f"max speed button 3omega: {max_speed}")
+    logger.debug(f"middle speed button 3omega: {middle_speed}")
+    logger.debug(f"low speed button 3omega: {low_speed}")
     selected_item = ctx.triggered_id
     if selected_item == "velocity_3omega_max":
-        picomotor.set_velocity(1, 2000)
+        picomotor.set_velocity(AXIS.h_3omega.value, 2000)
         return "Max"
     elif selected_item == "velocity_3omega_middle":
-        picomotor.set_velocity(1, 200)
+        picomotor.set_velocity(AXIS.h_3omega.value, 200)
         return "Middle"
     else:
-        picomotor.set_velocity(1, 20)
+        picomotor.set_velocity(AXIS.h_3omega.value, 20)
         return "Low"
 
 
@@ -278,16 +294,19 @@ def change_3omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
     Input("velocity_1omega_low", "n_clicks"),
 )
 def change_1omega_mirror_velocity(max_speed, middle_speed, low_speed) -> str:
+    logger.debug(f"max speed button omega: {max_speed}")
+    logger.debug(f"middle speed button omega: {middle_speed}")
+    logger.debug(f"low speed button omega: {low_speed}")
     selected_item = ctx.triggered_id
     if selected_item == "velocity_1omega_max":
-        picomotor.set_velocity(2, 2000)
+        picomotor.set_velocity(AXIS.h_omega.value, 2000)
         return "Max"
 
     elif selected_item == "velocity_1omega_middle":
-        picomotor.set_velocity(2, 200)
+        picomotor.set_velocity(AXIS.h_omega.value, 200)
         return "Middle"
     else:
-        picomotor.set_velocity(1, 20)
+        picomotor.set_velocity(AXIS.h_omega.value, 20)
         return "Low"
 
 
@@ -334,7 +353,7 @@ def move_start_3omega(distance: int, n_clicks: int | None) -> tuple[bool, bool, 
         "disable" property of the dash component
     """
     if n_clicks is not None:
-        return move_start(1, distance)
+        return move_start(AXIS.h_3omega.value, distance)
     return True, True, True
 
 
@@ -362,14 +381,13 @@ def move_start_1omega(distance: int, n_clicks: int | None) -> tuple[bool, bool, 
         "disable" property of the dash component
     """
     if n_clicks is not None:
-        return move_start(2, distance)
+        return move_start(AXIS.h_omega.value, distance)
     return True, True, True
 
 
 @app.callback(
     Output("position_3omega", "value"),
     Output("position_1omega", "value"),
-    Input("realtime_interval", "n_intervals"),
     Input("realtime_interval", "n_intervals"),
 )
 def update_mirror_position(n_intervals: int | None) -> tuple[int, int]:
@@ -387,8 +405,8 @@ def update_mirror_position(n_intervals: int | None) -> tuple[int, int]:
         step of the actuator
     """
     if n_intervals is not None:
-        mirror_position1 = picomotor.position(1)
-        mirror_position2 = picomotor.position(2)
+        mirror_position1 = picomotor.position(AXIS.h_3omega.value)
+        mirror_position2 = picomotor.position(AXIS.h_omega.value)
         return mirror_position1, mirror_position2
     return 0, 0
 
