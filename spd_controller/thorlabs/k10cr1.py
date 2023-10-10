@@ -3,6 +3,18 @@ from __future__ import annotations
 from . import THORLABS_MOTION_CONTROL, bytes_to_decimal, decimal_to_hex
 
 
+class MockK10CR1:
+    def __init__(self, serial_num: str | int) -> None:
+        self.serial_num = int(serial_num)
+        self.ready = True
+
+    def move_abs(self, angle_deg: float) -> None:
+        print(f"Rotate by {angle_deg} degrees")
+
+    def move_rel(self, angle_deg: float) -> None:
+        print(f"Rotate to {angle_deg} degrees")
+
+
 class K10CR1(THORLABS_MOTION_CONTROL):
     """Thorlabs K10CR1 rotation stage class."""
 

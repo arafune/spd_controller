@@ -3,8 +3,38 @@ import contextlib
 from typing import Literal
 
 from .. import TcpSocketWrapper
+from random import random
 
 Axis = Literal[1, 2, 3, 4]
+
+
+class MockPicomoter8742:
+    """Mock of Picomotor8742"""
+
+    def __init__(self) -> None:
+        pass
+
+    def move_indefinitely(self, axis: Axis = 1, *, positive: bool = True) -> None:
+        if positive:
+            print(f"move positively about axis {axis}.")
+        else:
+            print(f"move negatively about axis {axis}.")
+
+    def position(self, axis: Axis = 1) -> int:
+        assert isinstance(axis, int)
+        return int(random() * 1000)
+
+    def force_stop(self, axis: Axis = 1) -> None:
+        print(f"force_stop axis {axis}.")
+
+    def set_velocity(self, axis: Axis = 1, velocity: int = 2000) -> None:
+        print(f"velocity of axis {axis} is set at {velocity}.")
+
+    def move_rel(self, axis: int, distance: int) -> None:
+        print(f"move_rel: Axis {axis}, distance {distance}")
+
+    def connect(self) -> None:
+        pass
 
 
 class Picomotor8742:
