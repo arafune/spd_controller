@@ -39,6 +39,8 @@ class AXIS(Enum):
     v_omega = 4
 
 
+FlipperID = Literal[1, 2]
+
 app = dash.Dash(
     __name__,
     external_stylesheets=external_stylesheets,
@@ -63,6 +65,76 @@ app.layout = html.Article(
         ),
     ],
 )
+
+
+def flipbutton(id: FlipperID, n_clicks: int) -> dict[str, str]:
+    """Base of the callback function for flipbutton1
+
+    Parameters
+    --------------
+    n_clicks: int
+        number of clicks
+
+    Returns
+    -------
+    dict [str, str]
+        css style of the border
+    """
+    if id == 1:
+        flipper = flipper1
+    elif id == 2:
+        flipper = flipper2
+    else:
+        raise RuntimeError("We have only 2 flippers")
+    if n_clicks is not None:
+        flipper.flip()
+    if flipper.position() in (1, 18):
+        return {
+            "margin": "2em",
+            "border-style": "solid",
+            "border-radius": "10pt",
+            "border-color": "green",
+        }
+    return {
+        "margin": "2em",
+        "border-style": "solid",
+        "border-radius": "10pt",
+        "border-color": "blue",
+    }
+
+
+@app.callback(Output("flipper_1", "style"), Input("flipper_1", "n_clicks"))
+def flipbutton1(n_clicks: int) -> dict[str, str]:
+    """Flip the flipper1
+
+    Parameters
+    ----------
+    n_clicks : int
+        number of clicks of the button
+
+    Returns
+    -------
+    dict[str, str]
+        css style of the border
+    """
+    return flipbutton(1, n_clicks)
+
+
+@app.callback(Output("flipper_2", "style"), Input("flipper_2", "n_clicks"))
+def flipbutton2(n_clicks: int) -> dict[str, str]:
+    """Flip the flipper2
+
+    Parameters
+    ----------
+    n_clicks : int
+        number of clicks of the button
+
+    Returns
+    -------
+    dict[str, str]
+        css style of the border
+    """
+    return flipbutton(2, n_clicks)
 
 
 def move_mirror_indefinitely(axis: Axis, action: str) -> bool:
@@ -321,21 +393,24 @@ if __name__ == "__main__":
     args = parser.parse_args()
     idcodes = ("37003548", "37003278")
     host_address = "144.213.126.101"
-    flipper1: MFF101 | MockMFF101 = MFF101(str(idcodes[0]))
-    if not flipper1.ready:
-        flipper1 = MockMFF101(str(idcodes[0]))
-        logger.debug(f"Use MockMFF101 for {idcodes[0]}")
-    flipper2: MFF101 | MockMFF101 = MFF101(str(idcodes[1]))
-    if not flipper2.ready:
-        flipper2 = MockMFF101(str(idcodes[1]))
     if args.use_mock:
         LOGLEVEL = DEBUG
         logger.debug("Use Mock Mode")
-        flipper1 = MockMFF101(str(idcodes[0]))
-        flipper2 = MockMFF101(str(idcodes[1]))
-        picomotor: Picomotor8742 | MockPicomoter8742 = MockPicomoter8742()
+        flipper1: MFF101 | MockMFF101 = MockMFF101(str(idcodes[0]))
+        flipper2: MFF101 | MockMFF101 = MockMFF101(str(idcodes[1]))
+        logger.debug(f"Use MockMFF101 for {idcodes[0]}")
         logger.debug(f"Use MockMFF101 for {idcodes[1]}")
+        picomotor: Picomotor8742 | MockPicomoter8742 = MockPicomoter8742()
+        logger.debug("Use MociPicomoter8742")
     else:
+        flipper1 = MFF101(str(idcodes[0]))
+        if not flipper1.ready:
+            flipper1 = MockMFF101(str(idcodes[0]))
+            logger.debug(f"Use MockMFF101 for {idcodes[0]}")
+        flipper2 = MFF101(str(idcodes[1]))
+        if not flipper2.ready:
+            flipper2 = MockMFF101(str(idcodes[1]))
+        #
         picomotor = Picomotor8742(host=host_address)
         try:
             picomotor.connect()
