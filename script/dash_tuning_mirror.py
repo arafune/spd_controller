@@ -328,17 +328,18 @@ if __name__ == "__main__":
     flipper2: MFF101 | MockMFF101 = MFF101(str(idcodes[1]))
     if not flipper2.ready:
         flipper2 = MockMFF101(str(idcodes[1]))
-        logger.debug(f"Use MockMFF101 for {idcodes[1]}")
-    picomotor: Picomotor8742 | MockPicomoter8742 = Picomotor8742(host=host_address)
-    try:
-        picomotor.connect()
-    except (TimeoutError, OSError):
-        logger.debug("Use MockPicomoter8742")
-        picomotor = MockPicomoter8742()
     if args.use_mock:
         LOGLEVEL = DEBUG
         logger.debug("Use Mock Mode")
         flipper1 = MockMFF101(str(idcodes[0]))
         flipper2 = MockMFF101(str(idcodes[1]))
-        picomotor = MockPicomoter8742()
+        picomotor: Picomotor8742 | MockPicomoter8742 = MockPicomoter8742()
+        logger.debug(f"Use MockMFF101 for {idcodes[1]}")
+    else:
+        picomotor = Picomotor8742(host=host_address)
+        try:
+            picomotor.connect()
+        except (TimeoutError, OSError):
+            logger.debug("Use MockPicomoter8742")
+            picomotor = MockPicomoter8742()
     app.run_server(debug=True, host="0.0.0.0", dev_tools_ui=None)
