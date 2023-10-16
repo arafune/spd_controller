@@ -297,7 +297,9 @@ def move_1omega_mirror_indefinitely(
         ret_bool = move_mirror_indefinitely(AXIS.v_omega.value, "cw")
         return ret_bool, ret_bool
     else:
-        return move_mirror_indefinitely(3, "stop"), move_mirror_indefinitely(4, "stop")
+        return move_mirror_indefinitely(
+            AXIS.h_omega.value, "stop"
+        ), move_mirror_indefinitely(AXIS.v_omega.value, "stop")
 
 
 @app.callback(
