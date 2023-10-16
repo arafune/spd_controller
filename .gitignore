@@ -1,6 +1,7 @@
 script/.ipynb_checkpoints
+.virtual_documents
 .ipynb_checkpoints
-*.pyc
+*.py[cod]
 __pycache__/*
 doc/build
 semaphore_pol.txt
