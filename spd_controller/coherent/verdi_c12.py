@@ -36,6 +36,8 @@ class VerdiC12:
         self.sock = TcpSocketWrapper(term="\r\n", verbose=self.verbose)
         self.sock.settimeout(self.timeout)
         self.sock.connect((self.host, self.port))
+        #
+        self.cmd("PROMPT=0")
 
     def cmd(self, cmd: str) -> int:
         """Send a command to veridi C12
@@ -52,6 +54,8 @@ class VerdiC12:
     def ask(self, cmd: str) -> bytes:
         self.cmd(cmd)
         assert self.sock is not None
-        answer = self.sock.recv(128)
-        assert answer[-2:] == b"\r\n"
-        return answer.strip()
+        answer = self.sock.recv(1024)
+        while answer[-2:] != b"\r\n":
+            an_reply = self.sock.recv(1024)
+            answer += an_reply
+        return answer
