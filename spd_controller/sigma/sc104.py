@@ -25,6 +25,20 @@ from serial.tools import list_ports
 from .. import Comm
 
 
+class MockSC104:
+    def __init__(self) -> None:
+        pass
+
+    def move_abs(self, pos: float, *, wait: bool = True, micron: bool = False):
+        pass
+
+    def move_rel(self, move: float, *, wait: bool = True, micron: bool = False):
+        pass
+
+    def position(self) -> float:
+        pass
+
+
 class SC104(Comm):
     """Class for SC-104 Linear translation stage controller.
 
