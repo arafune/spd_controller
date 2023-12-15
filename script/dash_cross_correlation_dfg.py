@@ -2,6 +2,7 @@
 """Dash based application for measuring the temporal overlapping by using DFG"""
 
 import argparse
+import numpy as np
 
 from typing import Literal
 from logging import DEBUG, INFO, Formatter, Logger, StreamHandler, getLogger
@@ -53,6 +54,7 @@ file_name_input = dcc.Input(
     placeholder="File name",
     persistence=True,
     persistence_type="local",
+    required=True,
     style={
         "width": "70%",
         "display": "inline-block",
@@ -65,6 +67,10 @@ start_position_input = dcc.Input(
     id="initial_position",
     type="number",
     debounce=True,
+    min=0,
+    max=400,
+    step=0.01,
+    required=True,
     placeholder="Initial position (mm)",
     persistence=True,
     persistence_type="local",
@@ -75,6 +81,10 @@ end_position_input = dcc.Input(
     id="end_position",
     type="number",
     debounce=True,
+    min=0,
+    max=400,
+    step=0.01,
+    required=True,
     placeholder="End position (mm)",
     persistence=True,
     persistence_type="local",
@@ -85,7 +95,11 @@ step_position_input = dcc.Input(
     id="step_position",
     type="number",
     debounce=True,
-    placeholder="step position (mm)",
+    min=0,
+    max=1000,
+    step=1,
+    required=True,
+    placeholder="step position (µm)",
     persistence=True,
     persistence_type="local",
     style={"width": "20%", "margin-left": "10%"},
@@ -111,7 +125,6 @@ dl_button = dbc.Button(
     n_clicks=0,
     size="sm",
     style={
-        "display": "inline-block",
         "margin-left": "2%",
         "color": "black",
         "padding": "1px 4px 2px",
@@ -130,9 +143,7 @@ buttons = html.Div(
 )
 
 left_col = html.Div(
-    [
-        buttons,
-    ],
+    [buttons, html.Div(id="current_position"), html.Div(id="current_power")],
     style={"width": "40%", "display": "inline-block"},
 )
 right_col = html.Div(
@@ -143,7 +154,9 @@ right_col = html.Div(
 
 app.layout = html.Div(
     [
-        html.H1("Temporal overlap", style={"textAlign": "center"}),
+        html.H1(
+            "Cross correlation measurement", id="title", style={"textAlign": "center"}
+        ),
         file_name_input,
         start_position_input,
         end_position_input,
@@ -153,6 +166,80 @@ app.layout = html.Div(
         dcc.Interval(id="interval", interval=500),
     ],
 )
+
+
+@app.callback(
+    Output("download_data", "data"),
+    State("filename", "value"),
+    Input("dl_button", "n_clicks"),
+)
+def download_file(dl_filename: str, n_clicks: int):
+    """Button to download the data file.
+
+    Parameters
+    ----------
+    dl_filename: str
+        File name of data
+    n_clicks: int
+        Number of clicks
+
+    Raises
+    ------
+    Exception:
+
+    """
+    if semaphore.is_locked():
+        raise Exception("Resource is locked")
+    if n_clicks:
+        return dcc.send_file(dl_filename)
+
+
+def start_measuring(
+    start_position: float,
+    end_position: float,
+    step_position: float,
+    filename: str,
+    n_clicks: int,
+) -> str:
+    if semaphore.is_locked():
+        raise Exception("Resource is locked")
+    semaphore.lock()
+
+    if n_clicks:
+        sc104.move_abs(pos=start_position)
+        position = start_position
+        with open(filename, "w", buffering=1) as f:
+            while position < end_position:
+                power_measures = np.array([power_meter.read for _ in range(10)])
+                print(f"{position}\t{power_measures.mean()}\t{power_measures.std()}")
+                f.write(
+                    f"{position}\t{power_measures.mean()}\t{power_measures.std()}\n"
+                )
+                sc104.move_rel(move=step_position, micron=True)
+                position = sc104.position()
+    semaphore.unlock()
+    return "Cross correlation measurement"
+
+
+@app.callback(
+    Output("dl_button", "disabled"),
+    Output("measurement_start_button", "disabled"),
+    Input("filename", "value"),
+)
+def activate_button(filename: str) -> tuple[bool, bool]:
+    """Activate buttons (Measurement start  & Download data) when the file name is set.
+
+    Parameters
+    ----------
+    filename: str
+
+    Returns
+    -------
+    tuple[bool, bool]
+    """
+    if filename:
+        return False, False
+    return True, True
 
 
 if __name__ == "__main__":
