@@ -41,7 +41,7 @@ external_stylesheets = [dbc.themes.MATERIA]
 app = dash.Dash(
     __name__,
     external_stylesheets=external_stylesheets,
-    title="Polarization analysis",
+    title="CrossCorrelation with DFG",
     update_title=None,
     suppress_callback_exceptions=True,
 )
