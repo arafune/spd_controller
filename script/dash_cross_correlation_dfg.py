@@ -3,17 +3,29 @@
 
 import argparse
 import numpy as np
+from numpy.typing import NDArray
 
 from typing import Literal
 from logging import DEBUG, INFO, Formatter, Logger, StreamHandler, getLogger
 from enum import Enum
 
+from pathlib import Path
 import dash
 import dash_bootstrap_components as dbc
-from dash import Input, Output, State, ctx, dcc, html
+from dash import Input, Output, State, dcc, html
 
-# from spd_controller.sigma import sc104
-# from ThorlabsPM100 import USBTMC, ThorlabsPM100
+import plotly.express as px
+
+from spd_controller.sigma import sc104
+from ThorlabsPM100 import USBTMC, ThorlabsPM100
+
+inst = USBTMC()
+power_meter = ThorlabsPM100(inst=inst)
+power_meter.sense.power.dc.range.auto = "ON"
+power_meter.input.pdiode.filter.lpass.state = 0
+power_meter.sense.average.count = 100
+
+sc104 = sc104.SC104()
 
 
 class Semaphore:
@@ -146,8 +158,9 @@ left_col = html.Div(
     [buttons, html.Div(id="current_position"), html.Div(id="current_power")],
     style={"width": "40%", "display": "inline-block"},
 )
+
 right_col = html.Div(
-    [],
+    [dcc.Graph(id="cross_correlation_graph", figure=px.line(x=[0.0], y=[0.0]))],
     style={"width": "40%", "display": "inline-block"},
 )
 
@@ -240,6 +253,51 @@ def activate_button(filename: str) -> tuple[bool, bool]:
     if filename:
         return False, False
     return True, True
+
+
+@app.callback(
+    Output("current_position", "value"),
+    Output("current_power", "value"),
+    Output("cross_correlation_graph", "figure"),
+    State("filename", "value"),
+    Input("interval", "n_intervals"),
+)
+def update_graph(filename: str, n_intervals: int):
+    """Updating graph
+
+    Updating the graph of the DFG intensity as a function of the delay line position.
+
+    Parameters
+    ----------
+    filename: str
+        Filename of the data
+    n_intervals: int
+        Interval time in ms
+
+    Returns
+    -------
+    tuple
+        current position, current power and plotly graph object
+
+    """
+    if filename:
+        p = Path(filename)
+        if not p.exists():
+            p.touch()
+        if p.stat().st_size > 0:
+            data: NDArray[np.float_] = np.loadtxt(filename).T
+            positions = data[0]
+            powers = data[1]
+            current_position = positions[-1]
+            current_power = powers[-1]
+            return (
+                f"{current_position:.4f}",
+                f"{current_power * 10000:.2f}",
+                px.line(x=positions, y=powers),
+            )
+        else:
+            return ("0.0", "0.0", px.line(x=[0.0], y=[0.0]))
+    return ("0.0", "0.0", px.line(x=[0.0], y=[0.0]))
 
 
 if __name__ == "__main__":
