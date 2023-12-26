@@ -117,7 +117,7 @@ step_position_input = dcc.Input(
     style={"width": "20%", "margin-left": "10%"},
 )
 
-measurment_start_button = html.Button(
+measurement_start_button = html.Button(
     "Measurement start",
     id="measurement_start_button",
     disabled=True,
@@ -145,7 +145,7 @@ dl_button = dbc.Button(
 )
 
 buttons = html.Div(
-    [measurment_start_button, dl_button, dcc.Download(id="download_data")],
+    [measurement_start_button, dl_button, dcc.Download(id="download_data")],
     style={
         "margin": "2em",
         "border-style": "solid",
@@ -206,7 +206,12 @@ def download_file(dl_filename: str, n_clicks: int):
     if n_clicks:
         return dcc.send_file(dl_filename)
 
-
+@app.callback(Output("title", "children"),
+              State("initial_position", "value"),
+            State("end_position", "value"),
+    State("step_position", "value"),
+    State("filename", "value"),
+    Input("measurement_start_button", "n_clicks"))
 def start_measuring(
     start_position: float,
     end_position: float,
@@ -256,8 +261,8 @@ def activate_button(filename: str) -> tuple[bool, bool]:
 
 
 @app.callback(
-    Output("current_position", "value"),
-    Output("current_power", "value"),
+    Output("current_position", "children"),
+    Output("current_power",    "children"),
     Output("cross_correlation_graph", "figure"),
     State("filename", "value"),
     Input("interval", "n_intervals"),
@@ -292,7 +297,7 @@ def update_graph(filename: str, n_intervals: int):
             current_power = powers[-1]
             return (
                 f"{current_position:.4f}",
-                f"{current_power * 10000:.2f}",
+                f"{current_power}",
                 px.line(x=positions, y=powers),
             )
         else:
