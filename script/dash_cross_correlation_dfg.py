@@ -169,12 +169,12 @@ buttons = html.Div(
 
 left_col = html.Div(
     [buttons, html.Div(id="current_position"), html.Div(id="current_power")],
-    style={"width": "40%", "display": "inline-block"},
+    style={"width": "30%", "display": "inline-block"},
 )
 
 right_col = html.Div(
     [dcc.Graph(id="cross_correlation_graph", figure=px.line(x=[0.0], y=[0.0]))],
-    style={"width": "40%", "display": "inline-block"},
+    style={"width": "55%", "display": "inline-block"},
 )
 
 
@@ -317,7 +317,9 @@ def update_graph(filename: str, n_intervals: int):
             return (
                 f"Position: {current_position:.4f}",
                 f"Power: {current_power}",
-                px.line(x=positions, y=powers),
+                px.line(x=positions, y=powers).update_layout(
+                    xaxis_title="Position", yaxis_title="Power"
+                ),
             )
         else:
             return ("Posiiton: Nan", "Power: Nan", px.line(x=[0.0], y=[0.0]))
