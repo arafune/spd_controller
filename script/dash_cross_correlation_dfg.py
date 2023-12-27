@@ -19,6 +19,19 @@ import plotly.express as px
 from spd_controller.sigma import sc104
 from ThorlabsPM100 import USBTMC, ThorlabsPM100
 
+LOGLEVELS = (DEBUG, INFO)
+LOGLEVEL = LOGLEVELS[0]
+logger = getLogger(__name__)
+fmt = "%(asctime)s %(levelname)s %(name)s :%(message)s"
+formatter = Formatter(fmt)
+handler = StreamHandler()
+handler.setLevel(LOGLEVEL)
+logger.setLevel(LOGLEVEL)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.propagate = False
+
+
 inst = USBTMC()
 power_meter = ThorlabsPM100(inst=inst)
 power_meter.sense.power.dc.range.auto = "ON"
@@ -206,12 +219,15 @@ def download_file(dl_filename: str, n_clicks: int):
     if n_clicks:
         return dcc.send_file(dl_filename)
 
-@app.callback(Output("title", "children"),
-              State("initial_position", "value"),
-            State("end_position", "value"),
+
+@app.callback(
+    Output("title", "children"),
+    State("initial_position", "value"),
+    State("end_position", "value"),
     State("step_position", "value"),
     State("filename", "value"),
-    Input("measurement_start_button", "n_clicks"))
+    Input("measurement_start_button", "n_clicks"),
+)
 def start_measuring(
     start_position: float,
     end_position: float,
@@ -229,9 +245,9 @@ def start_measuring(
         with open(filename, "w", buffering=1) as f:
             while position < end_position:
                 power_measures = np.array([power_meter.read for _ in range(10)])
-                print(f"{position}\t{power_measures.mean()}\t{power_measures.std()}")
+                # print(f"{position}\t{power_measures.mean()}\t{power_measures.std()}")
                 f.write(
-                    f"{position}\t{power_measures.mean()}\t{power_measures.std()}\n"
+                    f"{position:.4f}\t{power_measures.mean()}\t{power_measures.std()}\n"
                 )
                 sc104.move_rel(move=step_position, micron=True)
                 position = sc104.position()
@@ -262,7 +278,7 @@ def activate_button(filename: str) -> tuple[bool, bool]:
 
 @app.callback(
     Output("current_position", "children"),
-    Output("current_power",    "children"),
+    Output("current_power", "children"),
     Output("cross_correlation_graph", "figure"),
     State("filename", "value"),
     Input("interval", "n_intervals"),
@@ -291,18 +307,21 @@ def update_graph(filename: str, n_intervals: int):
             p.touch()
         if p.stat().st_size > 0:
             data: NDArray[np.float_] = np.loadtxt(filename).T
-            positions = data[0]
-            powers = data[1]
-            current_position = positions[-1]
-            current_power = powers[-1]
+            try:
+                positions = data[0]
+                powers = data[1]
+                current_position = positions[-1]
+                current_power = powers[-1]
+            except IndexError:
+                pass
             return (
-                f"{current_position:.4f}",
-                f"{current_power}",
+                f"Position: {current_position:.4f}",
+                f"Power: {current_power}",
                 px.line(x=positions, y=powers),
             )
         else:
-            return ("0.0", "0.0", px.line(x=[0.0], y=[0.0]))
-    return ("0.0", "0.0", px.line(x=[0.0], y=[0.0]))
+            return ("Posiiton: Nan", "Power: Nan", px.line(x=[0.0], y=[0.0]))
+    return ("Position: Nan", "Power Nan", px.line(x=[0.0], y=[0.0]))
 
 
 if __name__ == "__main__":
