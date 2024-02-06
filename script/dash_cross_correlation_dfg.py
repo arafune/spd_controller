@@ -67,7 +67,7 @@ app = dash.Dash(
     __name__,
     external_stylesheets=external_stylesheets,
     title="CrossCorrelation with DFG",
-    update_title=None,
+    update_title="",
     suppress_callback_exceptions=True,
 )
 
