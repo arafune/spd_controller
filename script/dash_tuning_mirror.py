@@ -67,7 +67,10 @@ app.layout = html.Article(
 )
 
 
-def flipbutton(id: FlipperID, n_clicks: int) -> dict[str, str]:
+def flipbutton(
+    id: FlipperID,
+    n_clicks: int,
+) -> dict[str, str]:
     """Base of the callback function for flipbutton1
 
     Parameters
@@ -103,7 +106,11 @@ def flipbutton(id: FlipperID, n_clicks: int) -> dict[str, str]:
     }
 
 
-@app.callback(Output("flipper_1", "style"), Input("flipper_1", "n_clicks"))
+@app.callback(
+    Output("flipper_1", "style"),
+    #
+    Input("flipper_1", "n_clicks"),
+)
 def flipbutton1(n_clicks: int) -> dict[str, str]:
     """Flip the flipper1
 
@@ -120,7 +127,11 @@ def flipbutton1(n_clicks: int) -> dict[str, str]:
     return flipbutton(1, n_clicks)
 
 
-@app.callback(Output("flipper_2", "style"), Input("flipper_2", "n_clicks"))
+@app.callback(
+    Output("flipper_2", "style"),
+    #
+    Input("flipper_2", "n_clicks"),
+)
 def flipbutton2(n_clicks: int) -> dict[str, str]:
     """Flip the flipper2
 
@@ -137,7 +148,10 @@ def flipbutton2(n_clicks: int) -> dict[str, str]:
     return flipbutton(2, n_clicks)
 
 
-def move_mirror_indefinitely(axis: Axis, action: str) -> bool:
+def move_mirror_indefinitely(
+    axis: Axis,
+    action: str,
+) -> bool:
     """Move mirror indefinitely.
 
     Parameters
@@ -166,7 +180,8 @@ def move_mirror_indefinitely(axis: Axis, action: str) -> bool:
 
 
 def move_start(
-    axis: Literal[1, 2, 3, 4], distance: int
+    axis: Literal[1, 2, 3, 4],
+    distance: int,
 ) -> tuple[bool, bool, bool, bool, bool]:
     picomotor.move_rel(axis, distance)
     return False, False, False, False, False
@@ -178,12 +193,15 @@ def move_start(
     Output("up_3", "disabled"),
     Output("down_3", "disabled"),
     Output("stop_3", "disabled"),
+    #
     State("movement_3", "value"),
     Input("move_h_3", "n_clicks"),
     Input("move_v_3", "n_clicks"),
 )
 def move_3omega(
-    distance: int, n_clicks_h: int | None, n_clicks_v: int | None
+    distance: int,
+    n_clicks_h: int | None,
+    n_clicks_v: int | None,
 ) -> tuple[bool, bool, bool, bool, bool]:
     logger.debug(f"n_clics_h 3ω {n_clicks_h}")
     logger.debug(f"n_clics_v 3ω {n_clicks_v}")
@@ -201,12 +219,15 @@ def move_3omega(
     Output("up_1", "disabled"),
     Output("down_1", "disabled"),
     Output("stop_1", "disabled"),
+    #
     State("movement_1", "value"),
     Input("move_h_1", "n_clicks"),
     Input("move_v_1", "n_clicks"),
 )
 def move_1omega(
-    distance: int, n_clicks_h: int | None, n_clicks_v: int | None
+    distance: int,
+    n_clicks_h: int | None,
+    n_clicks_v: int | None,
 ) -> tuple[bool, bool, bool, bool, bool]:
     logger.debug(f"n_clics_h ω {n_clicks_h}")
     logger.debug(f"n_clics_v ω {n_clicks_v}")
@@ -221,6 +242,7 @@ def move_1omega(
 @app.callback(
     Output("move_h_3", "disabled"),
     Output("move_v_3", "disabled"),
+    #
     Input("right_3", "n_clicks"),
     Input("left_3", "n_clicks"),
     Input("up_3", "n_clicks"),
@@ -265,6 +287,7 @@ def move_3omega_mirror_indefinitely(
 @app.callback(
     Output("move_h_1", "disabled"),
     Output("move_v_1", "disabled"),
+    #
     Input("right_1", "n_clicks"),
     Input("left_1", "n_clicks"),
     Input("up_1", "n_clicks"),
@@ -304,12 +327,15 @@ def move_1omega_mirror_indefinitely(
 
 @app.callback(
     Output("current_velocity_3", "children"),
+    #
     Input("velocity_3_max", "n_clicks"),
     Input("velocity_3_middle", "n_clicks"),
     Input("velocity_3_min", "n_clicks"),
 )
 def change_3omega_mirror_velocity(
-    max_speed: int, middle_speed: int, minimum_speed: int
+    max_speed: int,
+    middle_speed: int,
+    minimum_speed: int,
 ) -> str:
     logger.debug(f"max_speed button 3ω {max_speed}")
     logger.debug(f"middle_speed button 3ω {middle_speed}")
@@ -331,12 +357,15 @@ def change_3omega_mirror_velocity(
 
 @app.callback(
     Output("current_velocity_1", "children"),
+    #
     Input("velocity_1_max", "n_clicks"),
     Input("velocity_1_middle", "n_clicks"),
     Input("velocity_1_min", "n_clicks"),
 )
 def change_1omega_mirror_velocity(
-    max_speed: int, middle_speed: int, minimum_speed: int
+    max_speed: int,
+    middle_speed: int,
+    minimum_speed: int,
 ) -> str:
     logger.debug(f"max_speed button ω {max_speed}")
     logger.debug(f"middle_speed button ω {middle_speed}")
@@ -361,6 +390,7 @@ def change_1omega_mirror_velocity(
     Output("position_v_3ω", "value"),
     Output("position_h_1ω", "value"),
     Output("position_v_1ω", "value"),
+    #
     Input("realtime_interval", "n_intervals"),
 )
 def update_mirror_positon(n_intervals: int | None) -> tuple[int, int, int, int]:
