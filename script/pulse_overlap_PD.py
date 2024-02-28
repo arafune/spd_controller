@@ -64,8 +64,13 @@ if __name__ == "__main__":
     header = ["timescale"]
     data: list[NDArray[np.float_]] = [o.timescale]
     while pos < args.end:
-        header.append(f"{pos:.4f}")
+        header.append(f"position_{pos:.4f}")
         data.append(o.acquire_memory(1))
         s.move_rel(args.step, micron=True)
         pos = s.position()
-    np.savetxt(args.output, np.array(data).T, delimiter="\t", header="\t".join(header))
+    np.savetxt(
+        args.output,
+        np.array(data).T,
+        delimiter="\t",
+        header="\t".join(header),
+    )
