@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-from __future__ import annotations
 
 """Module for GDS3502 Oscilloscope (socket connection)"""
 
 
+from __future__ import annotations
 import numpy as np
 from numpy.typing import NDArray
 from typing_extensions import Literal
