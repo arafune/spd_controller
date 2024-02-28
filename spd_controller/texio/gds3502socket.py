@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 """Module for GDS3502 Oscilloscope (socket connection)"""
 
 from __future__ import annotations

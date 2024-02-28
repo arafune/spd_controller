@@ -85,7 +85,7 @@ class GDS3502(Comm):
         self.sendtext(":MEASsure:FREQuency?")
         return float(self.comm.readline())
 
-    def acquire_memory(self, channel: Channel) -> NDArray:
+    def acquire_memory(self, channel: Channel) -> NDArray[np.float_]:
         """Return the memory
 
         Parameters
@@ -99,7 +99,8 @@ class GDS3502(Comm):
             Oscilloscope data
         """
         self.sendtext(":ACQuire{}:MEMory?".format(channel))
-        result: bytearray = bytearray(self.comm.readlines())
+        result_array: list[bytes] = self.comm.readlines()
+        result = b"".join(result_array)
         data_index: int = 7 + result.find(b"#550000")
         header = result[:data_index].decode("utf-8")
         wave_data = result[data_index:-1]
