@@ -59,6 +59,7 @@ if __name__ == "__main__":
     s.move_abs(args.start)
     pos = s.position()
     o = gds3502.GDS3502()
+    o.set_average_mode(n_average=256)  ## NEED to CHECK!!!
     o.acquire_memory(args.channel)
     header = ["timescale"]
     data: list[NDArray[np.float_]] = [o.timescale]
