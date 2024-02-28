@@ -4,6 +4,7 @@
 
 from pathlib import Path
 from time import sleep
+from typing import Literal
 
 import numpy as np
 
@@ -34,7 +35,7 @@ class RemoteIn:
         self,
         host: str = "144.213.126.140",
         port: int = 7010,
-        term: str = "\n",
+        term: Literal["\r", "\r\n", "\n"] = "\n",
         *,
         verbose: bool = False,
     ) -> None:
@@ -42,7 +43,7 @@ class RemoteIn:
         self.name: str = "Prodigy"
         self.host: str = host
         self.port: int = port
-        self.TERM: str = term
+        self.TERM: Literal["\r", "\r\n", "\n"] = term
         self.timeout = 10
         self.verbose: bool = verbose
         self.id: int = 1
@@ -471,7 +472,7 @@ class RemoteIn:
         """
         return self.sendcommand("GetAcquisitionStatus")
 
-    def get_data(self) -> list:
+    def get_data(self) -> list[float]:
         """Get the intensity map data from the buffer and stored in self.data.
 
         Returns
@@ -480,7 +481,7 @@ class RemoteIn:
             Intensity map data (1D), same data are stored in self.data
         """
         data: str = ""
-        status: dict = {}
+        status: dict[str, str | float] = {}
         for i in self.get_status()[10:].split():
             key, item = i.split(":")
             try:
@@ -561,7 +562,7 @@ class RemoteIn:
             intensity map data.  (The same data are stored as self.data)
         """
         self.param["num_scan"] = num_scan
-        data: list = []
+        data: list[float] = []
         for _ in range(num_scan):
             self.start(setsafeafter=setsafeafter)
             data += self.get_data()

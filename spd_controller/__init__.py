@@ -4,6 +4,8 @@ import socket
 import threading
 import time
 
+from typing import Literal
+
 import serial
 from serial.tools import list_ports
 
@@ -20,10 +22,10 @@ class SerialWrapper(serial.Serial):
         self._verbose = verbose
         self.TERM = term
 
-    def send(self, bytes_: bytes):
+    def send(self, bytes_: bytes) -> int:
         return super().write(bytes_)
 
-    def sendtext(self, text: str):
+    def sendtext(self, text: str) -> int:
         text = text + self.TERM
         return self.send(text.encode("utf-8"))
 
@@ -234,7 +236,11 @@ class Comm:
 class TcpSocketWrapper(socket.socket):
     """Very thin wrapper of socket."""
 
-    def __init__(self, term="\n", verbose: bool = False) -> None:
+    def __init__(
+        self,
+        term: Literal["\n", "\r\n", "\r"] = "\n",
+        verbose: bool = False,
+    ) -> None:
         self._verbose = verbose
         self.TERM = term
         super().__init__(socket.AF_INET, socket.SOCK_STREAM)

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-
 """Module for GDS3502 Oscilloscope (socket connection)"""
 
+from __future__ import annotations
+
+from typing import Literal
 
 import numpy as np
 from numpy.typing import NDArray
-from typing_extensions import Literal
 
 from .. import TcpSocketWrapper
 
@@ -20,7 +20,7 @@ class GDS3502:
         self,
         host: str = "144.213.126.10",
         port: int = 3000,
-        term: str = "\n",
+        term: Literal["\n", "\r", "\r\n"] = "\n",
         verbose=False,
     ) -> None:
         """Initialization of the GDS3502 (socket version)
@@ -39,7 +39,7 @@ class GDS3502:
         self.name: str = "GDS3502"
         self.host: str = host
         self.port: int = port
-        self.TERM: str = term
+        self.TERM: Literal["\n", "\r", "\r\n"] = term
         self.timeout = 2
         self.verbose: bool = verbose
         self.header: dict[str, float | str] = {}
