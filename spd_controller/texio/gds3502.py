@@ -85,7 +85,7 @@ class GDS3502(Comm):
         self.sendtext(":MEASsure:FREQuency?")
         return float(self.comm.readline())
 
-    def acquire_memory(self, channel: Channel) -> NDArray:
+    def acquire_memory(self, channel: Channel) -> NDArray[np.float_]:
         """Return the memory
 
         Parameters

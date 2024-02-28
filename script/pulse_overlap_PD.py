@@ -38,18 +38,33 @@ if __name__ == "__main__":
         required=True,
         help="Output file name",
     )
+    parser.add_argument(
+        "--reset",
+        action="store_true",
+        default=False,
+        help="""if set, the mirror moves to "mechanically zero" and then move to the "start position" """,
+    )
+    parser.add_argument(
+        "--channel",
+        type=int,
+        default=1,
+        required=True,
+        help="Channel number 1 or 2.",
+    )
     args = parser.parse_args()
+    assert args.channel in (1, 2)
     s = sc104.SC104()
-    s.move_to_origin()
+    if args.reset:
+        s.move_to_origin()
     s.move_abs(args.start)
     pos = s.position()
     o = gds3502.GDS3502()
-    o.acquire_memory(1)
+    o.acquire_memory(args.channel)
     header = ["timescale"]
-    data: list[NDArray] = [o.timescale]
+    data: list[NDArray[np.float_]] = [o.timescale]
     while pos < args.end:
         header.append(f"{pos:.4f}")
-        data.append(o.acquire_memory(2))
+        data.append(o.acquire_memory(1))
         s.move_rel(args.step, micron=True)
         pos = s.position()
     np.savetxt(args.output, np.array(data).T, delimiter="\t", header="\t".join(header))
