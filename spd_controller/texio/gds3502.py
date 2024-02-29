@@ -81,20 +81,24 @@ class GDS3502(Comm):
         float
             Measured frequency
         """
-        self.sendtext(":MEASsure:SOURce1  CH{}".format(channel))
-        self.sendtext(":MEASsure:FREQuency?")
-        return float(self.comm.readline())
+        self.sendtext(":MEASure:SOURce CH{}".format(channel))
+        self.sendtext(":MEASure:FREQuency?")
+        return float(self.recvtext())
 
-    def set_average_mode(self, n_average: int = 256) -> None:
+    def set_average_mode(self, n_average: int = 256) -> float:
         """Set average mode.
 
         This oscilloscope has 4 modes: Sample, HiResolution (boxcar smoothing), PeakDetec and Average.
 
         The Average mode would be more better than the Sample (default) mode.
+
+        Different from the other modes, return the recommended waiting time.
         """
         self.sendtext(":ACQuire:MODe AVERage")
         assert n_average in (2, 4, 8, 16, 32, 64, 128, 256)
+        waiting_time: dict[int, float] = {2: 2, 4: 2, 8: 2 , 16:2, 32: 5, 128: 10, 256: 20}
         self.sendtext(f":ACQuire:AVERage {n_average}")
+        return waiting_time[n_average]
 
     def set_hires_mode(self) -> None:
         """Set HiResolution mode
