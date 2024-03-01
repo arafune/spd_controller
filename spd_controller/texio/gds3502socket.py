@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 """Module for GDS3502 Oscilloscope (socket connection)"""
 
 from __future__ import annotations
@@ -47,7 +46,7 @@ class GDS3502:
         self.memory: NDArray[np.float_]
         self.connection = "socket"
 
-    def connect(self):
+    def connect(self) -> None:
         """Connect the texio GDS3501"""
         self.sock = TcpSocketWrapper(term=self.TERM, verbose=self.verbose)
         self.sock.settimeout(self.timeout)
