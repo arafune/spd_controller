@@ -1,5 +1,5 @@
 
-from numpy as np
+import numpy as np
 from numpy.typing import NDArray
 
 
@@ -9,4 +9,3 @@ class GDS3502common:
         self.memory: NDArray[np.float_]
         self.TERM = "\n"
 
-        def 
