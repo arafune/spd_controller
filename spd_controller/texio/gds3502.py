@@ -96,7 +96,15 @@ class GDS3502(Comm):
         """
         self.sendtext(":ACQuire:MODe AVERage")
         assert n_average in (2, 4, 8, 16, 32, 64, 128, 256)
-        waiting_time: dict[int, float] = {2: 2, 4: 2, 8: 2 , 16:2, 32: 5, 128: 10, 256: 20}
+        waiting_time: dict[int, float] = {
+            2: 2,
+            4: 2,
+            8: 2,
+            16: 2,
+            32: 5,
+            128: 10,
+            256: 20,
+        }
         self.sendtext(f":ACQuire:AVERage {n_average}")
         return waiting_time[n_average]
 
@@ -126,6 +134,16 @@ class GDS3502(Comm):
         The Sample mode is the default mode of this oscilloscope.
         """
         self.sendtext(":ACQuire:MODe SAMP")
+
+    def save_image(self, filename: str) -> None:
+        """SaveImage data.
+
+
+        When "USB:/image.png" is set, save the image data to an external flash meory.
+
+        """
+        self.sendtext(":SAV:IMAG:FILEF PNG")
+        self.sendtext(f":SAV:IMAGE: {filename}")
 
     def acquire_memory(self, channel: Channel) -> NDArray[np.float_]:
         """Return the memory
