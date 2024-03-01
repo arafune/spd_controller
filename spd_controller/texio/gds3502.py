@@ -114,6 +114,15 @@ class GDS3502(Comm):
         """
         self.sendtext(":ACQuire:MODe PDET")
 
+    def set_sample_mode(self) -> None:
+        """Set Peak Detect Mode mode
+
+        This oscilloscope has 4 modes: Sample, HiResolution (boxcar smoothing), PeakDetec and Average.
+
+        The Sample mode is the default mode of this oscilloscope.
+        """
+        self.sendtext(":ACQuire:MODe SAMP")
+
     def acquire_memory(self, channel: Channel) -> NDArray[np.float_]:
         """Return the memory
 
