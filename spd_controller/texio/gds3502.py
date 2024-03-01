@@ -81,9 +81,51 @@ class GDS3502(Comm):
         float
             Measured frequency
         """
-        self.sendtext(":MEASsure:SOURce1  CH{}".format(channel))
-        self.sendtext(":MEASsure:FREQuency?")
-        return float(self.comm.readline())
+        self.sendtext(":MEASure:SOURce CH{}".format(channel))
+        self.sendtext(":MEASure:FREQuency?")
+        return float(self.recvtext())
+
+    def set_average_mode(self, n_average: int = 256) -> float:
+        """Set average mode.
+
+        This oscilloscope has 4 modes: Sample, HiResolution (boxcar smoothing), PeakDetec and Average.
+
+        The Average mode would be more better than the Sample (default) mode.
+
+        Different from the other modes, return the recommended waiting time.
+        """
+        self.sendtext(":ACQuire:MODe AVERage")
+        assert n_average in (2, 4, 8, 16, 32, 64, 128, 256)
+        waiting_time: dict[int, float] = {2: 2, 4: 2, 8: 2 , 16:2, 32: 5, 128: 10, 256: 20}
+        self.sendtext(f":ACQuire:AVERage {n_average}")
+        return waiting_time[n_average]
+
+    def set_hires_mode(self) -> None:
+        """Set HiResolution mode
+
+        This oscilloscope has 4 modes: Sample, HiResolution (boxcar smoothing), PeakDetec and Average.
+
+        The HiResolution mode would not be more better than the Sample (default) mode, but for completeness, this method has been prepared.
+        """
+        self.sendtext(":ACQuire:MODe HIR")
+
+    def set_peak_detect_mode(self) -> None:
+        """Set Peak Detect Mode mode
+
+        This oscilloscope has 4 modes: Sample, HiResolution (boxcar smoothing), PeakDetec and Average.
+
+        The Peak Detect mode would not be more better than the Sample (default) mode, but for completeness, this method has been prepared.
+        """
+        self.sendtext(":ACQuire:MODe PDET")
+
+    def set_sample_mode(self) -> None:
+        """Set Peak Detect Mode mode
+
+        This oscilloscope has 4 modes: Sample, HiResolution (boxcar smoothing), PeakDetec and Average.
+
+        The Sample mode is the default mode of this oscilloscope.
+        """
+        self.sendtext(":ACQuire:MODe SAMP")
 
     def acquire_memory(self, channel: Channel) -> NDArray[np.float_]:
         """Return the memory
@@ -99,7 +141,8 @@ class GDS3502(Comm):
             Oscilloscope data
         """
         self.sendtext(":ACQuire{}:MEMory?".format(channel))
-        result: bytearray = bytearray(self.comm.readline())
+        result_array: list[bytes] = self.comm.readlines()
+        result = b"".join(result_array)
         data_index: int = 7 + result.find(b"#550000")
         header = result[:data_index].decode("utf-8")
         wave_data = result[data_index:-1]
