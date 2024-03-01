@@ -100,10 +100,10 @@ class GDS3502(Comm):
             2: 2,
             4: 2,
             8: 2,
-            16: 2,
-            32: 5,
-            128: 10,
-            256: 20,
+            16: 5,
+            32: 10,
+            128: 20,
+            256: 40,
         }
         self.sendtext(f":ACQuire:AVERage {n_average}")
         return waiting_time[n_average]
@@ -143,7 +143,7 @@ class GDS3502(Comm):
 
         """
         self.sendtext(":SAV:IMAG:FILEF PNG")
-        self.sendtext(f":SAV:IMAGE: {filename}")
+        self.sendtext(f":SAV:IMAGe {filename}")
 
     def acquire_memory(self, channel: Channel) -> NDArray[np.float_]:
         """Return the memory
