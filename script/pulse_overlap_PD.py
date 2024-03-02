@@ -6,7 +6,7 @@ import argparse
 import time
 import numpy as np
 from numpy.typing import NDArray
-
+from pathlib import Path
 from spd_controller.sigma import sc104
 from spd_controller.texio import gds3502
 from spd_controller.thorlabs import mff101
@@ -121,8 +121,9 @@ if __name__ == "__main__":
         header="\t".join(header),
     )
     if args.flip:
+        output_name, output_suffix = Path(args.output).stem, Path(args.outtput).suffix
         np.savetxt(
-            "with_flip_" + args.output,
+            output_name + "_with_flip" + output_suffix,
             np.array(data_with_flip).T,
             delimiter="\t",
             header="\t".join(header),
