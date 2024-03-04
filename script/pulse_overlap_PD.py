@@ -77,7 +77,7 @@ if __name__ == "__main__":
     data: list[NDArray[np.float_]] = [o.timescale]
     while pos < args.end:
         header.append(f"position_{np.round(pos, 3):.3f}")
-        data.append(o.acquire_memory(1))
+        data.append(o.acquire_memory(args.channel))
         s.move_rel(args.step, micron=True)
         time.sleep(waiting_time)
         pos = s.position()
