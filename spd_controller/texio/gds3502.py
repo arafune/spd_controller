@@ -7,7 +7,7 @@ from __future__ import annotations
 import numpy as np
 from numpy.typing import NDArray
 from typing_extensions import Literal
-
+from pathlib import Path
 from .. import Comm
 
 Channel = Literal[1, 2]
@@ -140,15 +140,28 @@ class GDS3502(Comm):
         """
         self.sendtext(":ACQuire:MODe SAMP")
 
+    def set_interpolation_et(self) -> None:
+        """Set Interporation ET mode.
+
+        """
+        self.sendtext(":ACQuire:INTERpolation ET")
+ 
+
+    def set_realtime_sampling(self) -> None:
+        """Set Interporation ET mode.
+
+        """
+        self.sendtext(":ACQuire:INTERpolation SINC")
+
     def save_image(self, filename: str) -> None:
         """SaveImage data.
 
-
-        When "USB:/image.png" is set, save the image data to an external flash meory.
-
+        The image file is png. (BMP is also available, but PNG would be better.)
+        The filename suffix should be the capital. (.PNG)
         """
         self.sendtext(":SAV:IMAG:FILEF PNG")
-        self.sendtext(f":SAV:IMAGe {filename}")
+        filename = "Disk:/" + Path(filename).stem + Path(filename).suffix.upper()
+        self.sendtext(f':SAV:IMAGe "{filename}"')
 
     def acquire_memory(self, channel: Channel) -> NDArray[np.float_]:
         """Return the memory

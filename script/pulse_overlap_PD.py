@@ -68,6 +68,12 @@ if __name__ == "__main__":
         help="Channel number 1 or 2.",
     )
     parser.add_argument(
+        "--ET",
+        action="store_true",
+        default=False,
+        help="If true, interpolation ET mode.",
+    )
+    parser.add_argument(
         "--average",
         type=int,
         default=0,
@@ -90,6 +96,10 @@ if __name__ == "__main__":
     s.move_abs(args.start)
     pos = s.position()
     o = gds3502.GDS3502()
+    if args.ET:
+        o.set_interpolation_et()
+    else:
+        o.set_realtime_sampling()
     if args.average == 0:
         o.set_sample_mode()
         waiting_time = 1
@@ -121,7 +131,7 @@ if __name__ == "__main__":
         header="\t".join(header),
     )
     if args.flip:
-        output_name, output_suffix = Path(args.output).stem, Path(args.outtput).suffix
+        output_name, output_suffix = Path(args.output).stem, Path(args.output).suffix
         np.savetxt(
             output_name + "_with_flip" + output_suffix,
             np.array(data_with_flip).T,
