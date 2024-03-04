@@ -220,7 +220,7 @@ class RemoteIn:
         )
         response = self.sendcommand(command + argument)
         if with_check:
-            command = "CheckSpectrumSFAT"
+            command = "CheckSpectrumSFAT "
             response = self.sendcommand(command + argument)
             self.parse_check_response(response)
         return response
@@ -489,6 +489,7 @@ class RemoteIn:
             except ValueError:  # item is string with quotations
                 status[key] = item
         assert status["ControllerState"] == "finished"
+        assert isinstance(status["NumberOfAcquiredPoints"], int | float)
         request_str: str = "?{:04X} GetAcquisitionData FromIndex:0 ToIndex:{}".format(
             self.id,
             status["NumberOfAcquiredPoints"] - 1,

@@ -29,10 +29,22 @@ class MockSC104:
     def __init__(self) -> None:
         pass
 
-    def move_abs(self, pos: float, *, wait: bool = True, micron: bool = False):
+    def move_abs(
+        self,
+        pos: float,
+        *,
+        wait: bool = True,
+        micron: bool = False,
+    ) -> None:
         pass
 
-    def move_rel(self, move: float, *, wait: bool = True, micron: bool = False):
+    def move_rel(
+        self,
+        move: float,
+        *,
+        wait: bool = True,
+        micron: bool = False,
+    ) -> None:
         pass
 
     def position(self) -> float:

@@ -35,7 +35,7 @@ DIGIT_ID = 3
 
 
 def itx(
-    data: list,
+    data: list[float] | list[list[float]],
     param: dict[str, str | float | int],
     spectrum_id: int,
     num_scan: int = 1,
@@ -90,6 +90,7 @@ def itx(
         msg = "NumNonEnergyChannels should be int."
         raise RuntimeError(msg)
     for line in data:
+        assert isinstance(line, list)
         itx += " ".join([str(_) for _ in line])
         itx += "\n"
     if (
@@ -151,7 +152,7 @@ def correct_angle_region(
 
 
 def header(
-    param: dict,
+    param: dict[str, int | float | str],
     spectrum_id: int,
     num_scan: int = 1,
     comment: str = "",
@@ -180,6 +181,7 @@ def header(
     mode = "Fixed Analyzer Transmission" if measure_mode == "FAT" else "Snapshot"
     now = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S.%f")
     if param["User Comment"]:
+        assert isinstance(param["User Comment"], str)
         comment += ";" + param["User Comment"]
     return header_template.format(
         now,

@@ -8,7 +8,7 @@ from .. import TcpSocketWrapper
 class MockVerdiC12:
     """Mock of Verdi C12"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
