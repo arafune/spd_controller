@@ -14,7 +14,7 @@ Channel = Literal[1, 2]
 
 
 class GDS3502(Comm):
-    def __init__(self, term: str = "\n") -> None:
+    def __init__(self, term: str = "\n", connection: str = "usb") -> None:
         """_summary_
 
         Parameters
@@ -29,7 +29,7 @@ class GDS3502(Comm):
         """
         super().__init__(term=term)
         port = self.connect("GEV150786")
-        self.connection = "usb"
+        self.connection = connection
         self.header_dict: dict[str, float | str] = {}
         self.memory: NDArray[np.float_]
         if port:

@@ -52,6 +52,10 @@ class Comm:
         self.recvData = bytearray()
         self.event = threading.Event()
 
+    def connect_usb(self, serial_num: str) -> str | None:
+        """Alias of connect."""
+        return self.connect(serial_num)
+
     def connect(self, serial_num: str) -> str | None:
         """Search all serial ports for device with matching serial number (USB).
 
