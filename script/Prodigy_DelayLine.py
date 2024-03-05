@@ -15,7 +15,6 @@ offline. Optionally you can specify command line arguments
 from __future__ import annotations
 
 import sys
-from ctypes import windll
 from time import sleep
 
 import spd_controller.sigma.sc104 as sc104

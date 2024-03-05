@@ -6,8 +6,8 @@ In the manual of Prodigy "Remote-out",
 **Executable**
 This setting is used to start executables or batch-scripts
 which will receive the commands on the standard input stream and have to write
-the reply to the standard output stream. You have to specify the executable, which will be
-started when going online, one it will be stopped when going offline.
+the reply to the standard output stream. You have to specify the executable, which will
+be started when going online, one it will be stopped when going offline.
 Optionally you can specify command line arguments
 """
 

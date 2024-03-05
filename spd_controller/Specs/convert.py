@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Literal
 
 import numpy as np
-from typing_extensions import Literal
 
 Measure_type = Literal["FAT", "SFAT"]
+WORKFUNCTION_ANALYZER = 4.401
 
 header_template = """IGOR
 X //Created Date (UTC): {}
@@ -27,21 +28,23 @@ X //Kinetic Energy    = {}
 X //Pass Energy       = {}
 X //Bias Voltage      = {}
 X //Detector Voltage  = {}
-X //WorkFunction      = 4.401
+X //WorkFunction      = {}
 """
 
 DIGIT_ID = 3
 
 
 def itx(
-    data: list,
+    data: list[float] | list[list[float]],
     param: dict[str, str | float | int],
     spectrum_id: int,
     num_scan: int = 1,
     comment: str = "",
     measure_mode: Measure_type = "FAT",
+    *,
+    correct_angle: bool = True,
 ) -> str:
-    """Build the the itx-style data from the intensity map
+    """Build the the itx-style data from the intensity map.
 
     Parameters
     ----------
@@ -57,13 +60,11 @@ def itx(
         Comment string.  Used in "//User Comment"
     measure_mode : str
         Measurement mode (FAT/SFAT)
+    correct_angle : bool
+        if True, correct the emission angle
     """
     itx: str = ""
-    if (
-        "num_scan" in param.keys()
-        and num_scan == 1
-        and isinstance(param["num_scan"], int)
-    ):
+    if "num_scan" in param and num_scan == 1 and isinstance(param["num_scan"], int):
         num_scan = param["num_scan"]
     itx = header(
         param=param,
@@ -75,17 +76,21 @@ def itx(
     wavename: str = "ID_" + str(spectrum_id).zfill(DIGIT_ID)
     if measure_mode == "FAT":
         itx += ("WAVES/S/N=({},{}) '" + wavename + "'\nBEGIN\n").format(
-            param["NumNonEnergyChannels"], param["Samples"]
+            param["NumNonEnergyChannels"],
+            param["Samples"],
         )
     else:
         itx += ("WAVES/S/N=({},{}) '" + wavename + "'\nBEGIN\n").format(
-            param["NumNonEnergyChannels"], param["NumEnergyChannels"]
+            param["NumNonEnergyChannels"],
+            param["NumEnergyChannels"],
         )
     if isinstance(param["NumNonEnergyChannels"], int):
         data = np.array(data).reshape(param["NumNonEnergyChannels"], -1).tolist()
     else:
-        raise RuntimeError("NumNonEnergyChannels should be int.")
+        msg = "NumNonEnergyChannels should be int."
+        raise RuntimeError(msg)
     for line in data:
+        assert isinstance(line, list)
         itx += " ".join([str(_) for _ in line])
         itx += "\n"
     if (
@@ -93,25 +98,38 @@ def itx(
         and isinstance(param["Angle_max"], float)
         and isinstance(param["NumNonEnergyChannels"], int)
     ):
-        angle_max, angle_min = correct_angle_region(
-            param["Angle_min"], param["Angle_max"], param["NumNonEnergyChannels"]
-        )
+        if correct_angle:
+            angle_max, angle_min = correct_angle_region(
+                param["Angle_min"],
+                param["Angle_max"],
+                param["NumNonEnergyChannels"],
+            )
+        else:
+            angle_max, angle_min = param["Angle_min"], param["Angle_max"]
     else:
-        raise RuntimeError("Angle_min and Angle_max should be float.")
+        msg = "Angle_min and Angle_max should be float."
+        raise RuntimeError(msg)
 
     itx += "END\n"
     itx += "X SetScale /I x, {}, {}, \"{}\", '{}'\n".format(
-        angle_max, angle_min, param["Angle_Unit"], wavename
+        angle_max,
+        angle_min,
+        param["Angle_Unit"],
+        wavename,
     )
     itx += "X SetScale /P y, {}, {},  \"eV\", '{}'\n".format(
-        param["StartEnergy"], param["StepWidth"], wavename
+        param["StartEnergy"],
+        param["StepWidth"],
+        wavename,
     )
-    itx += "X SetScale /I d, 0, 0, \"cps (Intensity)\", '{}'\n".format(wavename)
+    itx += f"X SetScale /I d, 0, 0, \"cps (Intensity)\", '{wavename}'\n"
     return itx
 
 
 def correct_angle_region(
-    angle_min: float, angle_max: float, num_pixel: int
+    angle_min: float,
+    angle_max: float,
+    num_pixel: int,
 ) -> tuple[float, float]:
     """Correct the angle value to fit igor.
 
@@ -134,13 +152,13 @@ def correct_angle_region(
 
 
 def header(
-    param: dict,
+    param: dict[str, int | float | str],
     spectrum_id: int,
     num_scan: int = 1,
     comment: str = "",
     measure_mode: Measure_type = "FAT",
 ) -> str:
-    """Make itx file header
+    """Make itx file header.
 
     Parameters
     ----------
@@ -160,11 +178,11 @@ def header(
     str
         Header part of itx
     """
-    if measure_mode == "FAT":
-        mode = "Fixed Analyzer Transmission"
-    else:
-        mode = "Snapshot"
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")
+    mode = "Fixed Analyzer Transmission" if measure_mode == "FAT" else "Snapshot"
+    now = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S.%f")
+    if param["User Comment"]:
+        assert isinstance(param["User Comment"], str)
+        comment += ";" + param["User Comment"]
     return header_template.format(
         now,
         mode,
@@ -181,4 +199,5 @@ def header(
         param["PassEnergy"],
         param["Bias Voltage Electrons"],
         param["Detector Voltage"],
+        WORKFUNCTION_ANALYZER,
     )

@@ -5,7 +5,6 @@ from __future__ import annotations
 
 from pathlib import Path
 from time import sleep
-from typing import Literal
 from unittest.mock import MagicMock
 
 import dash
@@ -225,7 +224,7 @@ def download_file(dl_filename: str, n_clicks: int):
     dl_filename: str
         The file name of data.
     n_clicks: int
-        Nnumber of clicks
+        Number of clicks
 
     Raises
     ------

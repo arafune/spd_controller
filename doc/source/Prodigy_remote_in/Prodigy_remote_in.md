@@ -42,6 +42,13 @@ Select "Remote Control" from the menu.
 
 and then select the template, and check "Allow Remote Connections"
 
+::: note info
+
+In the current version, the calibration file cannot be changed from the client-side.
+The template file should be prepared before the measurement. At present, two templates are prepared.
+
+:::
+
 - Confirm "Remote connections enabled. Listening on port 7010" in Log field.
 
 ![Remote_in](./ProdigyRemote_in.png)
@@ -110,8 +117,15 @@ prodigy.set_excitation_energy(4.4417)  # <- Set the excitation photon energy
 prodigy.validate()
 ```
 
+::: note info
+
+The number of scan cannot be set here. It is one of the restrictions of Prodigy Remote-in.  
+To increase the number of scan, use `prodigy.scan` command seen as below.
+
+:::
+
 In above lines, the most important is the second.
-(Needless to say, the other lines excepting prodigy.checkFAAT are essential to measure.)
+(Needless to say, the other lines excepting prodigy.checkFAT are essential to measure.)
 
 ```python
 prodigy.defineFAT(start_energy=5.0, end_energy=6.0, step=0.002, pass_eenrgy=5, dwell=.1)
@@ -133,7 +147,12 @@ Note that, in SFAT mode, pass_energy cannot be set. And setting the step energy 
 After configuration of the electron energy analyzer, the photoemission measurements can start.
 
 The follwoing lines are an example to perform the pump-probe experiments.
+
+::: note alart
+
 **Don't just copy and paste. Use it after completely understanding.**
+
+:::
 
 ```python
 sc104.move_abs(pos=stage_start)

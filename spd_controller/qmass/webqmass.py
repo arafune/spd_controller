@@ -1,31 +1,24 @@
 #!/usr/bin/env python3
-"""Qmass spectral data acquisition Web based user interface
-    """
+"""Qmass spectral data acquisition Web based user interface."""
 
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock
-
 import dash
 import dash_daq as daq
-from dash import Input, Output, State, dcc, html
+from dash import Input, Output, dcc, html
 
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 
 # styles
 
 div_style_1_1 = {
-    # "margin": "10pt",
     "display": "inline-block",
-    # "verticalAlign": "top",
 }
 
 div_style_1_2 = {
-    # "margin": "10pt",
     "width": "29%",
     "display": "inline-block",
-    # "verticalAlign": "top",
 }
 
 mode_style = {"margin-top": "0%", "width": "32%", "display": "inline-block"}
@@ -48,7 +41,8 @@ app = dash.Dash(
 
 
 measure_button = html.Div(
-    [daq.PowerButton(id="measure_button", on=False, color="red")], style=div_style_1_1
+    [daq.PowerButton(id="measure_button", on=False, color="red")],
+    style=div_style_1_1,
 )
 
 filename_input = html.Div(
@@ -73,7 +67,7 @@ filament_selection = html.Div(
             ],
             value=0,
             clearable=False,
-        )
+        ),
     ],
     style=div_style_1_2,
 )
@@ -87,7 +81,7 @@ multiplier_onoff = html.Div(
             on=False,
             vertical=True,
             color="blue",
-        )
+        ),
     ],
     style=div_style_1_1,
 )
@@ -103,7 +97,7 @@ mode_selection = html.Div(
             ],
             value="analog_mode",
             clearable=False,
-        )
+        ),
     ],
     style=mode_style,
 )
@@ -123,7 +117,7 @@ range_selection = html.Div(
             ],
             value=0,
             clearable=False,
-        )
+        ),
     ],
     style=mode_style,
 )
@@ -142,7 +136,7 @@ accuracy_selection = html.Div(
             ],
             value=4,
             clearable=False,
-        )
+        ),
     ],
     style=mode_style,
 )
@@ -171,7 +165,7 @@ analog_mode_span: list[dict[str, str | int]] = [
 ]
 
 leak_check_mode_span: list[dict[str, str | int]] = [
-    {"label": "Mass span: None(This is leak check mode)", "value": 0}
+    {"label": "Mass span: None(This is leak check mode)", "value": 0},
 ]
 
 mass_span = html.Div(
@@ -181,7 +175,7 @@ mass_span = html.Div(
             options=analog_mode_span,
             value=0,
             clearable=False,
-        )
+        ),
     ],
     style=massset_style2,
 )
@@ -194,18 +188,18 @@ basic_module = html.Div(
         filament_selection,
         html.P("Multiplier", style={"display": "inline-block"}),
         multiplier_onoff,
-    ]
+    ],
 )
 mode_module = html.Div([mode_selection, range_selection, accuracy_selection])
 mass_setting_module = html.Div(
-    [html.P("start mass: ", style={"display": "inline-block"}), start_mass, mass_span]
+    [html.P("start mass: ", style={"display": "inline-block"}), start_mass, mass_span],
 )
 measurement_module = html.Div(
     [
         measure_button,
         dcc.Graph(id="Graph"),
         dcc.Interval(id="intervals", interval=1000, max_intervals=-1),
-    ]
+    ],
 )  # << ここにグラフがはいる。
 app.layout = html.Div(
     [
@@ -217,7 +211,7 @@ app.layout = html.Div(
         html.Hr(),
         measurement_module,
         html.Hr(),
-    ]
+    ],
 )
 
 # callback
@@ -238,7 +232,7 @@ def set_condition(
     multiplier: bool,
     mode: str,
 ) -> list[dict[str, str | int]]:
-    """[summary]
+    """[summary].
 
     Parameters
     ----------
@@ -256,16 +250,11 @@ def set_condition(
     list[dict[str, str|int]]
         [description]
     """
-
     if mode == "analog_mode":
-        # q_mass.analog_mode()
         return analog_mode_span
-    elif mode == "digital_mode":
-        # q_mass.digital_mode()
+    if mode == "digital_mode":
         return digital_mode_span
-    else:
-        # q_mass.leak()
-        return leak_check_mode_span
+    return leak_check_mode_span
 
 
 @app.callback(
@@ -283,8 +272,7 @@ def set_condition(
 def measure_starts(measure: bool) -> tuple[bool, ...]:
     if measure:
         return (False, True, True, True, True, True, True, True, True)
-    else:
-        return (True, False, False, False, False, False, False, False, False)
+    return (True, False, False, False, False, False, False, False, False)
 
 
 """

@@ -16,3 +16,13 @@ Google "Act ssh server Windows"
 # To overcome NIMS network restriction issue
 
 ## pip
+
+Prepare the folloing file:
+
+${ENV:USERPROFILE}\AppData\Roaming\pip\pip.ini
+
+```
+[global]
+proxy = proxyout.nims.go.jp:8888
+cert = C:\\Users\\Ryuichi Arafune\\src\\setting\\wwwout.nims.go.jp.pem
+```

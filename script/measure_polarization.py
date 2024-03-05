@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
-"""偏光板を１度回して、レーザーパワーを測る。を３６０繰り返す。
+"""Measure the polarization direction.
 
-By this script, the polarizer is rotated by 1 degree from 0 to 359 degree, and then measure the power.
+The cycle of measuring the laser power and then rotating the polalizer.
 """
 import argparse
 from pathlib import Path
@@ -36,25 +36,23 @@ if __name__ == "__main__":
     power_meter.sense.average.count = 100
     #
     polarizer.home()
-    # sleep(30)
     if args.file_name:
         f = open(args.file_name, mode="w")
     for angle in range(0, 360, args.step):
         polarizer.move_rel(args.step)
         polarizer.rd(20)
-        # print(polarizer.btd(polarizer.rd(20)[8:12]))  # devide by 136553 equals angle of degree
         sleep(0.01)  # 0.01 s is sufficient waiting time.
         # BUT: by inserting rd(20), sleep can be removed.
         power_measures: NDArray[float] = np.array([power_meter.read for _ in range(10)])
         result = "angle: {}, power: {} ±: {}".format(
-            angle, power_measures.mean(), power_measures.std()
+            angle,
+            power_measures.mean(),
+            power_measures.std(),
         )
         print(result)
         if args.file_name:
             f.write(
-                "{}\t{}\t{}\n".format(
-                    angle, power_measures.mean(), power_measures.std()
-                )
+                f"{angle}\t{power_measures.mean()}\t{power_measures.std()}\n",
             )
     if args.file_name:
         f.close()

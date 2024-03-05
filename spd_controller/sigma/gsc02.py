@@ -18,10 +18,10 @@ from .. import Comm
 
 
 class GSC02(Comm):
-    """Class for DSC-02 controller
+    """Class for DSC-02 controller.
 
     Parameters
-    ------------
+    ----------
     term: str, optional
         termination character (default: CRLF)
     port: str, optional
@@ -29,6 +29,7 @@ class GSC02(Comm):
     """
 
     def __init__(self, term: str = "\r\n", port: str = "") -> None:
+        """Initialize."""
         super().__init__(term=term)
         if port:
             self.open(tty=port, baud=9600)
@@ -42,15 +43,15 @@ class GSC02(Comm):
                     self.is_portopen = True
                     self.close()
                     self.open(tty=tty, baud=9600, rtscts=True)
-                    return None
-                else:
-                    self.close()
+                    return
+                self.close()
+            msg = "Check the port. Cannot find the connection to the ND filter"
             raise RuntimeError(
-                "Check the port. Cannot find the connection to the ND filter"
+                msg,
             )
 
     def angle(self) -> float:
-        """Return the current angle of the rotation stage
+        """Return the current angle of the rotation stage.
 
         Returns
         -------
@@ -69,51 +70,55 @@ class GSC02(Comm):
         wait : bool, optional
             If true show the current angle during rotation, by default True
         """
-        self.sendtext("H:{}-".format(axis))
+        self.sendtext(f"H:{axis}-")
         if wait:
             self.waiting_for_rotation()
 
-    def move_rel(self, pulse: int, axis: int = 1, wait: bool = True) -> None:
-        """Rotate the stage by the input value
+    def move_rel(self, pulse: int, axis: int = 1, *, wait: bool = True) -> None:
+        """Rotate the stage by the input value.
 
         Parameters
         ----------
         pulse : int
             The number of pulses.
+        axis: int
+            axis
         wait : bool, optional
             If true show the current angle during rotation, by default True
         """
         if pulse >= 0:
-            command = "M:{}+P{}".format(axis, int(abs(pulse)))
+            command = f"M:{axis}+P{int(abs(pulse))}"
         else:
-            command = "M:{}-P{}".format(axis, int(abs(pulse)))
+            command = f"M:{axis}-P{int(abs(pulse))}"
         self.sendtext(command)
-        # time.sleep(0.03)  # 0.01 だと動かない。 RTS/CTS flow をオンにしたらいらない?
         self.sendtext("G")
         if wait:
             self.waiting_for_rotation()
 
-    def rotate(self, angle_deg: float, axis: int = 1, wait: bool = True) -> None:
-        """Rotate the stage by the input angle
+    def rotate(self, angle_deg: float, axis: int = 1, *, wait: bool = True) -> None:
+        """Rotate the stage by the input angle.
 
         Parameters
         ----------
         angle_deg : float
             The angle to rotate
+        axis: int
+            axis number
         wait : bool, optional
             If true show the current angle during rotation, by default True
         """
-
         pulse = int(angle_deg / 0.0025)
         self.move_rel(pulse, axis=axis, wait=wait)
 
-    def set_angle(self, angle_deg: float, axis: int = 1, wait: bool = True) -> None:
-        """Set the angle of the ND filter
+    def set_angle(self, angle_deg: float, axis: int = 1, *, wait: bool = True) -> None:
+        """Set the angle of the ND filter.
 
         Parameters
         ----------
         angle_deg : float
             angle of the ND filter
+        axis: int
+            axis number
         wait : bool, optional
             If true show the current angle during rotation, by default True
 
@@ -123,37 +128,35 @@ class GSC02(Comm):
         self.rotate(rotate_angle, axis=axis, wait=wait)
 
     def rotating(self) -> float | None:
-        """Check the ND filter is rotating
+        """Check the ND filter is rotating.
 
         Returns
         -------
         float|None
             The current angle, if motor is stopped return None.
         """
-
         self.sendtext("Q:")
         [position, _, _, _, status] = self.recvtext().strip().split(",")
         if status == "R":
             return None
-        else:
-            return int(position) * 0.0025
+        return int(position) * 0.0025
 
     def waiting_for_rotation(self) -> None:
-        """Wait for the rotation"""
+        """Wait for the rotation."""
         current_angle = self.rotating()
         while current_angle:
-            print("{:.4f}".format(current_angle))
+            print(f"{current_angle:.4f}")
             current_angle = self.rotating()
 
     def force_stop(self, axis: int = 1) -> float:
-        """Force stop motor
+        """Force stop motor.
 
         Returns
         -------
         float:
             The Current angle of the ND filter
         """
-        self.sendtext("L:{}".format(axis))
+        self.sendtext(f"L:{axis}")
         return self.angle()
 
     def check_stop(self) -> bool:

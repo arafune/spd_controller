@@ -22,7 +22,7 @@ def main() -> None:
         xonxoff=True,
     )
     # open if not opened
-    if ser.isOpen() == False:
+    if ser.isOpen() is False:
         print("OPENING port.")
         ser.open()
     # header

@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""SIGMA TECH SC104
+"""SIGMA TECH SC104.
 
 Specification:
 
@@ -25,8 +25,34 @@ from serial.tools import list_ports
 from .. import Comm
 
 
+class MockSC104:
+    def __init__(self) -> None:
+        pass
+
+    def move_abs(
+        self,
+        pos: float,
+        *,
+        wait: bool = True,
+        micron: bool = False,
+    ) -> None:
+        pass
+
+    def move_rel(
+        self,
+        move: float,
+        *,
+        wait: bool = True,
+        micron: bool = False,
+    ) -> None:
+        pass
+
+    def position(self) -> float:
+        pass
+
+
 class SC104(Comm):
-    """Class for SC-104 Linear translation stage controller
+    """Class for SC-104 Linear translation stage controller.
 
     Parameters
     ----------
@@ -43,7 +69,7 @@ class SC104(Comm):
     """
 
     def __init__(self, term: str = "\r\n", port: str = "") -> None:
-        """initialization"""
+        """Initialize."""
         super().__init__(term=term)
         if port:
             self.open(tty=port, baud=9600)
@@ -61,28 +87,26 @@ class SC104(Comm):
                     self.is_portopen = True
                     self.close()
                     self.open(tty=tty, baud=9600, xonxoff=True)
-                    return None
-                else:
-                    self.close()
+                    return
+                self.close()
+            msg = "Check the port. Cannot find the connection to the Delay line"
             raise RuntimeError(
-                "Check the port. Cannot find the connection to the Delay line"
+                msg,
             )
 
     def position(self) -> float:
-        """Return the current postion.
+        """Return the current position.
 
         Returns
         -------
         float
             The current position in mm unit.
         """
-
         self.sendtext("P:1")
         pos = int(self.recvtext().strip())
-        pos_mm = pos * 1e-4
-        return pos_mm
+        return pos * 1e-4
 
-    def move_to_origin(self, wait: bool = True) -> None:
+    def move_to_origin(self, *, wait: bool = True) -> None:
         """Move to the mechanical origin.
 
         And electric zero is set at this point.
@@ -91,7 +115,7 @@ class SC104(Comm):
         if wait:
             self.wait_during_move()
 
-    def move_to_zero(self, wait: bool = True) -> None:
+    def move_to_zero(self, *, wait: bool = True) -> None:
         """Move to electrical origin which can be varied.
 
         Parameters
@@ -107,11 +131,11 @@ class SC104(Comm):
         """Set the current position as the electrical origin."""
         self.sendtext("R:1")
 
-    def move_abs(self, pos: float, wait: bool = True, micron: bool = False) -> None:
+    def move_abs(self, pos: float, *, wait: bool = True, micron: bool = False) -> None:
         """Move to the absolute position.
 
         Parameters
-        -----------
+        ----------
         pos: float
             position. Default unit is mm.
         micron: Boolean, optional
@@ -130,11 +154,11 @@ class SC104(Comm):
         if wait:
             self.wait_during_move()
 
-    def move_rel(self, move: float, wait: bool = True, micron: bool = False) -> None:
+    def move_rel(self, move: float, *, wait: bool = True, micron: bool = False) -> None:
         """Move by the value from the current position(Relative move).
 
         Parameters
-        -----------
+        ----------
         move: float
             position. Default unit is mm.
         micron: bool
@@ -142,7 +166,6 @@ class SC104(Comm):
         wait : bool, optional
             If true show the current position during move, by default True
         """
-
         if micron:
             move /= 1000
         if move >= 0:
@@ -158,7 +181,7 @@ class SC104(Comm):
         """Check the current stage condition.
 
         Returns
-        ---------
+        -------
         float
             the current position, if the stage is not moving, return None
         """
@@ -170,7 +193,7 @@ class SC104(Comm):
             return int(tmp[0]) * 1.0e-4
 
     def set_speed(self, speed: float) -> None:
-        """Set stage spped in mm/s unit
+        """Set stage speed in mm/s unit.
 
         Parameters
         ----------
@@ -180,23 +203,21 @@ class SC104(Comm):
         assert speed > 0
         command: str = "D:1F{}".format(int(speed * 1e4))
         self.sendtext(command)
-        return None
 
     def set_acceralation_time(self, acc: int) -> None:
-        """Set accelaration/deceleration time  (default 100ms)
+        """Set acceleration/deceleration time  (default 100ms).
 
         Parameters
         ----------
         acc: int
-            Accelaration/deceleration time in ms unit.
+            Acceleration/deceleration time in ms unit.
         """
         assert acc > 0
-        command: str = "ACC: 1 {}".format(acc)
+        command: str = f"ACC: 1 {acc}"
         self.sendtext(command)
-        return None
 
-    def wait_during_move(self, printing: bool = False) -> None:
-        """Wait moving ends
+    def wait_during_move(self, *, printing: bool = False) -> None:
+        """Wait moving ends.
 
         Parameters
         ----------
@@ -207,11 +228,11 @@ class SC104(Comm):
         current_position: float | None = self.moving()
         while current_position:
             if printing:
-                print("{:.4f}".format(current_position))
+                print(f"{current_position:.4f}")
             current_position = self.moving()
 
     def force_stop(self) -> float:
-        """Force stop the motor
+        """Force stop the motor.
 
         Returns
         -------
@@ -222,10 +243,10 @@ class SC104(Comm):
         return self.position()
 
     def check_stop(self) -> bool:
-        """Return True if the motor stops (Not-busy)
+        """Return True if the motor stops (Not-busy).
 
         Returns
-        -----------
+        -------
         bool
             True if the motor stops.
         """
@@ -236,9 +257,13 @@ class SC104(Comm):
         return False
 
     def back_and_forth(
-        self, position_a: float, position_b: float, wait: bool = True
+        self,
+        position_a: float,
+        position_b: float,
+        *,
+        wait: bool = True,
     ) -> None:
-        """Reciprocate the stage between postion A and B.
+        """Reciprocate the stage between position A and B.
 
         Parameters
         ----------
@@ -260,8 +285,7 @@ class SC104(Comm):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-    # parser.add_argument("--tty", metavar="tty_name", type=str, default="/dev/ttyUSB1")
-    parser.add_argument("position", metavar="Postion", type=float)
+    parser.add_argument("position", metavar="Position", type=float)
     args = parser.parse_args()
     s = SC104()
     s.move_abs(args.position, wait=False)
