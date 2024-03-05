@@ -203,7 +203,7 @@ class RemoteIn:
         )
         response = self.sendcommand(command + argument)
         if with_check:
-            command = "CheckSpectrumSFAT"
+            command = "CheckSpectrumSFAT "
             response = self.sendcommand(command + argument)
             self.parse_check_response(response)
         return response
