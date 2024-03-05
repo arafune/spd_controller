@@ -71,12 +71,25 @@ class Comm:
         """
         ports = list_ports.comports()
         for port in ports:
-            try:
-                if port.serial_number.startswith(serial_num):
-                    return port.device
-            except AttributeError:
-                pass
+            if isinstance(port.serial_number, str) and port.serial_number.startswith(
+                serial_num
+            ):
+                return port.device
         return None
+
+    def open_socket(
+        self,
+        address_port: tuple[str, int],
+        timeout: float = 1,
+        baud: int = 115200,
+    ) -> bool:
+        """Open socket through pyserial url_uandler"""
+        socket_ = f"socket://{address_port[0]}:{address_port[1]}"
+        self.comm = serial.serial_for_url(socket_)
+        self.comm.timeout = timeout
+        self.comm.baudrate = baud
+        self.is_portopen = self.comm.is_open
+        return self.comm.is_open
 
     def recv(self, timeout: float = 3.0) -> tuple[bool, bytearray]:
         """Receive the data (within waiting time).

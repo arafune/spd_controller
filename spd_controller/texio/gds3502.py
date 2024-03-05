@@ -11,10 +11,11 @@ from typing_extensions import Literal
 from .. import Comm
 
 Channel = Literal[1, 2]
+Connection = Literal["usb", "socket"]
 
 
 class GDS3502(Comm):
-    def __init__(self, term: str = "\n", connection: str = "usb") -> None:
+    def __init__(self, term: str = "\n", connection: Connection = "usb") -> None:
         """_summary_
 
         Parameters
@@ -28,15 +29,19 @@ class GDS3502(Comm):
             _description_
         """
         super().__init__(term=term)
-        port = self.connect("GEV150786")
-        self.connection = connection
-        self.header_dict: dict[str, float | str] = {}
-        self.memory: NDArray[np.float_]
-        if port:
-            self.open(baud=115200, port=port)
-            self.is_portopen = True
+        if connection == "usb":
+            port = self.connect_usb("GEV150786")
+            self.connection = connection
+            self.header_dict: dict[str, float | str] = {}
+            self.memory: NDArray[np.float_]
+            if port:
+                self.open(baud=115200, port=port)
+                self.is_portopen = True
+                return None
+            raise RuntimeError("Not found")
+        elif connection == "socket":
+            self.open_socket(("144.213.126.10", 3000), timeout=1, baud=115200)
             return None
-        raise RuntimeError("Not found")
 
     def lrn(self) -> str:
         """Returns the oscilloscope settings as a data string
