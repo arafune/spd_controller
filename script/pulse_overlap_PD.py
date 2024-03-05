@@ -95,7 +95,7 @@ if __name__ == "__main__":
         s.move_to_origin()
     s.move_abs(args.start)
     pos = s.position()
-    o = gds3502.GDS3502()
+    o = gds3502.GDS3502(connection="socket")
     if args.ET:
         o.set_interpolation_et()
     else:
