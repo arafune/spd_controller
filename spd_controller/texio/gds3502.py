@@ -29,10 +29,10 @@ class GDS3502(Comm):
             _description_
         """
         super().__init__(term=term)
+        self.header_dict: dict[str, float | str] = {}
         if connection == "usb":
             port = self.connect_usb("GEV150786")
-            self.connection = connection
-            self.header_dict: dict[str, float | str] = {}
+            self.connection: Connection = connection
             self.memory: NDArray[np.float_]
             if port:
                 self.open(baud=115200, port=port)
@@ -40,6 +40,7 @@ class GDS3502(Comm):
                 return None
             raise RuntimeError("Not found")
         elif connection == "socket":
+            self.connection = "socket"
             self.open_socket(("144.213.126.10", 3000), timeout=1, baud=115200)
             return None
 
@@ -141,16 +142,11 @@ class GDS3502(Comm):
         self.sendtext(":ACQuire:MODe SAMP")
 
     def set_interpolation_et(self) -> None:
-        """Set Interporation ET mode.
-
-        """
+        """Set Interporation ET mode."""
         self.sendtext(":ACQuire:INTERpolation ET")
- 
 
     def set_realtime_sampling(self) -> None:
-        """Set Interporation ET mode.
-
-        """
+        """Set Interporation ET mode."""
         self.sendtext(":ACQuire:INTERpolation SINC")
 
     def save_image(self, filename: str) -> None:
