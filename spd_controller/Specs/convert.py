@@ -42,6 +42,7 @@ def itx(
     comment: str = "",
     measure_mode: Measure_type = "FAT",
     *,
+    counts: bool = True,
     correct_angle: bool = True,
 ) -> str:
     """Build the the itx-style data from the intensity map.
@@ -60,6 +61,8 @@ def itx(
         Comment string.  Used in "//User Comment"
     measure_mode : str
         Measurement mode (FAT/SFAT)
+    counts: bool
+        if True, the unit of the intensity is counts.
     correct_angle : bool
         if True, correct the emission angle
     """
@@ -122,7 +125,10 @@ def itx(
         param["StepWidth"],
         wavename,
     )
-    itx += f"X SetScale /I d, 0, 0, \"cps (Intensity)\", '{wavename}'\n"
+    if counts:
+        itx += f"X SetScale /I d, 0, 0, \"counts (Intensity)\", '{wavename}'\n"
+    else:
+        itx += f"X SetScale /I d, 0, 0, \"cps (Intensity)\", '{wavename}'\n"
     return itx
 
 

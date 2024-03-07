@@ -31,7 +31,7 @@ class MFF101(THORLABS_MOTION_CONTROL):
         """Identify itself by flashing the LED.
 
         MGMSG_MODE_IDENTIFY
-       """
+        """
         return self.write("230200005001")
 
     def position(self) -> int:

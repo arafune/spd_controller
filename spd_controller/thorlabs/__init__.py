@@ -38,7 +38,9 @@ class THORLABS_MOTION_CONTROL:
             try:
                 if port.serial_number.startswith(self.serial_num):
                     self.ser = serial.Serial(
-                        baudrate=115200, timeout=0.1, port=port.device,
+                        baudrate=115200,
+                        timeout=0.1,
+                        port=port.device,
                     )
                     self.ready = True
                     break
