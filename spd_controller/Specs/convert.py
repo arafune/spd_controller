@@ -180,8 +180,8 @@ def header(
     """
     mode = "Fixed Analyzer Transmission" if measure_mode == "FAT" else "Snapshot"
     now = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S.%f")
-    if param["User Comment"]:
-        assert isinstance(param["User Comment"], str)
+    if "User Comment" in param:
+        assert isinstance(param["User Comment"], str | None)
         comment += ";" + param["User Comment"]
     return header_template.format(
         now,
