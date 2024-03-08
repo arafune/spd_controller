@@ -71,7 +71,7 @@ if __name__ == "__main__":
         "--ET",
         action="store_true",
         default=False,
-        help="If true, interpolation ET mode.",
+        help="If set, interpolation ET mode.",
     )
     parser.add_argument(
         "--average",
@@ -81,6 +81,12 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--flip", action="store_true", default=False, help="if True, use flipper"
+    )
+    parser.add_argument(
+        "--socket",
+        action="store_true",
+        default=False,
+        help="if set, connect Oscilloscopy by socket (Ethernet).",
     )
     args = parser.parse_args()
     assert args.channel in (1, 2)
@@ -95,14 +101,17 @@ if __name__ == "__main__":
         s.move_to_origin()
     s.move_abs(args.start)
     pos = s.position()
-    o = gds3502.GDS3502(connection="socket")
+    if args.socket:
+        o = gds3502.GDS3502(connection="socket")
+    else:
+        o = gds3502.GDS3502(connection="usb")
     if args.ET:
         o.set_interpolation_et()
     else:
         o.set_realtime_sampling()
     if args.average == 0:
         o.set_sample_mode()
-        waiting_time = 1
+        waiting_time = 1.0
     else:
         waiting_time = o.set_average_mode(n_average=args.average)  ## NEED to CHECK!!!
     time.sleep(waiting_time)
@@ -111,7 +120,8 @@ if __name__ == "__main__":
     data: list[NDArray[np.float_]] = [o.timescale]
     data_with_flip: list[NDArray[np.float_]] = [o.timescale]
     while pos < args.end:
-        header.append(f"position_{np.round(pos, 3):.3f}")
+        frequency = o.measure_frequency(args.channel)
+        header.append(f"position_{np.round(pos, 3):.3f}@{frequency}")
         data.append(o.acquire_memory(args.channel))
         s.move_rel(args.step, micron=True)
         time.sleep(waiting_time)

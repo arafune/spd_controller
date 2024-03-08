@@ -15,7 +15,11 @@ Connection = Literal["usb", "socket"]
 
 
 class GDS3502(Comm):
-    def __init__(self, term: str = "\n", connection: Connection = "usb") -> None:
+    def __init__(
+        self,
+        term: str = "\n",
+        connection: Connection = "usb",
+    ) -> None:
         """_summary_
 
         Parameters
