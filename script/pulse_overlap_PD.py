@@ -65,7 +65,7 @@ if __name__ == "__main__":
         type=int,
         default=1,
         required=True,
-        help="Channel number 1 or 2.",
+        help="The number of the oscilloscope channel (1 or 2).",
     )
     parser.add_argument(
         "--ET",
@@ -80,20 +80,20 @@ if __name__ == "__main__":
         help="Set average times in acquition. if 0, Sample mode is set.",
     )
     parser.add_argument(
-        "--flip", action="store_true", default=False, help="if True, use flipper"
-    )
-    parser.add_argument(
         "--socket",
         action="store_true",
         default=False,
         help="if set, connect Oscilloscopy by socket (Ethernet).",
     )
     parser.add_argument(
+        "--flip", action="store_true", default=False, help="if True, use flipper"
+    )
+    parser.add_argument(
         "--flipper_port",
         type=int,
         required=False,
         default=0,
-        help="COM port number must be set for Windows.",
+        help="COM port number, which must be set for Windows.",
     )
     args = parser.parse_args()
     assert args.channel in (1, 2)
