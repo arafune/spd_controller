@@ -32,7 +32,11 @@ class THORLABS_MOTION_CONTROL:
             )
 
     def connect(self) -> None:
-        """Searhes all com ports for device with matching serial number and opens a connection."""
+        """Searhes all com ports for device with matching serial number and opens a connection.
+
+        On Windows machine, the "serial number" is not the number of the device, but the COM port number.
+        Thus, the number is like 3, 4, 5, not 37003548
+        """
         ports = list_ports.comports()
         for port in ports:
             try:

@@ -88,11 +88,25 @@ if __name__ == "__main__":
         default=False,
         help="if set, connect Oscilloscopy by socket (Ethernet).",
     )
+    parser.add_argument(
+        "--flipper_port",
+        type=int,
+        required=False,
+        default=0,
+        help="COM port number must be set for Windows.",
+    )
     args = parser.parse_args()
     assert args.channel in (1, 2)
     assert args.average in (0, 2, 4, 8, 16, 32, 64, 128, 256)
     if args.flip:
-        flipper = mff101.MFF101(37003548)
+        if args.flipper_port:
+            flipper = mff101.MFF101(args.flipper_port)
+            assert flipper.ready, "Check the port number of the flipper."
+        else:
+            flipper = mff101.MFF101(37003548)
+            assert (
+                flipper.ready
+            ), "If your os is Windows, --flipper_port N (N is the number of COM port) is requred."
         flipper.move_backward()
     else:
         flipper = DummyFlipper()
