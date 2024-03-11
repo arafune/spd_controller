@@ -109,7 +109,7 @@ if __name__ == "__main__":
             ), "If your os is Windows, --flipper_port N (N is the number of COM port) is requred."
         flipper.move_backward()
     else:
-        flipper = DummyFlipper()
+        flipper = DummyFlipper()  # type: ignore
     s = sc104.SC104()
     if args.reset:
         s.move_to_origin()
@@ -127,7 +127,7 @@ if __name__ == "__main__":
         o.set_sample_mode()
         waiting_time = 1.0
     else:
-        waiting_time = o.set_average_mode(n_average=args.average)  ## NEED to CHECK!!!
+        waiting_time = o.set_average_mode(n_average=args.average)
     time.sleep(waiting_time)
     o.acquire_memory(args.channel)
     header = ["timescale"]
