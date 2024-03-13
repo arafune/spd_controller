@@ -113,7 +113,7 @@ if __name__ == "__main__":
     s = sc104.SC104()
     if args.reset:
         s.move_to_origin()
-    s.move_abs(args.start)
+    s.move_abs(args.start, wait=True)
     pos = s.position()
     if args.socket:
         o = gds3502.GDS3502(connection="socket")
@@ -134,10 +134,10 @@ if __name__ == "__main__":
     data: list[NDArray[np.float_]] = [o.timescale]
     data_with_flip: list[NDArray[np.float_]] = [o.timescale]
     while pos < args.end:
-        frequency = o.measure_frequency(args.channel)
+        frequency = o.triger_frequency
         header.append(f"position_{np.round(pos, 3):.3f}@{frequency}")
         data.append(o.acquire_memory(args.channel))
-        s.move_rel(args.step, micron=True)
+        s.move_rel(args.step, micron=True, wait=True)
         time.sleep(waiting_time)
         if args.flip:
             flipper.flip()

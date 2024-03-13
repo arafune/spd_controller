@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Module for GDS3502 Oscilloscope (USB connection through pySerial)"""
+"""Module for GDS3502 Oscilloscope (USB/Socket connection through pySerial)"""
 
 from __future__ import annotations
 
@@ -45,7 +45,7 @@ class GDS3502(Comm):
             raise RuntimeError("Not found")
         elif connection == "socket":
             self.connection = "socket"
-            self.open_socket(("144.213.126.10", 3000), timeout=1, baud=115200)
+            self.open_socket(("144.213.126.10", 3000), timeout=1, baud=115200,)
             return None
 
     def lrn(self) -> str:
@@ -75,6 +75,11 @@ class GDS3502(Comm):
 
     def set_impedance(self, channel: Channel, impedance: float = 5.0e1) -> None:
         self.sendtext(":CHANnel{}:IMPedance {}".format(channel, impedance))
+
+    @property
+    def triger_frequency(self) -> float:
+        self.sendtext(":TRIG:FREQ?")
+        return float(self.recvtext())
 
     def measure_frequency(self, channel: Channel) -> float:
         """Measure the frequency from the channel.
