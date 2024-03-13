@@ -24,6 +24,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.propagate = False
 
+
 class DummyFlipper:
     def __init__(self) -> None:
         self.ready = False
@@ -111,7 +112,7 @@ if __name__ == "__main__":
         "--use_measured_freq",
         action="store_true",
         default=False,
-        help="if set, record the measured frequency instead of trigger frequency.  (Not the measured freqency is sometimes far from expected value...)."
+        help="if set, record the measured frequency instead of trigger frequency.  (Not the measured freqency is sometimes far from expected value...).",
     )
     args = parser.parse_args()
     assert args.channel in (1, 2)
@@ -147,9 +148,6 @@ if __name__ == "__main__":
     else:
         waiting_time = o.set_average_mode(n_average=args.average)
     time.sleep(waiting_time)
-#    is_ready = o.is_ready(args.channel)
-#    while not is_ready:
-#        is_ready = o.is_ready(args.channel)
     o.acquire_memory(args.channel)
     time.sleep(1)
     header = ["timescale"]
@@ -158,9 +156,6 @@ if __name__ == "__main__":
     pos = s.position()
     logger.debug(f"current position:{pos}")
     while pos < args.end:
-#        is_ready = o.is_ready(args.channel)
-#        while not is_ready:
-#            is_ready = o.is_ready(args.channel)
         if args.use_measured_freq:
             frequency = o.measure_frequency(args.channel)
         else:
@@ -180,13 +175,10 @@ if __name__ == "__main__":
         if args.with_fig:
             o.sendtext(":TIM:SCAL?")
             time_division = float(o.recvtext())
-            o.sendtext(":TIM:SCAL 1.0E-9") 
+            o.sendtext(":TIM:SCAL 1.0E-9")
             o.save_image(f'"Disk:/{args.output}_pos_{np.round(pos, 3):.3f}.png"')
             o.sendtext(f":TIM:SCAL {time_division:.2E}")
-            
-#            is_ready = o.is_ready(args.channel)
-#            while not is_ready:
-#                is_ready = o.is_ready(args.channel)
+            time.sleep(2)
     np.savetxt(
         args.output,
         np.array(data).T,
