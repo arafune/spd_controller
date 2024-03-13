@@ -95,6 +95,12 @@ if __name__ == "__main__":
         default=0,
         help="COM port number, which must be set for Windows.",
     )
+    parser.add_argument(
+        "--use_trigger_freq",
+        action="store_true",
+        default=False,
+        help="if set, use trigger frequency instead of the measured freqency."
+    )
     args = parser.parse_args()
     assert args.channel in (1, 2)
     assert args.average in (0, 2, 4, 8, 16, 32, 64, 128, 256)
@@ -134,7 +140,10 @@ if __name__ == "__main__":
     data: list[NDArray[np.float_]] = [o.timescale]
     data_with_flip: list[NDArray[np.float_]] = [o.timescale]
     while pos < args.end:
-        frequency = o.triger_frequency
+        if args.use_trigger_freq:
+            frequency = o.triger_frequency
+        else:
+            frequency = o.measure_frequency(args.channel)
         header.append(f"position_{np.round(pos, 3):.3f}@{frequency}")
         data.append(o.acquire_memory(args.channel))
         s.move_rel(args.step, micron=True, wait=True)
