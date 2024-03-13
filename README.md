@@ -16,3 +16,5 @@ Following facilities are supported
 - Thorlabs
   - K10CR1 (Rotation)
   - MFF101 (Flipper)
+- Specs
+  - Phoibos (Electron energy analyzer)
