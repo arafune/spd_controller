@@ -1,3 +1,16 @@
+[project]
+name = "spd_contoller"
+version = "0.1"
+description = "spd_controller: A set of tools for controlling our measurement facilities."
+authors = [{ name = "Ryuichi Arafune", email = "ryuichi.arafune@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26.4",
+    "pyserial>=3.5",
+]
+
+
 [tool.ruff]
 
 line-length = 88
