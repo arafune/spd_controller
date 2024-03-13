@@ -1,6 +1,16 @@
 # Measure the pulse overlapping by using Photodiode
 
-As the time response of the phtoodiode is quite slow (~ 50 ps), the precise determination cannot be made. However, the information from this measurements may help.
+As the time response of the phtoodiode is quite slow (~ 50 ps), the precise determination of the timing overlap is impossible. However, the information from this measurements may help.
+
+##
+
+## Coneection
+
+- PC <=> Oscilloscope (Texio, GDS3502): If the oscilloscope is connected to the net, no further connection is required. On the other hand, if the oscilloscope is connected to PC by usb, don't use --socket option in the command below.
+- PC <=> Delay line stage controller (Sigam Tech, SC104): Serial (straight) cable.
+- (Optional) PC <=> Flipper (Thorlabs, MFF101) If the control on the Windows machine, "VCS enable" in the property must be checked.
+
+## Command
 
 pulse_overlap_PD.py
 
