@@ -45,7 +45,7 @@ class GDS3502(Comm):
             raise RuntimeError("Not found")
         elif connection == "socket":
             self.connection = "socket"
-            self.open_socket(("144.213.126.10", 3000), timeout=1, baud=115200,)
+            self.open_socket(("144.213.126.10", 3000), timeout=1)
             return None
 
     def lrn(self) -> str:
@@ -81,15 +81,19 @@ class GDS3502(Comm):
         self.sendtext(":TRIG:FREQ?")
         return float(self.recvtext())
 
+    def is_ready(self, channel: Channel)->bool:
+        self.sendtext(f":ACQ{channel}:STAT?")
+        received_ = self.recvtext()
+        if received_:
+            return True
+        return False
+
     def measure_frequency(self, channel: Channel) -> float:
         """Measure the frequency from the channel.
-
-        [TODO:description]
 
         Parameters
         ----------
         channel: Channel
-            [TODO:description]
 
         Returns
         -------

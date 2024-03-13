@@ -10,7 +10,19 @@ from pathlib import Path
 from spd_controller.sigma import sc104
 from spd_controller.texio import gds3502
 from spd_controller.thorlabs import mff101
+from logging import DEBUG, INFO, Formatter, StreamHandler, getLogger
 
+
+LOGLEVELS = (DEBUG, INFO)
+LOGLEVEL = LOGLEVELS[0]
+logger = getLogger(__name__)
+fmt = "%(asctime)s %(levelname)s %(name)s :%(message)s"
+formatter = Formatter(fmt)
+handler = StreamHandler()
+handler.setLevel(LOGLEVEL)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.propagate = False
 
 class DummyFlipper:
     def __init__(self) -> None:
@@ -96,10 +108,10 @@ if __name__ == "__main__":
         help="COM port number, which must be set for Windows.",
     )
     parser.add_argument(
-        "--use_trigger_freq",
+        "--use_measured_freq",
         action="store_true",
         default=False,
-        help="if set, use trigger frequency instead of the measured freqency."
+        help="if set, record the measured frequency instead of trigger frequency.  (Not the measured freqency is sometimes far from expected value...)."
     )
     args = parser.parse_args()
     assert args.channel in (1, 2)
@@ -119,8 +131,8 @@ if __name__ == "__main__":
     s = sc104.SC104()
     if args.reset:
         s.move_to_origin()
+        logger.debug("Move to mechanical origin.")
     s.move_abs(args.start, wait=True)
-    pos = s.position()
     if args.socket:
         o = gds3502.GDS3502(connection="socket")
     else:
@@ -135,15 +147,25 @@ if __name__ == "__main__":
     else:
         waiting_time = o.set_average_mode(n_average=args.average)
     time.sleep(waiting_time)
+#    is_ready = o.is_ready(args.channel)
+#    while not is_ready:
+#        is_ready = o.is_ready(args.channel)
     o.acquire_memory(args.channel)
+    time.sleep(1)
     header = ["timescale"]
     data: list[NDArray[np.float_]] = [o.timescale]
     data_with_flip: list[NDArray[np.float_]] = [o.timescale]
+    pos = s.position()
+    logger.debug(f"current position:{pos}")
     while pos < args.end:
-        if args.use_trigger_freq:
-            frequency = o.triger_frequency
-        else:
+#        is_ready = o.is_ready(args.channel)
+#        while not is_ready:
+#            is_ready = o.is_ready(args.channel)
+        if args.use_measured_freq:
             frequency = o.measure_frequency(args.channel)
+        else:
+            frequency = o.triger_frequency
+        logger.debug(f"frequency: {frequency}")
         header.append(f"position_{np.round(pos, 3):.3f}@{frequency}")
         data.append(o.acquire_memory(args.channel))
         s.move_rel(args.step, micron=True, wait=True)
@@ -156,7 +178,15 @@ if __name__ == "__main__":
             time.sleep(waiting_time)
         pos = s.position()
         if args.with_fig:
+            o.sendtext(":TIM:SCAL?")
+            time_division = float(o.recvtext())
+            o.sendtext(":TIM:SCAL 1.0E-9") 
             o.save_image(f'"Disk:/{args.output}_pos_{np.round(pos, 3):.3f}.png"')
+            o.sendtext(f":TIM:SCAL {time_division:.2E}")
+            
+#            is_ready = o.is_ready(args.channel)
+#            while not is_ready:
+#                is_ready = o.is_ready(args.channel)
     np.savetxt(
         args.output,
         np.array(data).T,
