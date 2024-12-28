@@ -488,7 +488,9 @@ class RemoteIn:
                 status[key] = int(item)
             except ValueError:  # item is string with quotations
                 status[key] = item
-        assert status["ControllerState"] == "finished"
+        assert_msg = 'status["ControllerState"] should be "finished",'
+        assert_msg += f' but actually {status["ControllerState"]}"'
+        assert status["ControllerState"] == "finished", assert_msg
         assert isinstance(status["NumberOfAcquiredPoints"], int | float)
         request_str: str = "?{:04X} GetAcquisitionData FromIndex:0 ToIndex:{}".format(
             self.id,
