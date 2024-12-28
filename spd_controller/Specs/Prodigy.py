@@ -336,6 +336,7 @@ class RemoteIn:
     def setup_fat(
         self,
         *,
+        excitation_energy: float,
         start_energy: float,
         end_energy: float,
         step: float,
@@ -372,6 +373,7 @@ class RemoteIn:
             A tuple containing the FAT definition and check results.
         """
         _ = self.clear()
+        _ = self.set_excitation_energy(excitation_energy)
         return self.defineFAT(
             start_energy=start_energy,
             end_energy=end_energy,
@@ -394,6 +396,7 @@ class RemoteIn:
     def setup_sfat(
         self,
         *,
+        excitation_energy: float,
         start_energy: float,
         end_energy: float,
         samples: int = 1,
@@ -427,6 +430,7 @@ class RemoteIn:
             A tuple containing the SFAT definition and check results.
         """
         _ = self.clear()
+        _ = self.set_excitation_energy(excitation_energy)
         return self.defineSFAT(
             start_energy=start_energy,
             end_energy=end_energy,
