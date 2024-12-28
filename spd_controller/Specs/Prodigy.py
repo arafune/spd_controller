@@ -491,7 +491,10 @@ class RemoteIn:
         assert_msg = 'status["ControllerState"] should be "finished",'
         assert_msg += f' but actually {status["ControllerState"]}"'
         assert status["ControllerState"] == "finished", assert_msg
-        assert isinstance(status["NumberOfAcquiredPoints"], int | float)
+        assert_msg = 'status["NumberOfAcquiredPoints"] should be int | float,'
+        assert_msg += f' but actually {status["NumberOfAcquiredPoints"] }, and'
+        assert_msg += f' the type is {type(status["NumberOfAcquiredPoints"])}'
+        assert isinstance(status["NumberOfAcquiredPoints"], int | float), assert_msg
         request_str: str = "?{:04X} GetAcquisitionData FromIndex:0 ToIndex:{}".format(
             self.id,
             status["NumberOfAcquiredPoints"] - 1,
