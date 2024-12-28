@@ -5,6 +5,7 @@
 from pathlib import Path
 from time import sleep
 from typing import Literal
+import warnings
 
 import numpy as np
 
@@ -44,7 +45,7 @@ class RemoteIn:
         self.host: str = host
         self.port: int = port
         self.TERM: Literal["\r", "\r\n", "\n"] = term
-        self.timeout = 10
+        self.timeout: float = 10
         self.verbose: bool = verbose
         self.id: int = 1
         self.samples: int = 0
@@ -93,7 +94,7 @@ class RemoteIn:
         """
         request_str: str = "?" + format(self.id, "04X") + " " + text
         self.id += 1
-        self.sock.sendtext(request_str)
+        _ = self.sock.sendtext(request_str)
         return self.sock.recvtext(buffsize)
 
     def disconnect(self) -> str:
@@ -122,7 +123,6 @@ class RemoteIn:
 
         Send FAT spectrum specification for subsequent acquisition.
         Existing data must be cleared first.
-
 
         Parameters
         ----------
@@ -488,14 +488,16 @@ class RemoteIn:
                 status[key] = int(item)
             except ValueError:  # item is string with quotations
                 status[key] = item
-        assert status["ControllerState"] == "finished"
+        assert_msg = 'status["ControllerState"] should be "finished",'
+        assert_msg += f' but actually {status["ControllerState"]}"'
+        assert status["ControllerState"] == "finished", assert_msg
         assert isinstance(status["NumberOfAcquiredPoints"], int | float)
         request_str: str = "?{:04X} GetAcquisitionData FromIndex:0 ToIndex:{}".format(
             self.id,
             status["NumberOfAcquiredPoints"] - 1,
         )
         self.id += 1
-        self.sock.sendtext(request_str)
+        _ = self.sock.sendtext(request_str)
         data = self.sock.recvtext(byte_size=8192)
         while "]" not in data:
             data += self.sock.recvtext(byte_size=8192)
@@ -565,9 +567,9 @@ class RemoteIn:
         self.param["num_scan"] = num_scan
         data: list[float] = []
         for _ in range(num_scan):
-            self.start(setsafeafter=setsafeafter)
+            __ = self.start(setsafeafter=setsafeafter)
             data += self.get_data()
-            self.clear()
+            __ = self.clear()
         if num_scan > 1:
             data = np.array(data).reshape(num_scan, -1).sum(axis=0).tolist()
         self.data = data
@@ -593,6 +595,9 @@ class RemoteIn:
         measure_mode: Measure_type, optional
             Measure mode name (FAT or SFAT) (default: FAT)
         """
+        filepath = Path(filename)
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+
         itx_data = itx(
             self.data,
             self.param,
@@ -601,11 +606,27 @@ class RemoteIn:
             measure_mode=measure_mode,
         )
         if Path(filename).exists():
-            RuntimeError(
-                f"The file {filename} already exists. Check your command.",
+            filepath = get_unique_filepath(filepath)
+            warnings.warn(
+                f"The file {filename} already exists. The data is saved as  f{filepath}",
+                stacklevel=2,
             )
-        with open(filename, "w") as itx_file:
-            itx_file.write(itx_data)
+        with filepath.open("w") as itx_file:
+            _ = itx_file.write(itx_data)
+
+
+def get_unique_filepath(filename: str | Path) -> Path:
+    """Check if the file already exists. If it does, generate a unique filepath,
+    warn the user, and open the new file in write mode.
+    """
+    path = Path(filename)
+    counter = 1
+
+    while path.exists():
+        path = path.with_name(f"{path.stem}_{counter}{path.suffix}")
+        counter += 1
+
+    return path
 
 
 def parse_analyzer_parameter(response: str) -> tuple[str, int | float]:
