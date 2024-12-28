@@ -386,6 +386,10 @@ class RemoteIn:
         self.parse_check_response(response)
         self.get_analyzer_parameter()
         self.get_non_energy_channel_info()
+        excitation_energy = self.param.get("ExcitationEnergy", None)
+        assert (
+            excitation_energy is not None
+        ), 'ExcitationEnergy is not found, Use "set_excitation_energy" method'
         return response
 
     def set_safe_state(self) -> str:
