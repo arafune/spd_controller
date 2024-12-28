@@ -200,7 +200,7 @@ def header(
         param["Samples"],
         param["StepWidth"],
         param["DwellTime"],
-        param["ExcitationEnergy"],
+        param.get("ExcitationEnergy", "Nan"),
         param["StartEnergy"],
         param["PassEnergy"],
         param["Bias Voltage Electrons"],
