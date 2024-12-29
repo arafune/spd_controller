@@ -60,7 +60,7 @@ def start_logging() -> None:
     if isinstance(ipython, InteractiveShell):
         log_path: Path = generate_logfile_path()
         log_path.parent.mkdir(exist_ok=True)
-        _ = ipython.run_line_magic("logstart", str(log_path))
+        _ = ipython.run_line_magic("logstart", f"-o -t {str(log_path)}")
 
 
 def generate_logfile_path() -> Path:
