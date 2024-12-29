@@ -1,3 +1,5 @@
+"""Top level module for spd_controller."""
+
 from __future__ import annotations
 
 import socket
