@@ -6,14 +6,23 @@ from pathlib import Path
 from time import sleep
 from typing import Literal
 import warnings
+import sys
 
 import numpy as np
 
 from spd_controller.Specs.convert import Measure_type, itx
 
 from .. import TcpSocketWrapper
+from . import start_logging
 
+module_name = __name__
 BUFSIZE = 1024
+
+initialized = False
+
+if f"{module_name}.Prodigy" not in sys.modules:
+    start_logging()
+    initialized = True
 
 
 class RemoteIn:
