@@ -352,6 +352,8 @@ class RemoteIn:
 
         Parameters
         ----------
+        excitation_energyu: float
+            The energy of the excitation for photoemission.
         start_energy : float
             The starting energy level for the scan.
         end_energy : float
@@ -411,6 +413,8 @@ class RemoteIn:
 
         Parameters
         ----------
+        excitation_energyu: float
+            The energy of the excitation for photoemission.
         start_energy : float
             The starting energy level for the scan.
         end_energy : float
