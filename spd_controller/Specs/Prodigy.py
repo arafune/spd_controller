@@ -342,6 +342,125 @@ class RemoteIn:
         self.parse_check_response(response)
         return response
 
+    def setup_fat(
+        self,
+        *,
+        excitation_energy: float,
+        start_energy: float,
+        end_energy: float,
+        step: float,
+        dwell: float = 0.1,
+        pass_energy: float = 5,
+        lens: str = "WideAngleMode",
+        scanrange: str = "40V",
+    ) -> tuple[str, str]:
+        """Setup the Fixed Analyzer Transmission (FAT) scan.
+
+        This method configures the parameters for a FAT scan and returns the
+        definitions and checks for the scan.
+
+        Parameters
+        ----------
+        excitation_energyu: float
+            The energy of the excitation for photoemission.
+        start_energy : float
+            The starting energy level for the scan.
+        end_energy : float
+            The ending energy level for the scan.
+        step : float
+            The energy step size for the scan.
+        dwell : float, optional
+            The dwell time for each step in seconds. Default is 0.1.
+        pass_energy : float, optional
+            The pass energy for the analyzer. Default is 5.
+        lens : str, optional
+            The lens mode to use for the scan. Default is 'WideAngleMode'.
+        scanrange : str, optional
+            The scan range in volts. Default is '40V'.
+
+        Returns
+        -------
+        tuple[str, str]
+            A tuple containing the FAT definition and check results.
+        """
+        _ = self.clear()
+        _ = self.set_excitation_energy(excitation_energy)
+        return self.defineFAT(
+            start_energy=start_energy,
+            end_energy=end_energy,
+            step=step,
+            dwell=dwell,
+            pass_energy=pass_energy,
+            lens=lens,
+            scanrange=scanrange,
+            with_check=True,
+        ), self.checkFAT(
+            start_energy=start_energy,
+            end_energy=end_energy,
+            step=step,
+            dwell=dwell,
+            pass_energy=pass_energy,
+            lens=lens,
+            scanrange=scanrange,
+        )
+
+    def setup_sfat(
+        self,
+        *,
+        excitation_energy: float,
+        start_energy: float,
+        end_energy: float,
+        samples: int = 1,
+        dwell: float = 0.1,
+        lens: str = "WideAngleMode",
+        scanrange: str = "40V",
+    ) -> tuple[str, str]:
+        """Setup the Snapshot Fixed Analyzer Transmission (SFAT) scan.
+
+        This method configures the parameters for an SFAT scan and returns the
+        definitions and checks for the scan.
+
+        Parameters
+        ----------
+        excitation_energyu: float
+            The energy of the excitation for photoemission.
+        start_energy : float
+            The starting energy level for the scan.
+        end_energy : float
+            The ending energy level for the scan.
+        samples : int, optional
+            The number of samples to take during the scan. Default is 1.
+        dwell : float, optional
+            The dwell time for each sample in seconds. Default is 0.1.
+        lens : str, optional
+            The lens mode to use for the scan. Default is 'WideAngleMode'.
+        scanrange : str, optional
+            The scan range in volts. Default is '40V'.
+
+        Returns
+        -------
+        tuple[str, str]
+            A tuple containing the SFAT definition and check results.
+        """
+        _ = self.clear()
+        _ = self.set_excitation_energy(excitation_energy)
+        return self.defineSFAT(
+            start_energy=start_energy,
+            end_energy=end_energy,
+            samples=samples,
+            dwell=dwell,
+            lens=lens,
+            scanrange=scanrange,
+            with_check=True,
+        ), self.checkSFAT(
+            start_energy=start_energy,
+            end_energy=end_energy,
+            samples=samples,
+            dwell=dwell,
+            lens=lens,
+            scanrange=scanrange,
+        )
+
     def parse_check_response(self, response: str) -> None:
         """Parse the string of the Command reply.
 
@@ -395,6 +514,10 @@ class RemoteIn:
         self.parse_check_response(response)
         self.get_analyzer_parameter()
         self.get_non_energy_channel_info()
+        excitation_energy = self.param.get("ExcitationEnergy", None)
+        assert (
+            excitation_energy is not None
+        ), 'ExcitationEnergy is not found, Use "set_excitation_energy" method'
         return response
 
     def set_safe_state(self) -> str:
