@@ -7,7 +7,7 @@ from time import sleep
 from typing import Literal
 import warnings
 import sys
-
+from tqdm import tqdm
 import numpy as np
 
 from spd_controller.Specs.convert import Measure_type, itx
@@ -515,9 +515,9 @@ class RemoteIn:
         self.get_analyzer_parameter()
         self.get_non_energy_channel_info()
         excitation_energy = self.param.get("ExcitationEnergy", None)
-        assert (
-            excitation_energy is not None
-        ), 'ExcitationEnergy is not found, Use "set_excitation_energy" method'
+        assert excitation_energy is not None, (
+            'ExcitationEnergy is not found, Use "set_excitation_energy" method'
+        )
         return response
 
     def set_safe_state(self) -> str:
@@ -624,8 +624,8 @@ class RemoteIn:
         assert_msg += f' but actually {status["ControllerState"]}"'
         assert status["ControllerState"] == "finished", assert_msg
         assert_msg = 'status["NumberOfAcquiredPoints"] should be int | float,'
-        assert_msg += f' but actually {status["NumberOfAcquiredPoints"] }, and'
-        assert_msg += f' the type is {type(status["NumberOfAcquiredPoints"])}'
+        assert_msg += f" but actually {status['NumberOfAcquiredPoints']}, and"
+        assert_msg += f" the type is {type(status['NumberOfAcquiredPoints'])}"
         assert isinstance(status["NumberOfAcquiredPoints"], int | float), assert_msg
         request_str: str = "?{:04X} GetAcquisitionData FromIndex:0 ToIndex:{}".format(
             self.id,
@@ -701,7 +701,7 @@ class RemoteIn:
         """
         self.param["num_scan"] = num_scan
         data: list[float] = []
-        for _ in range(num_scan):
+        for _ in tqdm(range(num_scan)):
             __ = self.start(setsafeafter=setsafeafter)
             data += self.get_data()
             __ = self.clear()
@@ -743,7 +743,7 @@ class RemoteIn:
         if Path(filename).exists():
             filepath = get_unique_filepath(filepath)
             warnings.warn(
-                f"The file {filename} already exists. The data is saved as  f{filepath}",
+                f"The file {filename} already exists. The data is saved as {filepath}",
                 stacklevel=2,
             )
         with filepath.open("w") as itx_file:
