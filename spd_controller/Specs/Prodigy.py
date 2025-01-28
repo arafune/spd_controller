@@ -7,18 +7,19 @@ from time import sleep
 from typing import Literal
 import warnings
 import sys
-from tqdm import tqdm
 import numpy as np
 
 from spd_controller.Specs.convert import Measure_type, itx
 
 from .. import TcpSocketWrapper
-from . import start_logging
+from . import start_logging, get_tqdm
 
 module_name = __name__
 BUFSIZE = 1024
 
 initialized = False
+
+tqdm = get_tqdm()
 
 if f"{module_name}.Prodigy" not in sys.modules:
     start_logging()
