@@ -9,11 +9,14 @@ import json
 import urllib.request
 from urllib.error import HTTPError
 from typing import TypedDict, Required
-
+from IPython.core.getipython import get_ipython
+from ipykernel.zmqshell import ZMQInteractiveShell
 from traitlets.config import MultipleInstanceError
 import ipykernel
 from jupyter_server import serverapp
-
+from typing import Callable
+from tqdm import tqdm as cli_tqdm
+from tqdm.notebook import tqdm as notebook_tqdm
 
 module_name = __name__
 
@@ -43,6 +46,25 @@ class SessionInfo(TypedDict, total=False):
 class NoteBookInfomation(TypedDict, total=True):
     server: ServerInfo
     session: SessionInfo
+
+
+def get_tqdm() -> Callable[..., cli_tqdm | notebook_tqdm]:
+    """Returns the appropriate tqdm function based on the execution environment.
+
+    If it running in a Jupyter notebook environment, it returs 'tqdm.notebook'.
+    Otherwise, it returns the standard 'tqdm.tqdm' for CLI and other environment.
+
+    Returns
+    -------
+        Callable[..., cli_tqdm | notebook_tqdm] : The tqdm The tqdm function suitable for the current environment.
+
+    Raise:
+        RuntimeError: If tqdm is not installed or cannot be imoprted
+    """
+    shell = get_ipython()
+    if isinstance(shell, ZMQInteractiveShell):
+        return notebook_tqdm
+    return cli_tqdm
 
 
 def start_logging() -> None:
