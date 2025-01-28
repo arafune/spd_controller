@@ -10,12 +10,11 @@ import urllib.request
 from urllib.error import HTTPError
 from typing import TypedDict, Required
 from IPython.core.getipython import get_ipython
-from IPython.terminal.interactiveshell import TerminalInteractiveShell
 from ipykernel.zmqshell import ZMQInteractiveShell
 from traitlets.config import MultipleInstanceError
 import ipykernel
 from jupyter_server import serverapp
-from typing import Callable, Literal
+from typing import Callable
 from tqdm import tqdm as cli_tqdm
 from tqdm.notebook import tqdm as notebook_tqdm
 
@@ -49,26 +48,6 @@ class NoteBookInfomation(TypedDict, total=True):
     session: SessionInfo
 
 
-def detect_environment() -> Literal["jupyter", "ipython", "script"]:
-    """Detects the current runtime environment.
-
-    Returns
-    --------
-        Literal["jupyter", "ipython", "script"]:
-            - "jupyter" if running in a Jupyter notebook environment.
-            - "ipython" if running in  an IPython environment.
-            - "script" if running in a standard IPython script.
-    """
-    shell = get_ipython()
-    if shell is None:
-        return "script"
-    if isinstance(shell, ZMQInteractiveShell):
-        return "jupyter"
-    if isinstance(shell, TerminalInteractiveShell):
-        return "ipython"
-    return "script"
-
-
 def get_tqdm() -> Callable[..., cli_tqdm | notebook_tqdm]:
     """Returns the appropriate tqdm function based on the execution environment.
 
@@ -82,11 +61,10 @@ def get_tqdm() -> Callable[..., cli_tqdm | notebook_tqdm]:
     Raise:
         RuntimeError: If tqdm is not installed or cannot be imoprted
     """
-    if detect_environment() == "jupyter":
-        # Jupyter Notebook environment
+    shell = get_ipython()
+    if isinstance(shell, ZMQInteractiveShell):
         return notebook_tqdm
-    else:
-        return cli_tqdm
+    return cli_tqdm
 
 
 def start_logging() -> None:

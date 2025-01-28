@@ -5,7 +5,7 @@ description = "spd_controller: A set of tools for controlling our measurement fa
 authors = [{ name = "Ryuichi Arafune", email = "ryuichi.arafune@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["numpy>=1.26.4", "pyserial>=3.5"]
+dependencies = ["numpy>=1.26.4", "pyserial>=3.5", "ipykernel"]
 
 [tool.ruff]
 
