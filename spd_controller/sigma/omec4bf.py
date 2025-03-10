@@ -7,8 +7,6 @@ Hardware specification:
 from __future__ import annotations
 from typing import Literal, TypedDict
 
-from serial.tools import list_ports
-
 from .. import Comm
 
 from enum import Enum
@@ -49,6 +47,15 @@ class OMEC4BF(Comm):
         self.open(tty=port, baud=9600)
 
     def status(self, group: Literal[1, 2]) -> _OMECStatus:
+        """Retrieves the status of the specified group.
+
+        Args:
+            group (Literal[1, 2]): The group number (1 or 2).
+
+        Returns:
+            _OMECStatus: A dictionary containing the status information.
+        """
+
         command = f"{group}Q"
         self.sendtext(command)
         status = self.recvtext().strip().split(",")
@@ -70,33 +77,19 @@ class OMEC4BF(Comm):
 
         return status_dict
 
-    def check_stop(self, group: Literal[1, 2]) -> bool:
-        """Return True if the motor stops (Not-busy).
-
-        Returns
-        -------
-        bool
-            True if the motor stops.
-        """
-        return self.status(group)["ready"]
-
     def position(self, group: Literal[1, 2], axis: Literal["x", "y"]) -> int:
+        """
+        Gets the position of the specified axis for the given group.
+
+        Args:
+            group (Literal[1, 2]): The group number (1 or 2).
+            axis (Literal["x", "y"]): The axis ("x" or "y").
+
+        Returns:
+            int: The position of the specified axis.
+        """
         status = self.status(group)
         return status[axis.lower()]
-
-    def moving(self, group: Literal[1, 2]) -> tuple[int, int] | None:
-        """Check the current stage condition.
-
-        Returns
-        -------
-        tuple[int, int] | None
-            the current position, if the stage is not moving, return None
-        """
-        status = self.status(group)
-        if status["ready"]:
-            return status["x"], status["y"]
-        else:
-            return None
 
     def wait_during_move(
         self,
@@ -104,21 +97,25 @@ class OMEC4BF(Comm):
         *,
         printing: bool = False,
     ) -> None:
-        """Wait moving ends.
+        """Wait for the move operation to complete.
+
+        This method blocks the excecution until the move operation is finished.
 
         Parameters
         ----------
+        group : Literal[1, 2]
+            The group number (1 or 2), by default 1.
         printing: bool
             if True, print the "current" position
 
         """
-        current_position: tuple[int, int] | None = self.moving(group)
-        while current_position:
+        status = self.status(group=group)
+        while not status["ready"]:
             if printing:
                 print(
-                    f"current_position(x): {current_position[0]}, current_position(y): {current_position[1]}"
+                    f"current_position(x): {status['x']}, current_position(y): {status['y']}"
                 )
-            current_position = self.moving(group)
+            status = self.status(group)
 
     def move_abs(
         self,
@@ -132,17 +129,17 @@ class OMEC4BF(Comm):
 
         Parameters
         ----------
-        group
-            [TODO:description]
-        axis
-            [TODO:description]
-        position
-            [TODO:description]
-        wait
-            if True, wait for finihsing the moving.
+        group : Literal[1, 2], optional
+            The group number (1 or 2), by default 1.
+        axis : Literal["x", "y", "both"] | Axis, optional
+            The axis to move ("x", "y", or "both"), by default "x".
+        position : int, optional
+            The absolute position to move to, by default 0.
+        wait : bool, optional
+            If True, wait for finishing the move, by default True.
         """
         axis_int = axis_int = (
-            Axis[axis.upper()] if isinstance(axis, str) else axis.value
+            Axis[axis.upper()].value if isinstance(axis, str) else axis.value
         )
         cmd = f"{group}A{axis_int}:{position}"
         self.sendtext(cmd)
@@ -152,8 +149,17 @@ class OMEC4BF(Comm):
     def move_origin(
         self, group: Literal[1, 2] = 1, axis: Literal["x", "y", "both"] | Axis = "x"
     ) -> None:
+        """Move the specified axis to the origin (home position).
+
+        Parameters
+        ----------
+        group : Literal[1, 2], optional
+            The group number (1 or 2), by default 1.
+        axis : Literal["x", "y", "both"] | Axis, optional
+            The axis to move to the origin ("x", "y", or "both"), by default "x".
+        """
         axis_int = axis_int = (
-            Axis[axis.upper()] if isinstance(axis, str) else axis.value
+            Axis[axis.upper()].value if isinstance(axis, str) else axis.value
         )
         cmd = f"{group}H{axis_int}"
         self.sendtext(cmd)
@@ -167,21 +173,21 @@ class OMEC4BF(Comm):
         *,
         wait: bool = True,
     ) -> None:
-        """Move to the absolute position.
+        """Move to the relative position.
 
         Parameters
         ----------
-        group
-            [TODO:description]
-        axis
-            [TODO:description]
-        position
-            [TODO:description]
-        wait
-            if True, wait for finihsing the moving.
+        group : Literal[1, 2], optional
+            The group number (1 or 2), by default 1.
+        axis : Literal["x", "y", "both"] | Axis, optional
+            The axis to move ("x", "y", or "both"), by default "x".
+        move : int, optional
+            The relative distance to move, by default 0.
+        wait : bool, optional
+            If True, wait for finishing the move, by default True.
         """
         axis_int = axis_int = (
-            Axis[axis.upper()] if isinstance(axis, str) else axis.value
+            Axis[axis.upper()].value if isinstance(axis, str) else axis.value
         )
         cmd = f"{group}M{axis_int}:{move}"
         self.sendtext(cmd)
