@@ -34,7 +34,10 @@ if __name__ == "__main__":
     inst = USBTMC()
     power_meter = ThorlabsPM100(inst=inst)
     #
-    power_meter.sense.power.dc.range.auto = "ON"
+    # power_meter.sense.power.dc.range.auto = "ON"
+    power_meter.sense.power.dc.range.upper = config["power_range"]
+    power_meter.sense.correction.wavelength = config["wavelength"]
+    # power_meter.sense.power.dc.range.auto = "ON"
     power_meter.input.pdiode.filter.lpass.state = 0
     power_meter.sense.average.count = 100
     #

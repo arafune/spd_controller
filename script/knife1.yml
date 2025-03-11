@@ -4,5 +4,6 @@ step_z: 10
 start_height: 0
 end_height: 1000
 step_height: 10
-power_range: 10
+power_range: 0.120
+wavelength: 790
 output_file: "test.out"
