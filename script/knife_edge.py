@@ -61,7 +61,7 @@ if __name__ == "__main__":
             data_at_z.append(intensity)
         data.append(data_at_z)
 
-    header = f"#start_z:{config['start_z']}, end_z:{config['end_z']}, step_z:{config['step_z']}, "
+    header = f"start_z:{config['start_z']}, end_z:{config['end_z']}, step_z:{config['step_z']}, "
     header += f"start_height:{config['start_height']}, end_height:{config['end_height']}, step_height:{config['step_height']}"
     np.savetxt(
         fname=config["output_file"], X=np.array(data), header=header, delimiter="\t"
