@@ -34,14 +34,16 @@ if __name__ == "__main__":
     inst = USBTMC()
     power_meter = ThorlabsPM100(inst=inst)
     #
-    # power_meter.sense.power.dc.range.auto = "ON"
-    power_meter.sense.power.dc.range.upper = config["power_range"]
+    if config["power_range"] == "auto":
+        power_meter.sense.power.dc.range.auto = "ON"
+    else:
+        power_meter.sense.power.dc.range.upper = config["power_range"]
     power_meter.sense.correction.wavelength = config["wavelength"]
     # power_meter.sense.power.dc.range.auto = "ON"
     power_meter.input.pdiode.filter.lpass.state = 0
     power_meter.sense.average.count = 100
     #
-    omec = OMEC4BF()
+    omec = OMEC4BF(port=config["setting"]["omec_port"])
     for z in range(config["start_z"], config["end_z"], config["step_z"]):
         omec.move_abs(group=1, axis="x", position=z)
         data_at_z: list[float] = []
@@ -54,6 +56,8 @@ if __name__ == "__main__":
                 [power_meter.read for _ in range(10)]
             )
             intensity = power_measures.mean()
+            if "verbose" in config["setting"] and config["setting"]["verbose"]:
+                print(intensity)
             data_at_z.append(intensity)
         data.append(data_at_z)
 
