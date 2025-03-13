@@ -51,7 +51,7 @@ if __name__ == "__main__":
             config["start_height"], config["end_height"], config["step_height"]
         ):
             omec.move_abs(group=1, axis="y", position=height)
-            sleep(0.01)  # 0.01 s is sufficient waiting time.
+            #            sleep(0.01)  # 0.01 s is sufficient waiting time.
             power_measures: NDArray[np.float64] = np.array(
                 [power_meter.read for _ in range(10)]
             )
