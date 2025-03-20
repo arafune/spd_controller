@@ -1,8 +1,13 @@
+setting:
+  omec_port: "/dev/ttyUSB0"
+  pm100d_port: "/dev/usbtmc0"
+  verbose: False
 start_z: 0
 end_z: 1000
-step_z: 10
-start_height: 0
-end_height: 1000
+step_z: 100
+start_height: 2500
+end_height: 3450
 step_height: 10
-power_range: 10
+power_range: auto
+wavelength: 790
 output_file: "test.out"
