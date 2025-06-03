@@ -34,6 +34,8 @@ if __name__ == "__main__":
     inst = USBTMC()
     power_meter = ThorlabsPM100(inst=inst)
     #
+    threshold = float(config["threshold"])
+    #
     if config["power_range"] == "auto":
         power_meter.sense.power.dc.range.auto = "ON"
     else:
@@ -51,18 +53,22 @@ if __name__ == "__main__":
             config["start_height"], config["end_height"], config["step_height"]
         ):
             omec.move_abs(group=1, axis="y", position=height)
-            #            sleep(0.01)  # 0.01 s is sufficient waiting time.
             power_measures: NDArray[np.float64] = np.array(
                 [power_meter.read for _ in range(10)]
             )
             intensity = power_measures.mean()
             if "verbose" in config["setting"] and config["setting"]["verbose"]:
-                print(intensity)
+                print(f"z: {z}, height: {height}, {intensity}")
+            if intensity < threshold:
+                break
             data_at_z.append(intensity)
         data.append(data_at_z)
 
-    header = f"start_z:{config['start_z']}, end_z:{config['end_z']}, step_z:{config['step_z']}, "
+    header = f"# start_z:{config['start_z']}, end_z:{config['end_z']}, step_z:{config['step_z']}, "
     header += f"start_height:{config['start_height']}, end_height:{config['end_height']}, step_height:{config['step_height']}"
-    np.savetxt(
-        fname=config["output_file"], X=np.array(data), header=header, delimiter="\t"
-    )
+    header += f", threshold:{config['threshold']}"
+    with open(config["output_file"], "w") as f:
+        f.write(header + "\n")
+        for row in data:
+            line = "\t".join(f"{x:.8e}" for x in row)
+            f.write(line + "\n")
