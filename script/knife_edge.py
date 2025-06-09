@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import argparse
 import yaml
 import numpy as np
@@ -73,3 +74,5 @@ if __name__ == "__main__":
                 data_at_z.append(intensity)
             line = "\t".join(f"{x:.8e}" for x in data_at_z)
             f.write(line + "\n")
+            f.flush()
+            os.fsync(f.fileno())
