@@ -48,6 +48,8 @@ if __name__ == "__main__":
     header = f"# start_z:{config['start_z']}, end_z:{config['end_z']}, step_z:{config['step_z']}, "
     header += f"start_height:{config['start_height']}, end_height:{config['end_height']}, step_height:{config['step_height']}"
     header += f", threshold:{config['threshold']}"
+    header += f", wavelength: {config.get('wavelength', np.nan)}"
+    header += f", base_z: {config.get('base_z', np.nan)}"
     #
     omec = OMEC4BF(port=config["setting"]["omec_port"])
     #
