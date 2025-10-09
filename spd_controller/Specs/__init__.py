@@ -63,7 +63,11 @@ def get_tqdm() -> Callable[..., cli_tqdm | notebook_tqdm]:
     """
     shell = get_ipython()
     if isinstance(shell, ZMQInteractiveShell):
-        return notebook_tqdm
+        def notebook_tqdm_wrapper(*args, **kwargs):
+            """For notebook, return the wrapper with leave=Fasle"""
+            kwargs.setdefault("leave", False)
+            return notebook_tqdm(*args, **kwargs)
+        return notebook_tqdm_wrapper
     return cli_tqdm
 
 
