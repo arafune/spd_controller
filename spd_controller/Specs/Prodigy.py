@@ -2,6 +2,7 @@
 
 """Class for Prodigy remote_in."""
 
+from logging import DEBUG, Formatter, StreamHandler, getLogger
 from pathlib import Path
 from time import sleep
 from typing import Literal
@@ -13,6 +14,19 @@ from spd_controller.Specs.convert import Measure_type, itx
 
 from .. import TcpSocketWrapper
 from . import start_logging, get_tqdm
+
+# logger
+LOGLEVEL = DEBUG
+logger = getLogger(__name__)
+fmt = "%(asctime)s %(levelname)s %(name)s :%(message)s"
+formatter = Formatter(fmt)
+handler = StreamHandler()
+handler.setLevel(LOGLEVEL)
+logger.setLevel(LOGLEVEL)
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.propagate = False
+
 
 module_name = __name__
 BUFSIZE = 1024
@@ -105,7 +119,9 @@ class RemoteIn:
         request_str: str = "?" + format(self.id, "04X") + " " + text
         self.id += 1
         _ = self.sock.sendtext(request_str)
-        return self.sock.recvtext(buffsize)
+        received: str = self.sock.recvtext(buffsize)
+        logger.debug(f"Received messge: {received}")
+        return received
 
     def disconnect(self) -> str:
         r"""Close connection to SpecsLab Prodigy.
@@ -646,6 +662,7 @@ class RemoteIn:
         The data are stored in the self.param property
         """
         response = self.sendcommand('GetSpectrumDataInfo ParameterName:"OrdinateRange"')
+        logger.debug(f"Response of non-energy channel info: {response}")
         tmp = response[10:-1].split()[1:]
         self.param["Angle_Unit"] = tmp[0].split(":")[-1][1:-1]
         self.param["Angle_min"] = float(tmp[1].split(":")[-1])
@@ -659,6 +676,7 @@ class RemoteIn:
         command = 'GetDeviceParameterValue ParameterName:"ex_energy" '
         command += 'DeviceCommand:"UVS.Source"'
         response: str = self.sendcommand(command)
+        logger.debug(f"Response of excitation energy: {response}")
         self.param["ExcitationEnergy"] = float(
             response[10:-1].split()[-1].split()[-1].split(":")[-1],
         )

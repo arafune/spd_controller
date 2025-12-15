@@ -63,10 +63,12 @@ def get_tqdm() -> Callable[..., cli_tqdm | notebook_tqdm]:
     """
     shell = get_ipython()
     if isinstance(shell, ZMQInteractiveShell):
+
         def notebook_tqdm_wrapper(*args, **kwargs):
             """For notebook, return the wrapper with leave=Fasle"""
             kwargs.setdefault("leave", False)
             return notebook_tqdm(*args, **kwargs)
+
         return notebook_tqdm_wrapper
     return cli_tqdm
 
@@ -149,7 +151,7 @@ def get_full_notebook_information() -> NoteBookInfomation | None:
                         "server": server,
                         "session": sess,
                     }
-        except (KeyError, TypeError):
+        except (KeyError, TypeError, ValueError):
             pass
         except HTTPError:
             pass
