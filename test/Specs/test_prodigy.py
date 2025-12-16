@@ -29,7 +29,7 @@ class DummySock:
         if self.recv_texts:
             return self.recv_texts.pop(0)
         # データ取得テスト用
-        return "!0001 OK ControllerState:finished NumberOfAcquiredPoints:10"
+        return "!0001 OK ControllerState:finished NumberOfAcquiredPoints:10\n"
 
     def reset(self):
         self.sent.clear()
@@ -54,78 +54,77 @@ def test_connect(remote):
 
 def test_sendcommand(remote):
     remote.connect()
-    remote.sock.recv_texts = ["!0001 OK"]
+    remote.sock.recv_texts = ["!0001 OK\n"]
     result = remote.sendcommand("TestCmd")
     assert remote.sock.sent[-1].endswith("TestCmd")
-    assert result == "!0001 OK"
+    assert result == "!0001 OK\n"
 
 
 def test_disconnect(remote):
     remote.connect()
-    remote.sock.recv_texts = ["!0001 OK"]
+    remote.sock.recv_texts = ["!0001 OK\n"]
     result = remote.disconnect()
     assert "Disconnect" in remote.sock.sent[-1]
-    assert result == "!0001 OK"
+    assert result == "!0001 OK\n"
 
 
 def test_defineFAT_with_check(remote):
     remote.connect()
-    remote.sock.recv_texts = ["!ok", "!checkok"]
-    # CheckSpectrumFATも呼ばれる
+    remote.sock.recv_texts = ["!ok\n", "!checkok\n"]
     result = remote.defineFAT(0, 10, 1)
     assert "DefineSpectrumFAT" in remote.sock.sent[-2]
     # assert "DefineSpectrumFAT" in remote.sock.sent[0]
     assert "CheckSpectrumFAT" in remote.sock.sent[-1]
-    assert result == "!checkok"
+    assert result == "!checkok\n"
 
 
 def test_defineFAT_without_check(remote):
     remote.connect()
-    remote.sock.recv_texts = ["!ok"]
+    remote.sock.recv_texts = ["!ok\n"]
     result = remote.defineFAT(0, 10, 1, with_check=False)
     assert "DefineSpectrumFAT" in remote.sock.sent[-1]
     assert len(remote.sock.sent) == 2
-    assert result == "!ok"
+    assert result == "!ok\n"
 
 
 def test_defineSFAT_with_check(remote):
     remote.connect()
-    remote.sock.recv_texts = ["!ok", "!checkok"]
+    remote.sock.recv_texts = ["!ok\n", "!checkok\n"]
     result = remote.defineSFAT(0, 10)
     assert "DefineSpectrumSFAT" in remote.sock.sent[-2]
     assert "CheckSpectrumSFAT" in remote.sock.sent[-1]
-    assert result == "!checkok"
+    assert result == "!checkok\n"
 
 
 def test_checkFAT(remote):
     remote.connect()
-    remote.sock.recv_texts = ["!checkfat"]
+    remote.sock.recv_texts = ["!checkfat\n"]
     result = remote.checkFAT(0, 10, 1)
     assert "CheckSpectrumFAT" in remote.sock.sent[-1]
-    assert result == "!checkfat"
+    assert result == "!checkfat\n"
 
 
 def test_checkSFAT(remote):
     remote.connect()
-    remote.sock.recv_texts = ["!checksfat"]
+    remote.sock.recv_texts = ["!checksfat\n"]
     result = remote.checkSFAT(0, 10)
     assert "CheckSpectrumSFAT" in remote.sock.sent[-1]
-    assert result == "!checksfat"
+    assert result == "!checksfat\n"
 
 
 def test_clear(remote):
     remote.connect()
-    remote.sock.recv_texts = ["!clearok"]
+    remote.sock.recv_texts = ["!clearok\n"]
     result = remote.clear()
     assert remote.data == []
     assert "ClearSpectrum" in remote.sock.sent[-1]
-    assert result == "!clearok"
+    assert result == "!clearok\n"
 
 
 def test_get_status(remote):
     remote.connect()
     remote.sock.recv_texts = [
-        "!0001 OK ControllerState:finished NumberOfAcquiredPoints:10"
+        "!0001 OK ControllerState:finished NumberOfAcquiredPoints:10\n"
     ]
     result = remote.get_status()
     assert "GetAcquisitionStatus" in remote.sock.sent[-1]
@@ -136,8 +135,8 @@ def test_get_data(remote):
     remote.connect()
     # 最初のstatus
     remote.sock.recv_texts = [
-        "!0001 OK ControllerState:finished NumberOfAcquiredPoints:3",
-        "!0001 OK Data:[1.1,2.2,3.3]",
+        "!0001 OK ControllerState:finished NumberOfAcquiredPoints:3\n",
+        "!0001 OK Data:[1.1,2.2,3.3]\n",
     ]
     # statusはfinishedで3点
     remote.data = []
@@ -203,13 +202,15 @@ def test_scan(remote, monkeypatch):
 
 
 def test_set_excitation_energy(remote, monkeypatch):
-    monkeypatch.setattr(remote, "sendcommand", lambda cmd: "!001 OK Value:123.4")
+    monkeypatch.setattr(
+        remote, "sendcommand", lambda cmd: '!005 OK: Name: "ex_energy" Value:123.4\n'
+    )
     monkeypatch.setattr(
         remote,
         "get_excitation_energy",
         lambda: remote.param.update({"ExcitationEnergy": 123.4}),
     )
-    result = remote.set_excitation_energy(123.4)
+    _ = remote.set_excitation_energy(123.4)
     assert remote.param["ExcitationEnergy"] == 123.4
 
 
@@ -236,9 +237,7 @@ def test_set_safe_state(remote):
 
 def test_get_non_energy_channel_info(remote):
     remote.connect()
-    remote.sock.recv_texts = [
-        '!0001 OK ParameterName:"OrdinateRange" Angle_Unit:"deg"  Angle_min:10  Angle_max:20'
-    ]
+    remote.sock.recv_texts = ['!000F OK: ValueType:doubl Unit:"deg"  Min:10  Max:20\n']
     remote.param = {}
     remote.get_non_energy_channel_info()
     assert remote.param["Angle_Unit"] == "deg"
